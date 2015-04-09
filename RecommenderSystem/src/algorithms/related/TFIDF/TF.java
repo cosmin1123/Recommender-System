@@ -1,4 +1,4 @@
-package recommendation.algorithm.TFIDF;
+package algorithms.related.TFIDF;
 
 import java.util.HashMap;
 
@@ -20,6 +20,7 @@ public class TF {
         String[] contentWords = content.split("[\\.,\\s!;?:'\"]+");
 
         for(String word : contentWords) {
+            word = word.toLowerCase();
             Integer wordCount = wordMap.get(word);
 
             if(wordCount == null) {
@@ -34,14 +35,14 @@ public class TF {
 
     public static HashMap<String, Double> getArticleWordFrequency(String articleContent) {
         HashMap<String, Integer> wordCountMap = getWordCount(articleContent);
-        Integer totalArticleWordFrequency = getTotalArticleWordCount(wordCountMap);
+        double totalArticleWordFrequency = (double)getTotalArticleWordCount(wordCountMap);
         HashMap<String, Double> articleWordFrequency = new HashMap<String, Double>();
 
 
         for(String word : wordCountMap.keySet()) {
-            Integer wordCount = wordCountMap.get(word);
+            double wordCount = (double) wordCountMap.get(word);
 
-            articleWordFrequency.put(word, (Math.log(wordCount + 1) / Math.log(totalArticleWordFrequency)));
+            articleWordFrequency.put(word, (wordCount) / (totalArticleWordFrequency));
 
         }
         return articleWordFrequency;

@@ -1,4 +1,4 @@
-package recommendation.algorithm;
+package algorithms.recommended;
 
 import utils.Item;
 import utils.User;

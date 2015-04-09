@@ -1,19 +1,12 @@
 package database;
 
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.KeyValue;
-import org.apache.hadoop.hbase.client.Get;
-import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.util.Bytes;
-import recommendation.algorithm.RecommendedArticles;
-import recommendation.algorithm.RelatedArticles;
-import recommendation.algorithm.TFIDF.TFIDF;
+import algorithms.recommended.RecommendedArticles;
+import algorithms.related.RelatedArticles;
 import utils.*;
 
-import javax.xml.crypto.Data;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -28,7 +21,7 @@ public class Database {
                 Bytes.toBytes(TFIDFFamily.TOTAL_FILE_APPEARANCES.toString()));
 
         if(byteArray == null){
-            return 1;
+            return 0;
         }
         return Integer.parseInt(new String(byteArray));
 
@@ -37,6 +30,27 @@ public class Database {
     public static void setWordFileAppearance(String word, int wordFileAppearance) {
         Utils.addRecord(TableName.TFIDF.toString(), word, TFIDFFamily.TOTAL_FILE_APPEARANCES.toString(),
                 TFIDFFamily.TOTAL_FILE_APPEARANCES.toString(), wordFileAppearance + "");
+    }
+
+    public static int getTotalFileNum() {
+        Result rs = Utils.getOneRecord(TableName.TFIDF.toString(), TFIDFFamily.TOTAL_FILE_NUM.toString());
+
+        byte[] byteArray = rs.getValue(Bytes.toBytes(TFIDFFamily.TOTAL_FILE_NUM.toString()),
+                Bytes.toBytes(TFIDFFamily.TOTAL_FILE_NUM.toString()));
+
+        if(byteArray == null) {
+            return 0;
+        }
+
+        return Integer.parseInt(new String(byteArray));
+
+    }
+
+    public static void setTotalFileNum(int totalFileNum) {
+        Utils.addRecord(TableName.TFIDF.toString(), TFIDFFamily.TOTAL_FILE_NUM.toString(),
+                TFIDFFamily.TOTAL_FILE_NUM.toString(),
+                TFIDFFamily.TOTAL_FILE_NUM.toString(),
+                totalFileNum + "");
     }
 
     public static void setWordFrequency(String itemId, HashMap<String, Double> map) {
@@ -63,6 +77,7 @@ public class Database {
 
     public static void addItem(Item item) {
         String book = item.getItemId();
+
         Utils.addRecord(TableName.ITEMS.toString(), book, ItemFamily.TITLE.toString(),
                 ItemFamily.TITLE.toString(), item.getTitle());
         Utils.addRecord(TableName.ITEMS.toString(), book, ItemFamily.SHORT_TITLE.toString(),
@@ -77,6 +92,21 @@ public class Database {
                 ItemFamily.KEYWORDS.toString(), item.getKeywords().toArray());
         Utils.addRecord(TableName.ITEMS.toString(), book, ItemFamily.CONTENT.toString(),
                 ItemFamily.CONTENT.toString(), item.getContent());
+        Utils.addRecord(TableName.ITEMS.toString(), book, ItemFamily.DATE_CREATED.toString(),
+                ItemFamily.DATE_CREATED.toString(), item.getDateCreated() + "");
+        Utils.addRecord(TableName.ITEMS.toString(), book, ItemFamily.IMPORTANCE.toString(),
+                ItemFamily.IMPORTANCE.toString(), item.getDateCreated() + "");
+        Utils.addRecord(TableName.ITEMS.toString(), book, ItemFamily.PUBLICATION_ID.toString(),
+                ItemFamily.PUBLICATION_ID.toString(), item.getPublicationId());
+        Utils.addRecord(TableName.ITEMS.toString(), book, ItemFamily.LANGUAGE.toString(),
+                ItemFamily.LANGUAGE.toString(), item.getLanguage());
+        Utils.addRecord(TableName.ITEMS.toString(), book, ItemFamily.COLLECTION_REFERENCES.toString(),
+                ItemFamily.COLLECTION_REFERENCES.toString(), item.getCollectionReferences().toArray());
+        for(String user : item.getRating().keySet()) {
+            Utils.addRecord(TableName.ITEMS.toString(), book, ItemFamily.RATINGS.toString(),
+                    user, item.getRating().get(user) + "");
+        }
+
     }
 
     public static User getUser(String userId) {
@@ -115,10 +145,11 @@ public class Database {
         return  itemList;
     }
 
-    public static LinkedListWrapper<Item> getRelatedArticles (String articleId, int maxArticle) {
+    public static LinkedListWrapper<Item> getRelatedArticles (String articleId, int maxArticle,
+                                                              boolean useCollaborativeFiltering) {
 
 
-        return new LinkedListWrapper<Item>(RelatedArticles.recommend(articleId, maxArticle));
+        return new LinkedListWrapper<Item>(RelatedArticles.recommend(articleId, maxArticle, useCollaborativeFiltering));
 
     }
 

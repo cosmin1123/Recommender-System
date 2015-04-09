@@ -1,5 +1,6 @@
-package recommendation.algorithm;
+package algorithms.recommended;
 
+import algorithms.recommended.CorelatedUser;
 import database.Database;
 import database.TableName;
 import javafx.util.Pair;

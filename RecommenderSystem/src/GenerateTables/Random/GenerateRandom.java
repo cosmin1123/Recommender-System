@@ -54,27 +54,27 @@ public class GenerateRandom {
     private static void fillArrays() {
         try {
             BufferedReader book = new BufferedReader(
-                    (new FileReader("src/GenerateTables.Random/BookTitles")));
+                    (new FileReader("res/random.res/BookTitles")));
             BufferedReader category = new BufferedReader(
-                    (new FileReader("src/GenerateTables.Random/Categories")));
+                    (new FileReader("res/random.res/Categories")));
 
             BufferedReader dep = new BufferedReader(
-                    (new FileReader("src/GenerateTables.Random/Department")));
+                    (new FileReader("res/random.res/Department")));
 
             BufferedReader keyword = new BufferedReader(
-                    (new FileReader("src/GenerateTables.Random/Keywords")));
+                    (new FileReader("res/random.res/Keywords")));
 
             BufferedReader userNam = new BufferedReader(
-                    (new FileReader("src/GenerateTables.Random/UserName")));
+                    (new FileReader("res/random.res/UserName")));
 
             BufferedReader importance = new BufferedReader(
-                    (new FileReader("src/GenerateTables.Random/Importance")));
+                    (new FileReader("res/random.res/Importance")));
 
             BufferedReader languages = new BufferedReader(
-                    (new FileReader("src/GenerateTables.Random/Language")));
+                    (new FileReader("res/random.res/Language")));
 
             BufferedReader publicationId = new BufferedReader(
-                    (new FileReader("src/GenerateTables.Random/PublicationId")));
+                    (new FileReader("res/random.res/PublicationId")));
 
             String str = book.readLine();
 

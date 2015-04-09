@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<link>
+    <link type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/themes/base/jquery-ui.css" rel="stylesheet"> </link>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.15/jquery-ui.js"></script>
+
+</head>
+<script>
+    var basicUrl = "/";
+    var targetDocument = "http://www.fastcompany.com/"
+    function httpGet(theUrl)
+    {
+        var xmlHttp = null;
+
+        xmlHttp = new XMLHttpRequest();
+        xmlHttp.open( "GET", theUrl, false );
+        xmlHttp.send( null );
+        return JSON.parse(xmlHttp.responseText);
+    }
+
+    function getRelatedArticles(itemId, maxArticle) {
+        var response = httpGet(basicUrl + "relatedarticles?itemId=" + itemId + "&maxArticle=" + maxArticle);
+
+        console.log(response);
+        return response.linkedList;
+    }
+
+    function getAllArticles(maxArticle) {
+            var response = httpGet(basicUrl + "getallitems?maxArticle=" + maxArticle);
+            return response.linkedList;
+        }
+
+
+
+    function generateRelated(item) {
+        var currentDivId = "#" + item + "div";
+        var currentDiv = $(currentDivId);
+
+        currentDiv.append(currentDivId);
+        console.log(currentDiv);
+    }
+    function tableCreate(list) {
+        $( "#accordion" ).accordion( "destroy" );
+
+        var startOfDiv = "<h3> &nbsp;&nbsp;&nbsp;&nbsp;";
+        var midOfDiv = "</h3><div><p>"
+        var endOfDivOne = '" width="100%" height="500px" ><p>Your browser does not support iframes.</p></iframe> <button onclick="generateRelated(';
+        var endOfDivTwo = ')">Related Articles</button><div id="'
+        var endOfDivThree = ' "></p></div>';
+
+        for(var item in list) {
+            var newDiv = startOfDiv + list[item].itemId + " " + list[item].shortTitle;
+            newDiv += midOfDiv + '<iframe src="' + targetDocument + list[item].itemId ;
+            newDiv += endOfDivOne;
+            newDiv += list[item].itemId  + endOfDivTwo;
+            newDiv += list[item].itemId + "div" + endOfDivThree;
+            $( "#accordion" ).append(newDiv);
+        }
+        $( "#accordion" ).accordion();
+    }
+
+
+    window.onload = function() {
+        var list = getAllArticles(10);
+        tableCreate(list);
+
+
+    }
+
+
+</script>
+
+<body>
+<div id="accordion">
+</div>
+</body>
+</html>
+

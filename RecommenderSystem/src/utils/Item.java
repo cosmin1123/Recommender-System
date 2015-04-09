@@ -7,6 +7,7 @@ import org.yecht.Data;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by didii on 2/24/15.
@@ -27,7 +28,7 @@ public class Item {
     private String importance;
     private String publicationId;
     private String language;
-    private LinkedList<String> collectionReferences;
+    private List<String> collectionReferences;
     private String author;
     private HashMap<String, Double> ratings;
     private HashMap<String, Double> tfidf;
@@ -120,6 +121,10 @@ public class Item {
         this.author = author;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public void setTitle(String title) {
         this.title = title;
     }
@@ -140,18 +145,41 @@ public class Item {
         this.dateCreated = Long.parseLong(dateCreated);
     }
 
+    public void setDateCreated(long dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
 
     public void setItemId(String itemId) {
         this.itemId = itemId;
     }
 
+    public void setRatings(HashMap<String, Double> ratings) {
+        this.ratings = ratings;
+    }
+
     public void setContent(String content) {
         this.content = content;
+    }
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public void setImportance(String importance) {
+        this.importance = importance;
+    }
+    public void setPublicationId(String publicationId) {
+        this.publicationId = publicationId;
+    }
+    public void setLanguage(String language) { this.language = language;}
+    public void setCollectionReferences(List<String> collectionReferences) {
+        this.collectionReferences = collectionReferences;
     }
 
     public String getPublicationId() {
         return this.publicationId;
     }
+
 
     public String getLanguage() {
         return this.language;
@@ -161,7 +189,7 @@ public class Item {
         return this.importance;
     }
 
-    public LinkedList<String> getCollectionReferences() {
+    public List<String> getCollectionReferences() {
         return this.collectionReferences;
     }
 
@@ -224,6 +252,21 @@ public class Item {
 
     }
 
+    @Override
+    public String toString() {
+        String out = "";
+
+        out += this.itemId     + "\n";
+        out += this.title      + "\n";
+        out += this.content    + "\n";
+        out += this.keywords   + "\n";
+        out += this.category   + "\n";
+        out += this.department + "\n";
+        out += this.author     + "\n";
+
+        return out;
+
+    }
     @Override
     public int hashCode() {
         return this.itemId.hashCode();

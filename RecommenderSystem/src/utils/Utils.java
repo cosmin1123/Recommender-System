@@ -2,6 +2,7 @@ package utils;
 
 import java.io.IOException;
 
+import database.AllItemsMapper;
 import database.ItemFamily;
 import database.TableName;
 import org.apache.hadoop.conf.Configuration;
@@ -11,16 +12,19 @@ import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.MasterNotRunningException;
 import org.apache.hadoop.hbase.ZooKeeperConnectionException;
-import org.apache.hadoop.hbase.client.Delete;
-import org.apache.hadoop.hbase.client.Get;
-import org.apache.hadoop.hbase.client.HBaseAdmin;
-import org.apache.hadoop.hbase.client.HTable;
-import org.apache.hadoop.hbase.client.Result;
-import org.apache.hadoop.hbase.client.ResultScanner;
-import org.apache.hadoop.hbase.client.Scan;
-import org.apache.hadoop.hbase.client.Put;
-import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.hadoop.hbase.client.*;
 
+
+import org.apache.hadoop.hbase.filter.*;
+import org.apache.hadoop.hbase.mapreduce.TableMapReduceUtil;
+import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.hadoop.mapred.JobConf;
+import org.apache.hadoop.mapred.JobPriority;
+import org.apache.hadoop.mapred.MapReduceBase;
+import org.apache.hadoop.mapreduce.Job;
+
+
+import java.io.InterruptedIOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,6 +36,11 @@ public class Utils {
     private static HTable itemTable = null;
     private static HTable userTable = null;
     private static HTable tfidfTable = null;
+
+    private static Object itemTableSynch = null;
+    private static Object userTableSynch = null;
+    private static Object tfidfTableSynch = null;
+
     /**
      * Initialization
      */
@@ -41,6 +50,9 @@ public class Utils {
             itemTable = new HTable(conf, TableName.ITEMS.toString());
             userTable = new HTable(conf, TableName.USERS.toString());
             tfidfTable = new HTable(conf, TableName.TFIDF.toString());
+            itemTableSynch = new Object();
+            userTableSynch = new Object();
+            tfidfTableSynch = new Object();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -84,6 +96,14 @@ public class Utils {
         }
     }
 
+    private static void putInTable( HTable table, Object sync, Put put)
+            throws InterruptedIOException, RetriesExhaustedWithDetailsException {
+
+        synchronized (sync) {
+            table.put(put);
+        }
+    }
+
     /**
      * Put (or insert) a row
      */
@@ -96,13 +116,13 @@ public class Utils {
                     .toBytes(value));
 
             if(tableName.equals(TableName.ITEMS.toString())) {
-                itemTable.put(put);
+                putInTable( itemTable, itemTableSynch, put);
             } else {
                 if(tableName.equals(TableName.USERS.toString())) {
-                    userTable.put(put);
+                    putInTable( userTable, userTableSynch, put);
                 } else {
                     if(tableName.equals(TableName.TFIDF.toString())) {
-                        tfidfTable.put(put);
+                        putInTable(tfidfTable, tfidfTableSynch, put);
                     }
                 }
 
@@ -110,7 +130,7 @@ public class Utils {
 
             System.out.println("inserted record " + rowKey + " to table "
                     + tableName + " ok.");
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -130,9 +150,9 @@ public class Utils {
                     .toBytes(val));
 
             if(tableName.equals(TableName.ITEMS.toString())) {
-                itemTable.put(put);
+                putInTable(itemTable, itemTableSynch, put);
             } else {
-                userTable.put(put);
+                putInTable(userTable, userTableSynch, put);
             }
 
             System.out.println("inserted record " + rowKey + " to table "
@@ -165,7 +185,7 @@ public class Utils {
 
             Get get = new Get(rowKey.getBytes());
             return table.get(get);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -202,24 +222,29 @@ public class Utils {
      */
     public static LinkedList<Item> getAllItems (String tableName) {
         try{
-            HTable table = new HTable(conf, tableName);
-            Scan s = new Scan();
-            ResultScanner ss = table.getScanner(s);
-            LinkedList<Item> list = new LinkedList<Item>();
-            for (Result r : ss) {
-                Item item = new Item();
-                for (KeyValue kv : r.raw()) {
-                    item.addToItem(Enum.valueOf(ItemFamily.class,new String(kv.getFamily())),
-                            new String(kv.getValue()), new String(kv.getQualifier()));
 
-                    item.setItemId(new String(kv.getRow()));
-                }
-                list.add(item);
+            if(!AllItemsMapper.list.isEmpty()) {
+                return AllItemsMapper.list;
             }
 
+            boolean b = false;
+            Job [] jobArray = new Job[5];
+            for(int i = 0; i <= 4; i++) {
+                jobArray[i] = AllItemsMapper.startNewMapper(conf, "30" + i + "0000", "30" + (i + 1) + "0000");
+            }
 
-            return list;
-        } catch (IOException e){
+            for(int i = 0; i <= 4; i++) {
+                // TODO with sleep and things
+                while (!jobArray[i].isComplete());
+
+            }
+            return AllItemsMapper.list;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
         return null;

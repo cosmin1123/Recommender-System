@@ -16,7 +16,9 @@ public class RelatedArticlesController {
 
     @RequestMapping(method = RequestMethod.GET, value = "/relatedarticles")
     public LinkedListWrapper<Item> greeting(@RequestParam(value = "itemId", defaultValue = "World") String itemId,
-                                            @RequestParam(value = "maxArticle", defaultValue = "1000") String maxArticle) {
-        return Database.getRelatedArticles(itemId, Integer.parseInt(maxArticle));
+                                            @RequestParam(value = "maxArticle", defaultValue = "1000") String maxArticle,
+                                            @RequestParam(value = "useCollaborativeFiltering", defaultValue = "false")
+                                                boolean useCollaborativeFiltering) {
+        return Database.getRelatedArticles(itemId, Integer.parseInt(maxArticle), useCollaborativeFiltering);
     }
 }
