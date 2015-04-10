@@ -11,6 +11,10 @@ public class IDF {
         }
         double idf = Math.log(totalItemNum / articleWordFrequency);
 
+        if(idf <= 1) {
+            return  0;
+        }
+
         return idf;
     }
 }

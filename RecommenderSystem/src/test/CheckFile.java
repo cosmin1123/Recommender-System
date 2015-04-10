@@ -71,6 +71,9 @@ public class CheckFile {
                         }
                     }
                     title += splitValues[0] + " " + importance +  " ;";
+                    if(grade > maxGrade) {
+                        grade = -100000.0d;
+                    }
                     grade = ( grade/ maxGrade) * importance;
 
                     totalGrade += grade;

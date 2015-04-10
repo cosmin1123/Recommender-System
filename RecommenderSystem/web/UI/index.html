@@ -37,33 +37,54 @@
         var currentDivId = "#" + item + "div";
         var currentDiv = $(currentDivId);
 
-        currentDiv.append(currentDivId);
-        console.log(currentDiv);
-    }
-    function tableCreate(list) {
-        $( "#accordion" ).accordion( "destroy" );
 
+        list = getRelatedArticles(item, 10);
+
+        tableCreate(list, currentDiv, false);
+    }
+    function tableCreate(list, target, enableButton) {
+        target.accordion( "destroy" );
+        target.empty();
         var startOfDiv = "<h3> &nbsp;&nbsp;&nbsp;&nbsp;";
         var midOfDiv = "</h3><div><p>"
-        var endOfDivOne = '" width="100%" height="500px" ><p>Your browser does not support iframes.</p></iframe> <button onclick="generateRelated(';
-        var endOfDivTwo = ')">Related Articles</button><div id="'
-        var endOfDivThree = ' "></p></div>';
+        var endOfDivOne = '" width="100%" height="500px" ><p>Your browser does not support iframes.</p></iframe>';
+         if(enableButton) {
+            endOfDivOne += '<button onclick="generateRelated(';
+         }
+
+        var endOfDivTwo = "";
+
+        if(enableButton) {
+              endOfDivTwo = ')">Related Articles</button>'
+        }
+        endOfDivTwo += '<div id="'
+        var endOfDivThree = '" style="overflow:hidden"></p></div>';
 
         for(var item in list) {
             var newDiv = startOfDiv + list[item].itemId + " " + list[item].shortTitle;
-            newDiv += midOfDiv + '<iframe src="' + targetDocument + list[item].itemId ;
+
+            newDiv += midOfDiv + "<p>" + list[item].title + "</p>";
+
+            if(!enableButton) {
+                newDiv += "<p>Similarity: " + (list[item].name / list[0].name).toFixed(2) + "</p>";
+            }
+            newDiv +=  '<iframe src="' + targetDocument + list[item].itemId ;
+
             newDiv += endOfDivOne;
             newDiv += list[item].itemId  + endOfDivTwo;
-            newDiv += list[item].itemId + "div" + endOfDivThree;
-            $( "#accordion" ).append(newDiv);
+            if(enableButton) {
+                newDiv += list[item].itemId + "div";
+            }
+            newDiv += endOfDivThree;
+            target.append(newDiv);
         }
-        $( "#accordion" ).accordion();
+        target.accordion({ collapsible: true });
     }
 
 
     window.onload = function() {
-        var list = getAllArticles(10);
-        tableCreate(list);
+        var list = getAllArticles(100);
+        tableCreate(list, $( "#accordion" ), true);
 
 
     }

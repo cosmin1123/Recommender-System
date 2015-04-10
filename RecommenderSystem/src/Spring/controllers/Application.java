@@ -24,19 +24,21 @@ import java.io.IOException;
 @EnableAutoConfiguration
 public class Application {
 
+    static void testVal() {
+        RelatedArticles.enableCaching();
+        RelatedArticlesCheck.test();
+        CheckFile.test();
+    }
+
     public static void main(String[] args) {
 
-        GenerateFastCompany.fillDatabase();
+    //    GenerateFastCompany.fillDatabase();
 
-  //      RelatedArticles.enableCaching();
+        testVal();
 
      //   SpringApplication.run(Application.class, args);
-  //      RelatedArticlesCheck.test();
 
-        //TFIDF.computeForAll();
 
-    //    CheckFile.test();
-        //RelatedArticlesCheck.printSimilarities(3000099, 35082);
-
+        //RelatedArticlesCheck.printSimilarities(3000099, 37446);
     }
 }

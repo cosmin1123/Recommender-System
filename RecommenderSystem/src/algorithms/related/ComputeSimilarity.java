@@ -113,10 +113,12 @@ public class ComputeSimilarity {
 
                 if (aValue != null && bValue != null) {
 
-                    common++;
-
                     aValue *= wordIdf;
                     bValue *= wordIdf;
+
+                    if(aValue != 0 && bValue != 0) {
+                        common++;
+                    }
                     sumProdUp += (aValue * bValue);
                     sumDownA += (aValue * aValue);
                     sumDownB += (bValue * bValue);
@@ -124,12 +126,10 @@ public class ComputeSimilarity {
             }
        // }
 
-        if(sumDownA == 0 || sumDownB == 0) {
+        if(sumDownA == 0 || sumDownB == 0 || common <= 4) {
             return 0;
         }
-        return ((sumProdUp / (Math.sqrt(sumDownA * sumDownB))) +
-                (2 * common / ((double)idfMap.size() + relateArticle.size()))) / 2; //+
-                //wordSimilaritySum / simillarWordsCount;
+        return (sumProdUp / (Math.sqrt(sumDownA * sumDownB)));//
     }
 
     private static double getRatingsWeight(HashMap<String, Double> article, HashMap<String, Double> relateArticle) {
@@ -337,7 +337,6 @@ public class ComputeSimilarity {
 
     public static double getArticleSimilarity(Item article, Item relatedArticle,
                                               HashMap<String, Double> idfMap) {
-
         // article has always the same words, so get the IDF for them and save it!!!
         Double dateSimilarity = getSimilarity(ItemFamily.DATE_CREATED,relatedArticle, article, idfMap);
 

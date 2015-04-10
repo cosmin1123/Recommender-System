@@ -90,7 +90,8 @@ public class RelatedArticles {
 
         Comparator<Double> reverseDoubleComparator = new Comparator<Double>() {
             @Override public int compare( Double s1, Double s2) {
-                return (int) (s2 - s1 );
+
+                return (int) ((s2 - s1 ) * 1000000);
             }
         };
         SortedMap sortedMap = new TreeMap<Double, LinkedList<Item>>(reverseDoubleComparator);

@@ -16,6 +16,7 @@ public class RelatedArticlesCheck {
     private static PrintWriter writer = null;
 
     public static void printSimilarities(int id, int maxArticle) {
+        RelatedArticles.enableCaching();
         try {
             writer = new PrintWriter(new BufferedWriter(new FileWriter("out/simData"), 100000));
         } catch (IOException e) {
@@ -80,26 +81,37 @@ public class RelatedArticlesCheck {
 
             double dateCreatedWeight = 0.1;
             double titleWeight = 0;
-            double shortTitleWeight = 1.3;
-            double departmentWeight = 21;
-            double categoryWeight = 30;
-            double authorWeight = 0.3;
-            double keywordWeight = 1.2;
+            double shortTitleWeight = 0;
+            double departmentWeight = 0;
+            double categoryWeight = 0;
+            double authorWeight = 0;
+            double keywordWeight = 0.2;
             double ratingsWeight = 0.1;
-            double TFIDFWeight = 1.4;
+            double TFIDFWeight = 1;
             double collectionReferenceWeight = 0;
-
-            //for(departmentWeight = 0; departmentWeight <= MAX_FACTOR * 10; departmentWeight += 1) {
-              //  for(categoryWeight = 0; categoryWeight <= MAX_FACTOR * 10; categoryWeight += 1) {
-                    //for(authorWeight = 0;authorWeight < MAX_FACTOR / 2; authorWeight += 0.3) {
-                       // for(dateCreatedWeight = 0;dateCreatedWeight < MAX_FACTOR / 20; dateCreatedWeight+= 0.1) {
-                            for(titleWeight = 0;titleWeight <= MAX_FACTOR / 3; titleWeight += 0.1) {
-                                //for(shortTitleWeight = 0.5; shortTitleWeight < MAX_FACTOR; shortTitleWeight+=0.1) {
-                                   // for(keywordWeight = 0;keywordWeight < MAX_FACTOR; keywordWeight+=0.1) {
-                                    //    for(ratingsWeight = 0; ratingsWeight < MAX_FACTOR / 20; ratingsWeight += 0.1) {
-                                            //for(TFIDFWeight = 0;TFIDFWeight < MAX_FACTOR; TFIDFWeight+=0.1) {
+            /*
+Department: 1.3 
+Category: 0.6
+ Author: 0.0
+ Date: 1.0
+ Title: 0.1
+ ShortTitle: 0.2
+ Keywords: 1.2000000000000002 
+Ratings: 0.0
+ TFIDF: 0.6
+ CollectionRef: 0.0
+             */
+            for(departmentWeight = 0; departmentWeight < MAX_FACTOR; departmentWeight += 1) {
+                for(categoryWeight = 0; categoryWeight < MAX_FACTOR; categoryWeight += 1) {
+                    for(authorWeight = 0;authorWeight < MAX_FACTOR ; authorWeight += 1) {
+                       for(dateCreatedWeight = 0;dateCreatedWeight < MAX_FACTOR ; dateCreatedWeight+= 1) {
+                            for(titleWeight = 0;titleWeight < MAX_FACTOR ; titleWeight += 1) {
+                                for(shortTitleWeight = 0; shortTitleWeight < MAX_FACTOR; shortTitleWeight+=1) {
+                                    for(keywordWeight = 0;keywordWeight < MAX_FACTOR; keywordWeight+=1) {
+                                        for(ratingsWeight = 0; ratingsWeight < MAX_FACTOR ; ratingsWeight += 1) {
+                                            for(TFIDFWeight = 0;TFIDFWeight < MAX_FACTOR ; TFIDFWeight+=1) {
                                                 for(collectionReferenceWeight = 0;
-                                                    collectionReferenceWeight < MAX_FACTOR; collectionReferenceWeight+=0.1) {
+                                                    collectionReferenceWeight < MAX_FACTOR; collectionReferenceWeight+=1) {
 
                                                     ComputeSimilarity.changeWeights(dateCreatedWeight,
                                                             titleWeight, shortTitleWeight, departmentWeight,
@@ -122,14 +134,14 @@ public class RelatedArticlesCheck {
                                                     checkForId(3000099, 100);
                                                 }
                                             }
-                                        //}
-                                  //  }
-                                //}
-                       //     }
-                       // }
-                //    }
-               // }
-           // }
+                                        }
+                                  }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 
             writer.close();
         } catch (FileNotFoundException e) {
