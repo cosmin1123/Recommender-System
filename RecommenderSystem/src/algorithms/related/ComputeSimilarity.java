@@ -90,21 +90,9 @@ public class ComputeSimilarity {
         double sumDownB = 0;
         double common = 0;
 
-        double wordSimilaritySum = 0;
-        double simillarWordsCount = 0;
 
         for(String wordArticle : article.keySet()) {
-          //  for(String wordRelateArticle : relateArticle.keySet()) {
-            //    if (wordArticle.isEmpty()) {
-              //      continue;
-                //}
 
-              //  double wordSimilarity = getStringWeight(wordArticle, wordRelateArticle);
-
-                //if(wordSimilarity != 0) {
-                  //  simillarWordsCount++;
-                   // wordSimilaritySum += wordSimilarity;
-               // }
                 Double aValue = article.get(wordArticle);
                 Double bValue = relateArticle.get(wordArticle);
                 Double wordIdf = idfMap.get(wordArticle);
@@ -122,7 +110,6 @@ public class ComputeSimilarity {
                     sumDownB += (bValue * bValue);
                 }
             }
-       // }
 
         if(sumDownA == 0 || sumDownB == 0 || common <= 4) {
             return 0;
@@ -183,16 +170,16 @@ public class ComputeSimilarity {
         return 0;
 
     }
-    private static String[] letterPairs(String str) {
+    private static void letterPairs(String str, ArrayList pairs) {
         int numPairs = str.length() - 1;
         if(numPairs < 0) {
-            return new String[0];
+            return ;
         }
-        String[] pairs = new String[numPairs];
+
         for (int i=0; i < numPairs; i++) {
-            pairs[i] = str.substring(i,i+2);
+            pairs.add(str.substring(i,i+2));
         }
-        return pairs;
+
     }
 
     private static ArrayList wordLetterPairs(String str) {
@@ -201,9 +188,7 @@ public class ComputeSimilarity {
         String[] words = str.split("\\s");
 
         for (int i=0; i < words.length; i++) {
-
-            String[] pairsInWord = letterPairs(words[i]);
-            Collections.addAll(pairs, pairsInWord);
+            letterPairs(words[i], pairs);
         }
         return pairs;
     }

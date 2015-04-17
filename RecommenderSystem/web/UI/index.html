@@ -34,13 +34,15 @@
 
 
     function generateRelated(item) {
-        var currentDivId = "#" + item + "div";
-        var currentDiv = $(currentDivId);
+        setTimeout(function() {
+            var currentDivId = "#" + item + "div";
+            var currentDiv = $(currentDivId);
 
 
-        list = getRelatedArticles(item, 10);
+            list = getRelatedArticles(item, 10);
 
-        tableCreate(list, currentDiv, false);
+            tableCreate(list, currentDiv, false);
+        }, 0);
     }
     function tableCreate(list, target, enableButton) {
         target.accordion( "destroy" );
@@ -68,7 +70,7 @@
             if(!enableButton) {
                 newDiv += "<p>Similarity: " + (list[item].name / list[0].name).toFixed(5) + "</p>";
             }
-            newDiv +=  '<iframe src="' + targetDocument + list[item].itemId ;
+            newDiv +=  '<iframe id="' + targetDocument + list[item].itemId ;
 
             newDiv += endOfDivOne;
             newDiv += list[item].itemId  + endOfDivTwo;
@@ -78,7 +80,15 @@
             newDiv += endOfDivThree;
             target.append(newDiv);
         }
-        target.accordion({ collapsible: true });
+        target.accordion({ collapsible: true,
+            active: false,
+            changestart: function(event, ui) {
+		        var tmpIframe = ui.newContent.find("iframe");
+		        var tmpSrc = tmpIframe.attr("id");
+
+		        tmpIframe.attr("src", tmpSrc);
+	        }
+	    });
     }
 
 
