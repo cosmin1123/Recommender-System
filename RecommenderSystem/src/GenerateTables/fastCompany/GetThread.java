@@ -21,8 +21,8 @@ import java.util.Queue;
  * Created by didii on 4/7/15.
  */
 public class GetThread extends Thread {
-    int start;
-    int end;
+    private final int start;
+    private final int end;
 
 
     public GetThread(int start, int end) {
@@ -42,7 +42,7 @@ public class GetThread extends Thread {
             BufferedReader in = new BufferedReader(
                     new InputStreamReader(con.getInputStream()));
             String inputLine;
-            StringBuffer response = new StringBuffer();
+            StringBuilder response = new StringBuilder();
 
             while ((inputLine = in.readLine()) != null) {
                 response.append(inputLine);

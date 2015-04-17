@@ -1,6 +1,7 @@
 package algorithms.related;
 
 import algorithms.related.TFIDF.IDF;
+import com.sun.research.ws.wadl.Link;
 import database.Database;
 import database.TableName;
 import utils.Item;
@@ -24,7 +25,7 @@ public class RelatedArticles {
         ComputeSimilarity.enableCaching();
     }
 
-    public static LinkedList<String> getCommonReadUsers(String articleId) {
+    private static LinkedList<String> getCommonReadUsers(String articleId) {
         LinkedList<String> commonReadUsers = new LinkedList<String>();
 
         Item currentItem = Database.getItem(articleId);
@@ -88,13 +89,7 @@ public class RelatedArticles {
 
         LinkedList<Item> relatedArticles = new LinkedList<Item>();
 
-        Comparator<Double> reverseDoubleComparator = new Comparator<Double>() {
-            @Override public int compare( Double s1, Double s2) {
-
-                return (int) ((s2 - s1 ) * 1000000);
-            }
-        };
-        SortedMap sortedMap = new TreeMap<Double, LinkedList<Item>>(reverseDoubleComparator);
+        HashMap<Double, LinkedList<Item>> sortedMap = new HashMap<Double, LinkedList<Item>>();
 
 
         if(useCollaborativeFiltering) {
@@ -112,7 +107,7 @@ public class RelatedArticles {
                         sortedMap.put(similiarity, new LinkedList<Item>());
                     }
 
-                    ((LinkedList<Item>) sortedMap.get(similiarity)).add(item);
+                    (sortedMap.get(similiarity)).add(item);
                 }
             }
         }
@@ -125,13 +120,22 @@ public class RelatedArticles {
                     sortedMap.put(similiarity, new LinkedList<Item>());
                 }
 
-                ((LinkedList<Item>) sortedMap.get(similiarity)).add(item);
+                (sortedMap.get(similiarity)).add(item);
             }
         }
         int relatedArticlesSize = 0;
-        for(Object key : sortedMap.keySet()) {
 
-            for(Item item : (LinkedList<Item>) sortedMap.get(key)) {
+        Set<Double> keySet = sortedMap.keySet();
+        Double[] tmpSet = new Double[keySet.size()];
+
+        keySet.toArray(tmpSet);
+        Arrays.sort(tmpSet);
+
+
+        for(int i = tmpSet.length - 1; i >= 0; i--) {
+            Object key = tmpSet[i];
+
+            for(Item item : sortedMap.get(key)) {
                 relatedArticlesSize++;
 
                 // TODO remove ratings

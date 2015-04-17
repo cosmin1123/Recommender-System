@@ -24,7 +24,7 @@ import java.util.LinkedList;
  * Created by didii on 3/27/15.
  */
 public class AllItemsMapper extends TableMapper<ImmutableBytesWritable, Put>  {
-    public static LinkedList<Item> list = new LinkedList<Item>();
+    public static final LinkedList<Item> list = new LinkedList<Item>();
 
     public static Job startNewMapper(Configuration conf, String start, String end)
             throws InterruptedException, IOException, ClassNotFoundException {

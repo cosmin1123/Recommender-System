@@ -32,7 +32,7 @@ import java.util.List;
  * Created by didii on 2/25/15.
  */
 public class Utils {
-    private static Configuration conf = null;
+    private static  Configuration conf = null;
     private static HTable itemTable = null;
     private static HTable userTable = null;
     private static HTable tfidfTable = null;

@@ -7,13 +7,13 @@ import utils.Utils;
  */
 public class CreateTable {
 
-    public static void createUSERS() {
+    private static void createUSERS() {
         Utils.createTable(TableName.USERS.toString(), new String[]{ UserFamily.PREFERRED_CATEGORIES.toString(),
                 UserFamily.TOP_FRIENDS.toString(), UserFamily.ITEM_HISTORY.toString(),
                 UserFamily.ITEMS_RECOMMENDED_DIRECTLY.toString(), UserFamily.ITEMS_RECOMMENDED.toString()});
     }
 
-    public static void createITEMS() {
+    private static void createITEMS() {
         Utils.createTable(TableName.ITEMS.toString(),
                 new String[]{ ItemFamily.NAME.toString(),
                         ItemFamily.CONTENT_URL.toString(),
@@ -54,11 +54,11 @@ public class CreateTable {
         Utils.deleteTable(TableName.TFIDF.toString());
     }
 
-    public static void deleteUSERS() throws Exception {
+    private static void deleteUSERS() throws Exception {
         Utils.deleteTable(TableName.USERS.toString());
     }
 
-    public static void deleteITEMS() throws Exception {
+    private static void deleteITEMS() throws Exception {
         Utils.deleteTable(TableName.ITEMS.toString());
     }
 

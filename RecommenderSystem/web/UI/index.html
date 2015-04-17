@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-<link>
+<head>
     <link type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/themes/base/jquery-ui.css" rel="stylesheet"> </link>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.15/jquery-ui.js"></script>
@@ -66,7 +66,7 @@
             newDiv += midOfDiv + "<p>" + list[item].title + "</p>";
 
             if(!enableButton) {
-                newDiv += "<p>Similarity: " + (list[item].name / list[0].name).toFixed(2) + "</p>";
+                newDiv += "<p>Similarity: " + (list[item].name / list[0].name).toFixed(5) + "</p>";
             }
             newDiv +=  '<iframe src="' + targetDocument + list[item].itemId ;
 

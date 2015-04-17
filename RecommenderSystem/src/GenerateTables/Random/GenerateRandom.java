@@ -11,20 +11,20 @@ import java.util.*;
  * Created by didii on 3/3/15.
  */
 public class GenerateRandom {
-    static LinkedList<String> AllBookTitles = new LinkedList<String>();
-    static LinkedList<String> AllCategories = new LinkedList<String>();
-    static LinkedList<String> AllDepartment = new LinkedList<String>();
-    static LinkedList<String> AllKeywords = new LinkedList<String>();
-    static LinkedList<String> AllUserName = new LinkedList<String>();
-    static LinkedList<String> AllImportance = new LinkedList<String>();
-    static LinkedList<String> AllPublicationId = new LinkedList<String>();
-    static LinkedList<String> AllLanguage = new LinkedList<String>();
+    private static final LinkedList<String> AllBookTitles = new LinkedList<String>();
+    private static final LinkedList<String> AllCategories = new LinkedList<String>();
+    private static final LinkedList<String> AllDepartment = new LinkedList<String>();
+    private static final LinkedList<String> AllKeywords = new LinkedList<String>();
+    private static final LinkedList<String> AllUserName = new LinkedList<String>();
+    private static final LinkedList<String> AllImportance = new LinkedList<String>();
+    private static final LinkedList<String> AllPublicationId = new LinkedList<String>();
+    private static final LinkedList<String> AllLanguage = new LinkedList<String>();
 
-    public static int getRandom(int max) {
+    private static int getRandom(int max) {
         return (int) (Math.random() * max);
     }
 
-    public static int getRandom(int min, int max) {
+    private static int getRandom(int min, int max) {
         int range = (max - min) + 1;
         return (int)(Math.random() * range) + min;
     }
@@ -101,10 +101,8 @@ public class GenerateRandom {
             if(book.equals("Final Star")) {
                 System.out.println("STOP!!!");
             }
-            String name = book;
             Integer dateCreated = getRandom(Integer.MAX_VALUE);
-            String title = book;
-            String shortTitle = book;
+
             String author = AllUserName.get(getRandom(AllUserName.size()));
             String department = AllDepartment.get(getRandom(AllDepartment.size()));
             String category = AllCategories.get(getRandom(AllCategories.size()));
@@ -127,13 +125,13 @@ public class GenerateRandom {
             Utils.addRecord(TableName.ITEMS.toString(), book, ItemFamily.PUBLICATION_ID.toString(),
                     ItemFamily.PUBLICATION_ID.toString(), publicationId);
             Utils.addRecord(TableName.ITEMS.toString(), book, ItemFamily.NAME.toString(),
-                    ItemFamily.NAME.toString(), name);
+                    ItemFamily.NAME.toString(), book);
             Utils.addRecord(TableName.ITEMS.toString(), book, ItemFamily.DATE_CREATED.toString(),
                     ItemFamily.DATE_CREATED.toString(), dateCreated.toString());
             Utils.addRecord(TableName.ITEMS.toString(), book, ItemFamily.TITLE.toString(),
-                    ItemFamily.TITLE.toString(), title);
+                    ItemFamily.TITLE.toString(), book);
             Utils.addRecord(TableName.ITEMS.toString(), book, ItemFamily.SHORT_TITLE.toString(),
-                    ItemFamily.NAME.toString(), shortTitle);
+                    ItemFamily.NAME.toString(), book);
             Utils.addRecord(TableName.ITEMS.toString(), book, ItemFamily.AUTHOR.toString(),
                     ItemFamily.AUTHOR.toString(), author);
             Utils.addRecord(TableName.ITEMS.toString(), book, ItemFamily.DEPARTMENT.toString(),

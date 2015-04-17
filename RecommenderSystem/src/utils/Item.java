@@ -243,12 +243,12 @@ public class Item {
     }
 
     public boolean equals(Item obj) {
-            Item temp = obj;
-            return this.language.equals(temp.language) &&
-                    this.publicationId.equals(temp.publicationId) &&
-                    this.author.equals(temp.author) &&
-                    this.category.equals(temp.category) &&
-                    this.itemId.equals(temp.itemId);
+
+            return this.language.equals(obj.language) &&
+                    this.publicationId.equals(obj.publicationId) &&
+                    this.author.equals(obj.author) &&
+                    this.category.equals(obj.category) &&
+                    this.itemId.equals(obj.itemId);
 
     }
 

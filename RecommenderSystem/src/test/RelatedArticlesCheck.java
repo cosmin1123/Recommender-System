@@ -7,7 +7,9 @@ import database.ItemFamily;
 import utils.Item;
 
 import java.io.*;
+import java.util.Date;
 import java.util.LinkedList;
+import java.util.Scanner;
 
 /**
  * Created by didii on 3/24/15.
@@ -59,7 +61,7 @@ public class RelatedArticlesCheck {
 
     }
 
-    public static void checkForId(int id, int maxArticle) {
+    private static void checkForId(int id, int maxArticle) {
 
         LinkedList<Item> itemLinkedList = RelatedArticles.recommend(id + "", maxArticle, false);
 
@@ -72,78 +74,129 @@ public class RelatedArticlesCheck {
         writer.println("");
 
     }
-    public static void test() {
+
+    public static void testValues(double dateCreatedWeight, double titleWeight, double departmentWeight,
+                                  double shortTitleWeight, double categoryWeight, double ratingsWeight,
+                                  double authorWeight, double keywordWeight, double collectionReferenceWeight,
+                                  double TFIDFWeight) {
+        ComputeSimilarity.changeWeights(dateCreatedWeight,
+                titleWeight, shortTitleWeight, departmentWeight,
+                categoryWeight, 0, 0, authorWeight, keywordWeight,
+                ratingsWeight, collectionReferenceWeight, TFIDFWeight);
+
+        writer.println("===========================" +
+                " Current values ===========================");
+        writer.println("Department: " + departmentWeight);
+        writer.println("Category: " + categoryWeight);
+        writer.println("Author: " + authorWeight);
+        writer.println("Date: " + dateCreatedWeight);
+        writer.println("Title: " + titleWeight);
+        writer.println("ShortTitle: " + shortTitleWeight);
+        writer.println("Keywords: " + keywordWeight);
+        writer.println("Ratings: " + ratingsWeight);
+        writer.println("TFIDF: " + TFIDFWeight);
+        writer.println("CollectionRef: " + collectionReferenceWeight);
+
+        checkForId(3000099, 100);
+    }
+
+    public static Double readAndWrite(String write, Scanner scanIn) {
+
+        if(scanIn.hasNextLine()) {
+
+            String line = scanIn.nextLine();
+            System.out.println(write + " " +  line);
+            return Double.parseDouble(line.substring(0, line.indexOf("/")));
+        }
+        return 0.0;
+    }
+    public static void test(boolean interactive) {
         try {
-            writer = new PrintWriter(new BufferedWriter(new FileWriter("out/resultedData"), 100000));
+            if(!interactive || writer == null) {
+                writer = new PrintWriter(new BufferedWriter(new FileWriter("out/resultedData"), 100000));
+            }
 
 
-            final double MAX_FACTOR = 3;
+            final double MAX_FACTOR = 100;
 
-            double dateCreatedWeight = 0.1;
-            double titleWeight = 0;
-            double shortTitleWeight = 0;
-            double departmentWeight = 0;
-            double categoryWeight = 0;
-            double authorWeight = 0;
-            double keywordWeight = 0.2;
-            double ratingsWeight = 0.1;
-            double TFIDFWeight = 1;
-            double collectionReferenceWeight = 0;
+            Double dateCreatedWeight = 12.5;
+            Double titleWeight = 82.0;//3125;
+            Double shortTitleWeight = 88.2;//8125;
+            Double departmentWeight = 18.7;//5;//1.0;
+            Double categoryWeight = 18.7;//5;//3.0;
+            Double authorWeight = 33.5;//9375;//3.0;
+            Double keywordWeight = 83.5;//6.0;
+            Double ratingsWeight = 1.0;//0.0;
+            Double TFIDFWeight = 12.5;//6.0;
+            Double collectionReferenceWeight = 0.5;//1.0;
+
+            if(interactive) {
+
+                Scanner scanIn = new Scanner(new FileInputStream("res/weights"));
+                dateCreatedWeight = readAndWrite("Date: ", scanIn);
+                titleWeight = readAndWrite("Title: ", scanIn);
+                shortTitleWeight = readAndWrite("ShortTitle: ", scanIn);
+                departmentWeight = readAndWrite("Department: ", scanIn);
+                categoryWeight = readAndWrite("Category: ", scanIn);
+                authorWeight = readAndWrite("author: ", scanIn);
+                keywordWeight = readAndWrite("Keyword: ", scanIn);
+                ratingsWeight = readAndWrite("ratings: ", scanIn);
+                TFIDFWeight = readAndWrite("TFIDF: ", scanIn);
+                collectionReferenceWeight = readAndWrite("CollectionRef: ", scanIn);
+
+                testValues( dateCreatedWeight, titleWeight, departmentWeight,
+                        shortTitleWeight, categoryWeight, ratingsWeight,
+                        authorWeight, keywordWeight, collectionReferenceWeight,
+                        TFIDFWeight);
+
+                scanIn.close();
+                writer.flush();
+            }else {
             /*
-Department: 1.3 
-Category: 0.6
- Author: 0.0
- Date: 1.0
- Title: 0.1
- ShortTitle: 0.2
- Keywords: 1.2000000000000002 
-Ratings: 0.0
- TFIDF: 0.6
- CollectionRef: 0.0
+1950.0
+Department: 18.75
+Category: 18.75
+Author: 33.59375
+Date: 12.5
+Title: 82.03125
+ShortTitle: 88.28125
+Keywords: 83.5
+Ratings: 1.0
+TFIDF: 12.5
+CollectionRef: 0.5
              */
-            for(departmentWeight = 0; departmentWeight < MAX_FACTOR; departmentWeight += 1) {
-                for(categoryWeight = 0; categoryWeight < MAX_FACTOR; categoryWeight += 1) {
-                    for(authorWeight = 0;authorWeight < MAX_FACTOR ; authorWeight += 1) {
-                       for(dateCreatedWeight = 0;dateCreatedWeight < MAX_FACTOR ; dateCreatedWeight+= 1) {
-                            for(titleWeight = 0;titleWeight < MAX_FACTOR ; titleWeight += 1) {
-                                for(shortTitleWeight = 0; shortTitleWeight < MAX_FACTOR; shortTitleWeight+=1) {
-                                    for(keywordWeight = 0;keywordWeight < MAX_FACTOR; keywordWeight+=1) {
-                                        for(ratingsWeight = 0; ratingsWeight < MAX_FACTOR ; ratingsWeight += 1) {
-                                            for(TFIDFWeight = 0;TFIDFWeight < MAX_FACTOR ; TFIDFWeight+=1) {
-                                                for(collectionReferenceWeight = 0;
-                                                    collectionReferenceWeight < MAX_FACTOR; collectionReferenceWeight+=1) {
+                double currentStep = 0.5;
+                for (departmentWeight = 18.75 - currentStep; departmentWeight <= (18.75 + currentStep); departmentWeight += currentStep) {
+                    for (categoryWeight = 18.75 - currentStep; categoryWeight <= 18.75 + currentStep; categoryWeight += currentStep) {
+                        for (authorWeight = 34.375 - currentStep; authorWeight <= 34.375 + currentStep; authorWeight += currentStep) {
+                            for (dateCreatedWeight = 12.5 - currentStep; dateCreatedWeight <= 12.5 + currentStep; dateCreatedWeight += currentStep) {
+                                for (titleWeight = 82.8125 - currentStep; titleWeight <= 81.25 + currentStep; titleWeight += currentStep) {
+                                    for (shortTitleWeight = 89.0625 - currentStep; shortTitleWeight <= 87.5 + currentStep; shortTitleWeight += currentStep) {
+                                       for (keywordWeight = 81.0; keywordWeight <= 99; keywordWeight += currentStep) {
+                                            for (ratingsWeight = 0.0; ratingsWeight < 10; ratingsWeight += currentStep) {
+                                                for (TFIDFWeight = 12.5 - currentStep; TFIDFWeight <= 12.5 + currentStep; TFIDFWeight += currentStep) {
+                                                    for (collectionReferenceWeight = 0.0;
+                                                         collectionReferenceWeight < 10; collectionReferenceWeight += currentStep) {
 
-                                                    ComputeSimilarity.changeWeights(dateCreatedWeight,
-                                                            titleWeight, shortTitleWeight, departmentWeight,
-                                                            categoryWeight, 0, 0, 0, authorWeight, keywordWeight,
-                                                            ratingsWeight, collectionReferenceWeight, TFIDFWeight);
+                                                        testValues( dateCreatedWeight, titleWeight, departmentWeight,
+                                                        shortTitleWeight, categoryWeight, ratingsWeight,
+                                                        authorWeight, keywordWeight, collectionReferenceWeight,
+                                                        TFIDFWeight);
 
-                                                    writer.println("===========================" +
-                                                            " Current values ===========================");
-                                                    writer.println("Department: " + departmentWeight);
-                                                    writer.println("Category: " + categoryWeight);
-                                                    writer.println("Author: " + authorWeight);
-                                                    writer.println("Date: " + dateCreatedWeight);
-                                                    writer.println("Title: " + titleWeight);
-                                                    writer.println("ShortTitle: " + shortTitleWeight);
-                                                    writer.println("Keywords: " + keywordWeight);
-                                                    writer.println("Ratings: " + ratingsWeight);
-                                                    writer.println("TFIDF: " + TFIDFWeight);
-                                                    writer.println("CollectionRef: " + collectionReferenceWeight);
-
-                                                    checkForId(3000099, 100);
+                                                    }
                                                 }
                                             }
                                         }
-                                  }
+                                    }
                                 }
                             }
                         }
                     }
                 }
+                writer.close();
             }
 
-            writer.close();
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (UnsupportedEncodingException e) {

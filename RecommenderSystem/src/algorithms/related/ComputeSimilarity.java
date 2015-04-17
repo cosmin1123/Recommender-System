@@ -27,20 +27,19 @@ public class ComputeSimilarity {
     public static HashMap<ItemFamily, HashMap<String, Double>> similarityValues;
     private static final double MAX_RATING = 1000000;
 
-    private static double dateCreatedWeight = 1;
-    private static double titleWeight = 10;
-    private static double shortTitleWeight = 10;
-    private static double departmentWeight = 100;
-    private static double categoryWeight = 100;
-    private static double importanceWeight = 9;
-    private static double publicationIdWeight = 5;
-    private static double languageWeight = 100000;
-    private static double authorWeight = 5;
+    private static double dateCreatedWeight = 12.5;
+    private static double titleWeight = 82.0;
+    private static double shortTitleWeight = 88.2;
+    private static double departmentWeight = 18.7;
+    private static double categoryWeight = 18.7;
+    private static double importanceWeight = 3; // not tested yet
+    private static double languageWeight = 0;
+    private static double authorWeight = 33.5;
 
-    private static double keywordWeight = 100;
-    private static double ratingsWeight = 10;
-    private static double collectionReferenceWeight = 100;
-    private static double TFIDFWeight = 200;
+    private static double keywordWeight = 83.5;
+    private static double ratingsWeight = 1.0;
+    private static double collectionReferenceWeight = 0.5;
+    private static double TFIDFWeight = 12.5;
 
     private static Double upperBoundKeywords = null;
     private static Double upperBoundCollectionRef = null;
@@ -67,7 +66,7 @@ public class ComputeSimilarity {
 
     public static void changeWeights(double newDateCreatedWeight, double newTitleWeight, double newShortTitleWeight,
                                       double newDepartmentWeight, double newCategoryWeight, double newImportanceWeight,
-                                      double newPublicationIdWeight, double newLanguageWeight, double newAuthorWeight,
+                                      double newLanguageWeight, double newAuthorWeight,
                                       double newKeywordWeight, double newRatingsWeight,
                                       double newCollectionReferenceWeight, double newTFIDFWeight) {
         dateCreatedWeight = newDateCreatedWeight;
@@ -76,7 +75,6 @@ public class ComputeSimilarity {
         departmentWeight = newDepartmentWeight;
         categoryWeight = newCategoryWeight;
         importanceWeight = newImportanceWeight;
-        publicationIdWeight = newPublicationIdWeight;
         languageWeight = newLanguageWeight;
         authorWeight = newAuthorWeight;
         ratingsWeight = newRatingsWeight;
@@ -129,7 +127,7 @@ public class ComputeSimilarity {
         if(sumDownA == 0 || sumDownB == 0 || common <= 4) {
             return 0;
         }
-        return (sumProdUp / (Math.sqrt(sumDownA * sumDownB)));//
+        return (sumProdUp / (Math.sqrt(sumDownA * sumDownB)));
     }
 
     private static double getRatingsWeight(HashMap<String, Double> article, HashMap<String, Double> relateArticle) {
@@ -157,7 +155,7 @@ public class ComputeSimilarity {
         for(String keyword1 : list1) {
             for(String keyword2 : list2) {
                 double similarity = getStringWeight(keyword1, keyword2);
-                if(similarity != 0) {
+                if(similarity >= 0.5) {
                     similaritySum += similarity;
                 }
             }
@@ -205,9 +203,7 @@ public class ComputeSimilarity {
         for (int i=0; i < words.length; i++) {
 
             String[] pairsInWord = letterPairs(words[i]);
-            for (int j=0; j < pairsInWord.length; j++) {
-                pairs.add(pairsInWord[j]);
-            }
+            Collections.addAll(pairs, pairsInWord);
         }
         return pairs;
     }
@@ -257,8 +253,8 @@ public class ComputeSimilarity {
         return 0;
     }
 
-    public static double getWeightValue(ItemFamily family, Item relatedArticle, Item article,
-                                             HashMap<String, Double> idfMap) {
+    private static double getWeightValue(ItemFamily family, Item relatedArticle, Item article,
+                                         HashMap<String, Double> idfMap) {
         double returnValue = 0;
         if(family.equals(ItemFamily.DATE_CREATED)) {
             returnValue = getDateWeight(article.getDateCreated(), relatedArticle.getDateCreated());
@@ -317,8 +313,8 @@ public class ComputeSimilarity {
         return returnValue;
     }
 
-    public static double getSimilarity(ItemFamily family, Item relatedArticle, Item article,
-                                       HashMap<String, Double> idfMap) {
+    private static double getSimilarity(ItemFamily family, Item relatedArticle, Item article,
+                                        HashMap<String, Double> idfMap) {
         Double returnValue;
         if(ENABLE_CACHING) {
             returnValue = similarityValues.get(family).get(relatedArticle.getItemId());
@@ -346,21 +342,21 @@ public class ComputeSimilarity {
 
         Double categorySimilarity = getSimilarity(ItemFamily.CATEGORY,relatedArticle, article, idfMap);
 
-        Double departmentSimilarity = getSimilarity(ItemFamily.DEPARTMENT,relatedArticle, article, idfMap);;
+        Double departmentSimilarity = getSimilarity(ItemFamily.DEPARTMENT,relatedArticle, article, idfMap);
 
-        Double authorSimilarity = getSimilarity(ItemFamily.AUTHOR,relatedArticle, article, idfMap);;
+        Double authorSimilarity = getSimilarity(ItemFamily.AUTHOR,relatedArticle, article, idfMap);
 
-        Double languageSimilarity = getSimilarity(ItemFamily.LANGUAGE,relatedArticle, article, idfMap);;
+        Double languageSimilarity = getSimilarity(ItemFamily.LANGUAGE,relatedArticle, article, idfMap);
 
-        Double publicationSimilarity = getSimilarity(ItemFamily.PUBLICATION_ID,relatedArticle, article, idfMap);;
+        Double publicationSimilarity = getSimilarity(ItemFamily.PUBLICATION_ID,relatedArticle, article, idfMap);
 
-        Double importance = getSimilarity(ItemFamily.IMPORTANCE,relatedArticle, article, idfMap);;
+        Double importance = getSimilarity(ItemFamily.IMPORTANCE,relatedArticle, article, idfMap);
 
-        Double keywordSimilarity = getSimilarity(ItemFamily.KEYWORDS,relatedArticle, article, idfMap);;
+        Double keywordSimilarity = getSimilarity(ItemFamily.KEYWORDS,relatedArticle, article, idfMap);
 
-        Double collectionSimilarity = getSimilarity(ItemFamily.COLLECTION_REFERENCES,relatedArticle, article, idfMap);;
+        Double collectionSimilarity = getSimilarity(ItemFamily.COLLECTION_REFERENCES,relatedArticle, article, idfMap);
 
-        Double ratingsSimilarity = getSimilarity(ItemFamily.RATINGS,relatedArticle, article, idfMap);;
+        Double ratingsSimilarity = getSimilarity(ItemFamily.RATINGS,relatedArticle, article, idfMap);
 
         Double TFIDFSimilarity = getSimilarity(ItemFamily.TFIDF, relatedArticle, article, idfMap);
 
@@ -371,7 +367,6 @@ public class ComputeSimilarity {
                 categorySimilarity * categoryWeight +
                 departmentSimilarity * departmentWeight +
                 languageSimilarity * languageWeight +
-                publicationSimilarity * publicationIdWeight +
                 importance * importanceWeight +
                 keywordSimilarity * keywordWeight +
                 collectionSimilarity * collectionReferenceWeight +

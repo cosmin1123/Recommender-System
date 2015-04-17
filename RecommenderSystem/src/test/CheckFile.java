@@ -13,7 +13,7 @@ public class CheckFile {
     private static BufferedReader dataReader;
     private static BufferedReader expectedDataReader;
 
-    public static void fillExpectedData(HashMap<String, Integer> expectedData) throws IOException {
+    private static void fillExpectedData(HashMap<String, Integer> expectedData) throws IOException {
         String line;
         while ((line = expectedDataReader.readLine()) != null) {
             if(line.contains("???")) {
@@ -32,12 +32,12 @@ public class CheckFile {
         }
     }
 
-    public static void readAndCheck(HashMap<String, Integer> expectedData) throws IOException {
+    private static void readAndCheck(HashMap<String, Integer> expectedData) throws IOException {
 
 
         Comparator<Double> reverseDoubleComparator = new Comparator<Double>() {
             @Override public int compare( Double s1, Double s2) {
-                return (int)((s2 - s1) * Integer.MAX_VALUE);
+                return (int)((s2 - s1) * 1000000.0d);
             }
         };
         TreeMap <Double, LinkedList<String>> bestResults =
@@ -56,7 +56,10 @@ public class CheckFile {
             Double maxGrade = 1.0d;
             Double totalGrade = 0.0d;
 
+            int linesNum = 100;
             while((line = dataReader.readLine()) != null && !line.isEmpty()) {
+                linesNum--;
+
                 String[] splitValues = line.split(" ");
 
                 if(expectedData.containsKey(splitValues[0])) {
@@ -74,7 +77,7 @@ public class CheckFile {
                     if(grade > maxGrade) {
                         grade = -100000.0d;
                     }
-                    grade = ( grade/ maxGrade) * importance;
+                    grade = linesNum * importance; //( grade/ maxGrade) * importance;
 
                     totalGrade += grade;
 

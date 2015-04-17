@@ -47,17 +47,11 @@ public class GenerateIMDB {
         String[] splitS1 = s1.split("\\{");
         String[] splitS2 = s2.split("\\{");
 
-        if(s2.equals("\"1714. El preu de la llibertat\" (2014)")) {
-            System.out.println(splitS1);
-        }
         return splitS2[0].contains(splitS1[0]) ||
                 splitS1[0].contains(splitS2[0]);
     }
 
-    public static void setPublishDate(Item item) throws IOException {
-        if(item.getItemId().equals("\"#LakeShow\" (2012)")) {
-            System.out.println("STOPP");
-        }
+    private static void setPublishDate(Item item) throws IOException {
         String placeAndDate = getMetadataList(releaseDatesFile, item);
         long milliseconds = 0;
         if(placeAndDate.isEmpty()) {
@@ -77,13 +71,13 @@ public class GenerateIMDB {
         item.setDateCreated(milliseconds);
     }
 
-    public static void setLanguage(Item item) throws IOException {
+    private static void setLanguage(Item item) throws IOException {
         String language = getMetadataList(languageFile, item);
 
         item.setLanguage(language.split(";")[0]);
     }
 
-    public static void setRatings(Item item) throws IOException {
+    private static void setRatings(Item item) throws IOException {
         ratingsFile.mark(1000);
         String currentLine = ratingsFile.readLine();
 
@@ -102,7 +96,7 @@ public class GenerateIMDB {
 
     }
 
-    public static void setContent(Item item) throws  IOException {
+    private static void setContent(Item item) throws  IOException {
         plotFile.mark(1000);
 
         String currentLine = plotFile.readLine();
@@ -128,7 +122,7 @@ public class GenerateIMDB {
         item.setContent(plot);
     }
 
-    public static void setDepartment(Item item) throws IOException {
+    private static void setDepartment(Item item) throws IOException {
         String genres = getMetadataList(genresFile, item);
         if(genres.isEmpty()) {
             return;
@@ -148,21 +142,21 @@ public class GenerateIMDB {
 
     }
 
-    public static void setKeywords(Item item) throws IOException {
+    private static void setKeywords(Item item) throws IOException {
         String keywords = getMetadataList(keywordsFile, item);
         if(!keywords.isEmpty()) {
             item.setKeywords(keywords);
         }
     }
 
-    public static void setAuthor(Item item) throws IOException {
+    private static void setAuthor(Item item) throws IOException {
 
         String author = getMetadataList(productionCompanyFile, item).split(";")[0];
         item.setAuthor(author);
         item.setPublicationId(author);
     }
 
-    public static String getMetadataList(BufferedReader buffer, Item item) throws IOException {
+    private static String getMetadataList(BufferedReader buffer, Item item) throws IOException {
         buffer.mark(1000);
         String currentLine = buffer.readLine();
         String data = "";
@@ -187,7 +181,7 @@ public class GenerateIMDB {
         return data;
     }
 
-    public static boolean setItemId(Item item) throws IOException {
+    private static boolean setItemId(Item item) throws IOException {
         String currentLine = moviesFile.readLine();
         if(currentLine == null) {
             return false;
@@ -202,7 +196,7 @@ public class GenerateIMDB {
         return true;
     }
 
-    public static Item createItem() {
+    private static Item createItem() {
         Item newItem = new Item();
         try {
             while(setItemId(newItem)) {
@@ -227,7 +221,7 @@ public class GenerateIMDB {
         return newItem;
     }
 
-    public static void openFiles() {
+    private static void openFiles() {
         try {
             genresFile = new BufferedReader(
                     (new FileReader("res/imdb.res/genres.list")));
@@ -250,7 +244,7 @@ public class GenerateIMDB {
         }
     }
 
-    public static void closeFiles() {
+    private static void closeFiles() {
         try {
             genresFile.close();
             keywordsFile.close();

@@ -74,7 +74,7 @@ public class RecommendedArticles {
         return (upCorelation) / Math.sqrt(downCorelation1 * downCorelation2);
     }
 
-    public static Pair<Double, Double> getRatedSumAndCount(LinkedList<Item> itemList, User user) {
+    private static Pair<Double, Double> getRatedSumAndCount(LinkedList<Item> itemList, User user) {
         double sum = 0;
         double count = 0;
 
@@ -90,7 +90,7 @@ public class RecommendedArticles {
         return new Pair<Double, Double>(sum, count);
     }
 
-    public static LinkedList<CorelatedUser> getUserCluster(User firstUser) {
+    private static LinkedList<CorelatedUser> getUserCluster(User firstUser) {
         LinkedList<User> userList = Utils.getAllUsers(TableName.USERS.toString());
         LinkedList<CorelatedUser> userCluster = new LinkedList<CorelatedUser>();
 
@@ -151,8 +151,8 @@ public class RecommendedArticles {
 
     }
 
-    public static LinkedList<Item> recommendItems(LinkedList<CorelatedUser> corelatedUserList,
-                                                  User mainUser, int maxArticle) {
+    private static LinkedList<Item> recommendItems(LinkedList<CorelatedUser> corelatedUserList,
+                                                   User mainUser, int maxArticle) {
         LinkedList<Item> recommendItemList = new LinkedList<Item>();
         HashMap<Item, Pair<Double, Double>> top = new HashMap<Item, Pair<Double, Double>>();
         HashMap<Double, LinkedList<Item>> presumedItemRating = new HashMap<Double, LinkedList<Item>>();
@@ -166,7 +166,7 @@ public class RecommendedArticles {
                     double itemRating = item.getRating().get(user.user.getUserId());
 
                     if(!top.containsKey(item)) {
-                        top.put(item, new Pair<Double, Double>(new Double(0), new Double(0)));
+                        top.put(item, new Pair<Double, Double>((double) 0, (double) 0));
                     }
                     Pair<Double, Double> pair =  top.get(item);
 

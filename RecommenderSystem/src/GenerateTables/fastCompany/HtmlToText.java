@@ -8,7 +8,7 @@ import javax.swing.text.html.parser.*;
  */
 
 public class HtmlToText extends HTMLEditorKit.ParserCallback {
-    StringBuffer s;
+    private StringBuffer s;
 
     public void parse(String str) {
         s = new StringBuffer();
