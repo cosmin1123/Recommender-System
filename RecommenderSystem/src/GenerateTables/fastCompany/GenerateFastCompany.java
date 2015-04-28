@@ -1,23 +1,7 @@
 package GenerateTables.fastCompany;
 
-import algorithms.related.TFIDF.TFIDF;
+import algorithms.related.TFIDF.TF;
 import database.CreateTable;
-import database.Database;
-import org.apache.hadoop.hbase.util.Hash;
-import org.codehaus.jettison.json.JSONArray;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
-import utils.Item;
-
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.HashMap;
-import java.util.LinkedList;
 
 /**
  * Created by didii on 3/17/15.
@@ -32,10 +16,6 @@ import java.util.LinkedList;
  dateCreated;
  */
 public class GenerateFastCompany {
-
-
-
-
 
     public static void fillDatabase() {
         CreateTable.deleteAll();
@@ -67,6 +47,8 @@ public class GenerateFastCompany {
                 e.printStackTrace();
             }
         }
+
+        TF.computeTFForAll();
 
     }
 }

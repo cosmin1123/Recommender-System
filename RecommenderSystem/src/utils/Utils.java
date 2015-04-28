@@ -3,7 +3,6 @@ package utils;
 import java.io.IOException;
 
 import database.AllItemsMapper;
-import database.ItemFamily;
 import database.TableName;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
@@ -15,12 +14,7 @@ import org.apache.hadoop.hbase.ZooKeeperConnectionException;
 import org.apache.hadoop.hbase.client.*;
 
 
-import org.apache.hadoop.hbase.filter.*;
-import org.apache.hadoop.hbase.mapreduce.TableMapReduceUtil;
 import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.hadoop.mapred.JobConf;
-import org.apache.hadoop.mapred.JobPriority;
-import org.apache.hadoop.mapred.MapReduceBase;
 import org.apache.hadoop.mapreduce.Job;
 
 
@@ -69,8 +63,8 @@ public class Utils {
                 System.out.println("table already exists!");
             } else {
                 HTableDescriptor tableDesc = new HTableDescriptor(tableName);
-                for (int i = 0; i < families.length; i++) {
-                    tableDesc.addFamily(new HColumnDescriptor(families[i]));
+                for (String family : families) {
+                    tableDesc.addFamily(new HColumnDescriptor(family));
                 }
                 admin.createTable(tableDesc);
                 System.out.println("create table " + tableName + " ok.");
@@ -143,8 +137,8 @@ public class Utils {
         try {
             Put put = new Put(Bytes.toBytes(rowKey));
             String val = "";
-            for(int i = 0; i < value.length; i++) {
-                val += value[i] + ";";
+            for (Object aValue : value) {
+                val += aValue + ";";
             }
             put.add(Bytes.toBytes(family), Bytes.toBytes(qualifier), Bytes
                     .toBytes(val));

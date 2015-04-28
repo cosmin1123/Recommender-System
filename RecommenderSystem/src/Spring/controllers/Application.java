@@ -1,57 +1,57 @@
 package Spring.controllers;
 
-import GenerateTables.fastCompany.GenerateFastCompany;
-import GenerateTables.imdb.GenerateIMDB;
-import algorithms.related.ComputeSimilarity;
-import algorithms.related.RelatedArticles;
-import algorithms.related.TFIDF.TFIDF;
-import database.AllItemsMapper;
-import database.Database;
-import database.TableName;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.HBaseConfiguration;
-import org.apache.hadoop.hbase.client.Scan;
-import org.apache.hadoop.hbase.mapreduce.TableMapReduceUtil;
-import org.apache.hadoop.mapreduce.Job;
+import edu.cmu.lti.lexical_db.ILexicalDatabase;
+import edu.cmu.lti.lexical_db.NictWordNet;
+import edu.cmu.lti.ws4j.RelatednessCalculator;
+import edu.cmu.lti.ws4j.impl.*;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
-import test.CheckFile;
+import test.BinarySearchVal;
 import test.RelatedArticlesCheck;
-import utils.Item;
-import utils.Utils;
 
-import java.io.IOException;
-import java.util.HashMap;
 
 @ComponentScan
 @EnableAutoConfiguration
 public class Application {
 
-    static void testVal(boolean interactive) {
-        RelatedArticles.enableCaching();
 
-        do {
-            RelatedArticlesCheck.test(interactive);
-            CheckFile.test();
-        } while (interactive);
+    public static void compareSim(String s1, String s2) {
+        ILexicalDatabase db = new NictWordNet();
+        RelatednessCalculator lin = new HirstStOnge(db);
 
-       // Item article = Database.getItem("3000099");
-       // Item relateArticle = Database.getItem("3010223");
+        String []words1 = s1.split(" ");
+        String []words2 = s2.split(" ");
+        lin.calcRelatednessOfWords("za", "zap");
+        long start = System.currentTimeMillis();
+        double sum = 0.0;
 
-       // ComputeSimilarity.getArticleSimilarity(article, relateArticle, new HashMap<String, Double>());
+        for(String word1 : words1) {
+            for(String word2 : words2) {
+                double sim = 1.0;
+                if(!word1.equals(word2)) {
+                    sim = lin.calcRelatednessOfWords(word1, word2);
+                }
 
+
+                sum += sim;
+            }
+        }
+
+
+
+        System.out.println(System.currentTimeMillis() - start);
+        System.out.println(2 * sum / (words1.length + words2.length));
     }
-
     public static void main(String[] args) {
 
         //GenerateFastCompany.fillDatabase();
+        //TF.computeTFForAll();
 
-        //testVal(false);
+        //compareSim("I like to run", "I love to go");
 
         SpringApplication.run(Application.class, args);
 
-
-       // RelatedArticlesCheck.printSimilarities(3000099, 37446);
+     //  RelatedArticlesCheck.printSimilarities(3000099, 37446);
     }
 }

@@ -1,6 +1,5 @@
 package Spring.controllers;
 
-import database.Database;
 import database.TableName;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -9,7 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import utils.Item;
 import utils.LinkedListWrapper;
-import utils.User;
 import utils.Utils;
 
 import java.util.LinkedList;
@@ -24,6 +22,7 @@ public class GetAllItemsController {
         LinkedList<Item> result = new LinkedList<Item>();
         int max = Integer.parseInt(maxArticle);
 
+        assert list != null;
         for(Item item : list) {
             result.add(item);
             max--;

@@ -32,7 +32,7 @@ public class CheckFile {
         }
     }
 
-    private static void readAndCheck(HashMap<String, Integer> expectedData) throws IOException {
+    private static LinkedList<String> readAndCheck(HashMap<String, Integer> expectedData) throws IOException {
 
 
         Comparator<Double> reverseDoubleComparator = new Comparator<Double>() {
@@ -117,17 +117,23 @@ public class CheckFile {
         writer.close();
 
         System.out.println("STOP");
+
+        for(Double key : bestResults.keySet()) {
+            return bestResults.get(key);
+        }
+
+        return null;
     }
 
-    public static void test() {
+    public static LinkedList<String> test(String id) {
         try {
             dataReader = new BufferedReader(new FileReader("out/resultedData"));
-            expectedDataReader = new BufferedReader(new FileReader("res/fastCompany.res/expected"));
+            expectedDataReader = new BufferedReader(new FileReader("res/fastCompany.res/expected" + id));
 
             HashMap<String, Integer> expectedData = new HashMap<String, Integer>();
             fillExpectedData(expectedData);
 
-            readAndCheck(expectedData);
+            return readAndCheck(expectedData);
 
 
         } catch (FileNotFoundException e) {
@@ -142,5 +148,6 @@ public class CheckFile {
                 e.printStackTrace();
             }
         }
+        return null;
     }
 }

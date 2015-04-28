@@ -112,6 +112,7 @@ public class RecommendedArticles {
         CorelatedUser.referenceRatedSum = firstUserSumAndCountRating.getKey();
         CorelatedUser.referenceRatedItemsCount = firstUserSumAndCountRating.getValue();
 
+        assert userList != null;
         for(User user : userList) {
             Pair<Double, Double> meanPair =
                     getUserCommonMeanRating(firstUser.getUserId(), user.getUserId(), firstUserItems);

@@ -1,11 +1,13 @@
 package GenerateTables.fastCompany;
 
-import algorithms.related.TFIDF.TFIDF;
 import database.Database;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import utils.Item;
+
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -15,7 +17,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Queue;
+
 
 /**
  * Created by didii on 4/7/15.
@@ -41,6 +43,15 @@ public class GetThread extends Thread {
 
             BufferedReader in = new BufferedReader(
                     new InputStreamReader(con.getInputStream()));
+            long startTime = System.currentTimeMillis();
+
+            while(!in.ready()) {
+
+                if((System.currentTimeMillis() - startTime) > 100) {
+                    System.out.println(id + " is blocking BufferedReader");
+                    return null;
+                }
+            }
             String inputLine;
             StringBuilder response = new StringBuilder();
 
@@ -58,7 +69,6 @@ public class GetThread extends Thread {
     }
     private Item createItem(int articleId) {
         Item newItem = new Item();
-        HtmlToText parser = new HtmlToText();
 
         newItem.setItemId(articleId + "");
         String jsonString = makeGetRequest(articleId);
@@ -70,9 +80,9 @@ public class GetThread extends Thread {
             jsonObject = new JSONObject(jsonString);
 
             // set content
-            parser.parse(jsonObject.getString("body"));
+            Document doc = Jsoup.parse(jsonObject.getString("body"));
 
-            newItem.setContent(parser.getText());
+            newItem.setContent(doc.body().text());
 
             // set title
             newItem.setTitle(jsonObject.getJSONObject("teaser").getString("plain"));
@@ -150,7 +160,7 @@ public class GetThread extends Thread {
             if (newItem != null) {
 
                 Database.addItem(newItem);
-                TFIDF.computeForItem(newItem);
+                //TFIDF.computeForItem(newItem);
 
                 System.out.println("Added " + i);
             }

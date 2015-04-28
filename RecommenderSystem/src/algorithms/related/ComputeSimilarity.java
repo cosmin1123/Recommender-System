@@ -1,6 +1,6 @@
 package algorithms.related;
 
-import database.Database;
+import algorithms.related.TFIDF.TFIDF;
 import database.ItemFamily;
 import utils.Item;
 
@@ -8,38 +8,37 @@ import java.util.*;
 
 /**
  * Created by didii on 3/20/15.
- private long dateCreated;
- private String title;
- private String shortTitle;
- private LinkedList<String> keywords;
- private String department;
- private String category;
- private String importance;
- private String publicationId;
- private String language;
- private LinkedList<String> collectionReferences;
- private String author;
- private HashMap<String, Double> ratings;
+ *
  */
 public class ComputeSimilarity {
 
     private static boolean ENABLE_CACHING = false;
     public static HashMap<ItemFamily, HashMap<String, Double>> similarityValues;
     private static final double MAX_RATING = 1000000;
-
-    private static double dateCreatedWeight = 12.5;
-    private static double titleWeight = 82.0;
-    private static double shortTitleWeight = 88.2;
-    private static double departmentWeight = 18.7;
-    private static double categoryWeight = 18.7;
+/*        Double dateCreatedWeight = 73.4375;
+        Double titleWeight = 98.4375;//3125;
+        Double shortTitleWeight = 89.0625;//8125;
+        Double departmentWeight = 4.6875;//5;//1.0;
+        Double categoryWeight = 40.625;//5;//3.0;
+        Double authorWeight = 29.6875;//9375;//3.0;
+        Double keywordWeight = 64.0625;//6.0;
+        Double ratingsWeight = 1.5625;//0.0;
+        Double TFIDFWeight = 35.9375;//6.0;
+        Double collectionReferenceWeight = 0.0;//1.0;*/
+    private static double dateCreatedWeight = 73.4375;//67.1875;
+    private static double titleWeight = 98.4375;//99.21875;
+    private static double shortTitleWeight = 89.0625;//76.5625;
+    private static double departmentWeight = 4.6875;//20.0;
+    private static double categoryWeight = 40.625;//25.0;
     private static double importanceWeight = 3; // not tested yet
     private static double languageWeight = 0;
-    private static double authorWeight = 33.5;
+    private static double authorWeight = 29.6875;//28.125;
 
-    private static double keywordWeight = 83.5;
-    private static double ratingsWeight = 1.0;
-    private static double collectionReferenceWeight = 0.5;
-    private static double TFIDFWeight = 12.5;
+    // image searching?
+    private static double keywordWeight = 64.0625;//31.25;
+    private static double ratingsWeight = 1.5625;
+    private static double collectionReferenceWeight = 0.0;
+    private static double TFIDFWeight = 35.9375;
 
     private static Double upperBoundKeywords = null;
     private static Double upperBoundCollectionRef = null;
@@ -85,36 +84,7 @@ public class ComputeSimilarity {
     /// TODO LOOOK OVER TFIDF, not ok mate!!!
     private static double getTFIDFweight(HashMap<String, Double> article, HashMap<String, Double> relateArticle,
                                          HashMap<String, Double> idfMap) {
-        double sumProdUp = 0;
-        double sumDownA = 0;
-        double sumDownB = 0;
-        double common = 0;
-
-
-        for(String wordArticle : article.keySet()) {
-
-                Double aValue = article.get(wordArticle);
-                Double bValue = relateArticle.get(wordArticle);
-                Double wordIdf = idfMap.get(wordArticle);
-
-                if (aValue != null && bValue != null) {
-
-                    aValue *= wordIdf;
-                    bValue *= wordIdf;
-
-                    if(aValue != 0 && bValue != 0) {
-                        common++;
-                    }
-                    sumProdUp += (aValue * bValue);
-                    sumDownA += (aValue * aValue);
-                    sumDownB += (bValue * bValue);
-                }
-            }
-
-        if(sumDownA == 0 || sumDownB == 0 || common <= 4) {
-            return 0;
-        }
-        return (sumProdUp / (Math.sqrt(sumDownA * sumDownB)));
+        return TFIDF.compute( article, relateArticle, idfMap);
     }
 
     private static double getRatingsWeight(HashMap<String, Double> article, HashMap<String, Double> relateArticle) {
@@ -187,25 +157,23 @@ public class ComputeSimilarity {
 
         String[] words = str.split("\\s");
 
-        for (int i=0; i < words.length; i++) {
-            letterPairs(words[i], pairs);
+        for (String word : words) {
+            letterPairs(word, pairs);
         }
         return pairs;
     }
 
-    private static double getStringWeight(String title1, String title2) {
+    public static double getStringWeight(String title1, String title2) {
         ArrayList pairs1 = wordLetterPairs(title1.toUpperCase());
         ArrayList pairs2 = wordLetterPairs(title2.toUpperCase());
         double intersection = 0;
         double union = pairs1.size() + pairs2.size();
 
-        for (int i = 0; i < pairs1.size(); i++) {
-            Object pair1 = pairs1.get(i);
-            for(int j = 0; j < pairs2.size(); j++) {
-                Object pair2 = pairs2.get(j);
+        for (Object pair1 : pairs1) {
+            for (Object pair2 : pairs2) {
                 if (pair1.equals(pair2)) {
                     intersection++;
-                    pairs2.remove(j);
+                    pairs2.remove(pair2);
                     break;
                 }
             }
@@ -271,14 +239,14 @@ public class ComputeSimilarity {
         if(family.equals(ItemFamily.KEYWORDS)) {
             if(upperBoundKeywords == null) {
                 upperBoundKeywords = getListWeight(article.getKeywords(),
-                        article.getKeywords(), upperBoundKeywords);
+                        article.getKeywords(), null);
             }
             returnValue = getListWeight(article.getKeywords(), relatedArticle.getKeywords(), upperBoundKeywords);
         }
         if(family.equals(ItemFamily.COLLECTION_REFERENCES)) {
             if(upperBoundCollectionRef == null) {
                 upperBoundCollectionRef = getListWeight(article.getCollectionReferences(),
-                        article.getCollectionReferences(), upperBoundCollectionRef);
+                        article.getCollectionReferences(), null);
             }
             returnValue = getListWeight(article.getCollectionReferences(),
                     relatedArticle.getCollectionReferences(), upperBoundCollectionRef);

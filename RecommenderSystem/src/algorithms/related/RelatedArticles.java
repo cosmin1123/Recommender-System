@@ -1,7 +1,6 @@
 package algorithms.related;
 
 import algorithms.related.TFIDF.IDF;
-import com.sun.research.ws.wadl.Link;
 import database.Database;
 import database.TableName;
 import utils.Item;
@@ -91,7 +90,7 @@ public class RelatedArticles {
 
         HashMap<Double, LinkedList<Item>> sortedMap = new HashMap<Double, LinkedList<Item>>();
 
-
+        // use collaborative filtering
         if(useCollaborativeFiltering) {
             for (String userId : commonUsers) {
                 User user = Database.getUser(userId);
@@ -111,18 +110,32 @@ public class RelatedArticles {
                 }
             }
         }
+
+        // compare items to each other
         if(sortedMap.size() < maxArticle) {
-            List<Item> listItem = Utils.getAllItems(TableName.ITEMS.toString());
-            for(Item item : listItem) {
-                Double similiarity = ComputeSimilarity.getArticleSimilarity(mainItem, item, idfMap);
+            LinkedList<Item> listItem = Utils.getAllItems(TableName.ITEMS.toString());
+            if(ENABLE_CACHING) {
+                assert listItem != null;
+                for(Item item : listItem) {
+                    Double similiarity = ComputeSimilarity.getArticleSimilarity(mainItem, item, idfMap);
 
-                if(!sortedMap.containsKey(similiarity)) {
-                    sortedMap.put(similiarity, new LinkedList<Item>());
+                    if (!sortedMap.containsKey(similiarity)) {
+                        sortedMap.put(similiarity, new LinkedList<Item>());
+                    }
+
+                    (sortedMap.get(similiarity)).add(item);
                 }
+            }
+            else{
+                ComputeSimilarityThreadPool pool = new ComputeSimilarityThreadPool(8, listItem,
+                        sortedMap, idfMap, mainItem);
 
-                (sortedMap.get(similiarity)).add(item);
+                pool.startThreads();
+                pool.waitToFinish();
             }
         }
+
+
         int relatedArticlesSize = 0;
 
         Set<Double> keySet = sortedMap.keySet();

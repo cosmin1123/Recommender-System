@@ -8,10 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import utils.Item;
 import utils.LinkedListWrapper;
-import utils.User;
-import utils.Utils;
-
-import java.util.LinkedList;
 
 @RestController
 public class FriendRecommendedArticlesController {

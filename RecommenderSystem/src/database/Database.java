@@ -1,5 +1,6 @@
 package database;
 
+import algorithms.related.TFIDF.IDF;
 import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.util.Bytes;
@@ -17,6 +18,7 @@ public class Database {
 
     public static int getWordFileAppearance(String word) {
         Result rs = Utils.getOneRecord(TableName.TFIDF.toString(), word);
+        assert rs != null;
         byte[] byteArray = rs.getValue(Bytes.toBytes(TFIDFFamily.TOTAL_FILE_APPEARANCES.toString()),
                 Bytes.toBytes(TFIDFFamily.TOTAL_FILE_APPEARANCES.toString()));
 
@@ -35,6 +37,7 @@ public class Database {
     public static int getTotalFileNum() {
         Result rs = Utils.getOneRecord(TableName.TFIDF.toString(), TFIDFFamily.TOTAL_FILE_NUM.toString());
 
+        assert rs != null;
         byte[] byteArray = rs.getValue(Bytes.toBytes(TFIDFFamily.TOTAL_FILE_NUM.toString()),
                 Bytes.toBytes(TFIDFFamily.TOTAL_FILE_NUM.toString()));
 
@@ -67,6 +70,7 @@ public class Database {
 
         Result rs = Utils.getOneRecord(TableName.ITEMS.toString(), itemID);
         currentItem.setItemId(itemID);
+        assert rs != null;
         for(KeyValue kv : rs.raw()){
             currentItem.addToItem(Enum.valueOf(ItemFamily.class, new String(kv.getFamily())),
                      new String(kv.getValue()), new String(kv.getQualifier()));
@@ -76,6 +80,7 @@ public class Database {
     }
 
     public static void addItem(Item item) {
+        IDF.addIdfToDatabase(item);
         String book = item.getItemId();
 
         Utils.addRecord(TableName.ITEMS.toString(), book, ItemFamily.TITLE.toString(),
@@ -113,6 +118,7 @@ public class Database {
         User currentUser = new User();
         currentUser.setUserId(userId);
         Result rs = Utils.getOneRecord(TableName.USERS.toString(), userId);
+        assert rs != null;
         for(KeyValue kv : rs.raw()){
             currentUser.addToUser(new String(kv.getFamily()), new String(kv.getValue()));
         }

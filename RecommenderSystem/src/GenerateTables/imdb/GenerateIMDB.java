@@ -1,8 +1,6 @@
 package GenerateTables.imdb;
 
-import algorithms.related.TFIDF.TFIDF;
-import com.jcraft.jsch.Buffer;
-import com.kenai.jffi.Array;
+import algorithms.related.TFIDF.TF;
 import database.CreateTable;
 import database.Database;
 import utils.Item;
@@ -16,7 +14,6 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
 
 /**
  * Created by didii on 3/20/15.
@@ -109,8 +106,7 @@ public class GenerateIMDB {
         String plot = "";
 
         while (!(currentLine = plotFile.readLine()).
-                equals("-------------------------------------------------------------------------------") &&
-                currentLine != null) {
+                        equals("-------------------------------------------------------------------------------")) {
 
             if(currentLine.length() > 3) {
                 plot += currentLine.substring(3, currentLine.length());
@@ -268,6 +264,6 @@ public class GenerateIMDB {
         createItem();
         closeFiles();
 
-        TFIDF.computeForAll();
+        TF.computeTFForAll();
     }
 }
