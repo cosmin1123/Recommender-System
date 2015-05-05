@@ -144,7 +144,7 @@ public class RelatedArticlesCheck {
         Double ratingsWeight = 1.5625;//0.0;
         Double TFIDFWeight = 35.9375;//6.0;
         Double collectionReferenceWeight = 0.0;//1.0;
-        double currentStep = 100;
+        double currentStep = 0;
 
         test(interactive, id, dateCreatedWeight, titleWeight, departmentWeight,
                 shortTitleWeight, categoryWeight, ratingsWeight,
@@ -222,6 +222,10 @@ public class RelatedArticlesCheck {
                                                         shortTitleWeight, categoryWeight, ratingsWeight,
                                                         authorWeight, keywordWeight, collectionReferenceWeight,
                                                         TFIDFWeight, id);
+                                                        if(currentStep == 0) {
+                                                            writer.close();
+                                                            return;
+                                                        }
 
                                                     }
                                                 }

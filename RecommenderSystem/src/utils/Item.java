@@ -254,13 +254,16 @@ public class Item {
     public String toString() {
         String out = "";
 
-        out += this.itemId     + "\n";
-        out += this.title      + "\n";
-        out += this.content    + "\n";
-        out += this.keywords   + "\n";
-        out += this.category   + "\n";
-        out += this.department + "\n";
-        out += this.author     + "\n";
+        out += this.itemId               + "\n";
+        out += this.title                + "\n";
+        out += this.dateCreated          + "\n";
+        out += this.shortTitle           + "\n";
+        out += this.content              + "\n";
+        out += this.keywords             + "\n";
+        out += this.category             + "\n";
+        out += this.department           + "\n";
+        out += this.author               + "\n";
+        out += this.collectionReferences + "\n";
 
         return out;
 

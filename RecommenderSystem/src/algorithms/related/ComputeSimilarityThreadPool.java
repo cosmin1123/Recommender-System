@@ -4,6 +4,7 @@ import utils.Item;
 
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by didii on 4/21/15.
@@ -23,12 +24,8 @@ public class ComputeSimilarityThreadPool extends Thread{
         pool = itemList;
     }
 
-    private static synchronized void addToTarget(Double similarity, Item item) {
-        if(!target.containsKey(similarity)) {
-            target.put(similarity, new LinkedList<Item>());
-        }
-
-        (target.get(similarity)).add(item);
+    private static synchronized void addToTarget(HashMap<Double, LinkedList<Item>> myTarget) {
+        target.putAll(myTarget);
     }
 
     public ComputeSimilarityThreadPool(int numThread, LinkedList items,
@@ -69,20 +66,46 @@ public class ComputeSimilarityThreadPool extends Thread{
         }
     }
 
-    public synchronized Item getItem() {
-        if(currentIndex >= pool.size()) {
-            return null;
+    public synchronized void getItems(List<Item> list) {
+        int myListSize = 1000;
+        int endOfList = currentIndex + myListSize;
+        if(endOfList >= pool.size()) {
+            endOfList = pool.size() - 1;
         }
-        return pool.get(currentIndex++);
+
+        if(currentIndex >= endOfList) {
+            return ;
+        }
+        list.addAll(pool.subList(currentIndex, endOfList));
+        currentIndex = endOfList;
+        return;
     }
 
     public void run() {
-        Item item = getItem();
-        while (item != null) {
-            Double similiarity = ComputeSimilarity.getArticleSimilarity(targetItem, item, idfMap);
-            addToTarget(similiarity, item);
-            item = getItem();
+        LinkedList<Item> myPool = new LinkedList<Item>();
+        getItems(myPool);
+        HashMap<Double, LinkedList<Item>> myTarget = new HashMap<Double, LinkedList<Item>>();
+        Item item;
+        while (myPool.size() != 0) {
+            // get item
+            item = myPool.pop();
+            if(myPool.size() == 0) {
+                getItems(myPool);
+            }
+
+            // compute similarity and add it to target
+            Double similarity = ComputeSimilarity.getArticleSimilarity(targetItem, item, idfMap);
+            //
+
+            if(!myTarget.containsKey(similarity)) {
+                myTarget.put(similarity, new LinkedList<Item>());
+            }
+
+            (myTarget.get(similarity)).add(item);
+
+
         }
+        addToTarget(myTarget);
 
     }
 }

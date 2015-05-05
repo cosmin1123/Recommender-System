@@ -14,28 +14,19 @@ public class ComputeSimilarity {
 
     private static boolean ENABLE_CACHING = false;
     public static HashMap<ItemFamily, HashMap<String, Double>> similarityValues;
+
     private static final double MAX_RATING = 1000000;
-/*        Double dateCreatedWeight = 73.4375;
-        Double titleWeight = 98.4375;//3125;
-        Double shortTitleWeight = 89.0625;//8125;
-        Double departmentWeight = 4.6875;//5;//1.0;
-        Double categoryWeight = 40.625;//5;//3.0;
-        Double authorWeight = 29.6875;//9375;//3.0;
-        Double keywordWeight = 64.0625;//6.0;
-        Double ratingsWeight = 1.5625;//0.0;
-        Double TFIDFWeight = 35.9375;//6.0;
-        Double collectionReferenceWeight = 0.0;//1.0;*/
-    private static double dateCreatedWeight = 73.4375;//67.1875;
-    private static double titleWeight = 98.4375;//99.21875;
-    private static double shortTitleWeight = 89.0625;//76.5625;
-    private static double departmentWeight = 4.6875;//20.0;
-    private static double categoryWeight = 40.625;//25.0;
+
+    private static double dateCreatedWeight = 73.4375;;
+    private static double titleWeight = 98.4375;
+    private static double shortTitleWeight = 89.0625;
+    private static double departmentWeight = 4.6875;
+    private static double categoryWeight = 40.625;
     private static double importanceWeight = 3; // not tested yet
     private static double languageWeight = 0;
-    private static double authorWeight = 29.6875;//28.125;
+    private static double authorWeight = 29.6875;
 
-    // image searching?
-    private static double keywordWeight = 64.0625;//31.25;
+    private static double keywordWeight = 64.0625;
     private static double ratingsWeight = 1.5625;
     private static double collectionReferenceWeight = 0.0;
     private static double TFIDFWeight = 35.9375;
@@ -164,6 +155,10 @@ public class ComputeSimilarity {
     }
 
     public static double getStringWeight(String title1, String title2) {
+        //return getStringWeightBigrams(title1, title2);
+        return getStringWeightLevenshteinDistance(title1,title2);
+    }
+    public static double getStringWeightBigrams(String title1, String title2) {
         ArrayList pairs1 = wordLetterPairs(title1.toUpperCase());
         ArrayList pairs2 = wordLetterPairs(title2.toUpperCase());
         double intersection = 0;
@@ -184,6 +179,49 @@ public class ComputeSimilarity {
         }
 
         return ((2.0*intersection) / union);
+    }
+
+    public static double getStringWeightLevenshteinDistance(String title1, String title2) {
+        if(title1.equals(title2)) {
+            return 1;
+        }
+        if(title1.isEmpty() || title2.isEmpty()) {
+            return 0;
+        }
+
+
+        // create two work vectors of integer distances
+        int[] v0 = new int[title2.length() + 1];
+        int[] v1 = new int[title2.length() + 1];
+
+        // initialize v0 (the previous row of distances)
+        // this row is A[0][i]: edit distance for an empty s
+        // the distance is just the number of characters to delete from t
+        for (int i = 0; i < v0.length; i++)
+            v0[i] = i;
+
+        for (int i = 0; i < title1.length(); i++)
+        {
+            // calculate v1 (current row distances) from the previous row v0
+
+            // first element of v1 is A[i+1][0]
+            //   edit distance is delete (i+1) chars from s to match empty t
+            v1[0] = i + 1;
+
+            // use formula to fill in the rest of the row
+            for (int j = 0; j < title2.length(); j++)
+            {
+                int cost = (title1.charAt(i) == title2.charAt(j)) ? 0 : 1;
+                int min = Math.min(v1[j] + 1, v0[j + 1] + 1);
+                v1[j + 1] = Math.min(min, v0[j] + cost);
+            }
+
+            // copy v1 (current row) to v0 (previous row) for next iteration
+            for (int j = 0; j < v0.length; j++)
+                v0[j] = v1[j];
+        }
+
+        return 1 - (((double)v1[title2.length()]) / Math.max(title1.length(), title2.length()));
     }
 
     private static double getDateWeight(long date1, long date2) {
@@ -209,60 +247,72 @@ public class ComputeSimilarity {
     private static double getWeightValue(ItemFamily family, Item relatedArticle, Item article,
                                          HashMap<String, Double> idfMap) {
         double returnValue = 0;
-        if(family.equals(ItemFamily.DATE_CREATED)) {
-            returnValue = getDateWeight(article.getDateCreated(), relatedArticle.getDateCreated());
-        }
-        if(family.equals(ItemFamily.TITLE)) {
-            returnValue = getStringWeight(article.getTitle(), relatedArticle.getTitle());
-        }
-        if(family.equals(ItemFamily.SHORT_TITLE)) {
-            returnValue = getStringWeight(article.getShortTitle(), relatedArticle.getShortTitle());
-        }
-        if(family.equals(ItemFamily.CATEGORY)) {
-            returnValue = getStringWeight(article.getCategory(), relatedArticle.getCategory());
-        }
-        if(family.equals(ItemFamily.DEPARTMENT)) {
-            returnValue = getStringWeight(article.getDepartment(), relatedArticle.getDepartment());
-        }
-        if(family.equals(ItemFamily.AUTHOR)) {
-            returnValue = getMatchWeight(article.getAuthor(), relatedArticle.getAuthor());
-        }
-        if(family.equals(ItemFamily.LANGUAGE)) {
-            returnValue = getMatchWeight(article.getLanguage(), relatedArticle.getLanguage());
-        }
-        if(family.equals(ItemFamily.PUBLICATION_ID)) {
-            returnValue = getMatchWeight(article.getPublicationId(), relatedArticle.getPublicationId());
-        }
-        if(family.equals(ItemFamily.IMPORTANCE)) {
-            returnValue = getImportanceWeight(relatedArticle.getImportance());
-        }
-        if(family.equals(ItemFamily.KEYWORDS)) {
-            if(upperBoundKeywords == null) {
-                upperBoundKeywords = getListWeight(article.getKeywords(),
-                        article.getKeywords(), null);
-            }
-            returnValue = getListWeight(article.getKeywords(), relatedArticle.getKeywords(), upperBoundKeywords);
-        }
-        if(family.equals(ItemFamily.COLLECTION_REFERENCES)) {
-            if(upperBoundCollectionRef == null) {
-                upperBoundCollectionRef = getListWeight(article.getCollectionReferences(),
-                        article.getCollectionReferences(), null);
-            }
-            returnValue = getListWeight(article.getCollectionReferences(),
-                    relatedArticle.getCollectionReferences(), upperBoundCollectionRef);
-        }
+        switch (family) {
+            case DATE_CREATED:
+                returnValue = getDateWeight(article.getDateCreated(), relatedArticle.getDateCreated());
+                break;
 
-        if(family.equals(ItemFamily.RATINGS)) {
-            returnValue = getRatingsWeight(article.getRating(), relatedArticle.getRating()) / MAX_RATING;
-        }
-        if(family.equals(ItemFamily.TFIDF)) {
-            if(relatedArticle.getItemId().equals("3002899")) {
-                System.out.println("STOP");
-            }
-            returnValue = getTFIDFweight(article.getTfidf(), relatedArticle.getTfidf(),
-                    idfMap);
-        }
+            case TITLE:
+                returnValue = getStringWeight(article.getTitle(), relatedArticle.getTitle());
+                break;
 
+            case SHORT_TITLE:
+                returnValue = getStringWeight(article.getShortTitle(), relatedArticle.getShortTitle());
+                break;
+
+            case CATEGORY:
+                returnValue = getStringWeight(article.getCategory(), relatedArticle.getCategory());
+                break;
+
+            case DEPARTMENT:
+                returnValue = getStringWeight(article.getDepartment(), relatedArticle.getDepartment());
+                break;
+
+            case AUTHOR:
+                returnValue = getMatchWeight(article.getAuthor(), relatedArticle.getAuthor());
+                break;
+
+            case LANGUAGE:
+                returnValue = getMatchWeight(article.getLanguage(), relatedArticle.getLanguage());
+                break;
+
+            case PUBLICATION_ID:
+                returnValue = getMatchWeight(article.getPublicationId(), relatedArticle.getPublicationId());
+                break;
+
+            case IMPORTANCE:
+                returnValue = getImportanceWeight(relatedArticle.getImportance());
+                break;
+
+            case KEYWORDS:
+                if (upperBoundKeywords == null) {
+                    upperBoundKeywords = getListWeight(article.getKeywords(),
+                            article.getKeywords(), null);
+                }
+                returnValue = getListWeight(article.getKeywords(), relatedArticle.getKeywords(), upperBoundKeywords);
+                break;
+
+            case COLLECTION_REFERENCES:
+                if (upperBoundCollectionRef == null) {
+                    upperBoundCollectionRef = getListWeight(article.getCollectionReferences(),
+                            article.getCollectionReferences(), null);
+                }
+                returnValue = getListWeight(article.getCollectionReferences(),
+                        relatedArticle.getCollectionReferences(), upperBoundCollectionRef);
+                break;
+
+            case RATINGS:
+                returnValue = getRatingsWeight(article.getRating(), relatedArticle.getRating()) / MAX_RATING;
+                break;
+
+            case TFIDF:
+                if (relatedArticle.getItemId().equals("3002899")) {
+                    System.out.println("STOP");
+                }
+                returnValue = getTFIDFweight(article.getTfidf(), relatedArticle.getTfidf(),
+                        idfMap);
+                break;
+        }
         return returnValue;
     }
 

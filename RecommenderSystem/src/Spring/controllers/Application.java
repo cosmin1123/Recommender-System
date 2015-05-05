@@ -1,5 +1,7 @@
 package Spring.controllers;
 
+import algorithms.related.ComputeSimilarity;
+import algorithms.related.TFIDF.StanfordLemmatizer;
 import edu.cmu.lti.lexical_db.ILexicalDatabase;
 import edu.cmu.lti.lexical_db.NictWordNet;
 import edu.cmu.lti.ws4j.RelatednessCalculator;
@@ -44,14 +46,6 @@ public class Application {
         System.out.println(2 * sum / (words1.length + words2.length));
     }
     public static void main(String[] args) {
-
-        //GenerateFastCompany.fillDatabase();
-        //TF.computeTFForAll();
-
-        //compareSim("I like to run", "I love to go");
-
         SpringApplication.run(Application.class, args);
-
-     //  RelatedArticlesCheck.printSimilarities(3000099, 37446);
     }
 }

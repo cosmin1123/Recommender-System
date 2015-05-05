@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/themes/base/jquery-ui.css" rel="stylesheet"> </link>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.15/jquery-ui.js"></script>
+    <style>
+        body {
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden;
+        }
+
+        #downBox1 {
+        width: 100%;
+        height: 50%;
+        background: #ccc;
+        position: absolute;
+        top: 50%;
+        }
+        #upBox1 {
+        width: 100%;
+        height: 50%;
+        background: #caa;
+        position: absolute;
+        }
+
+        #downBox2 {
+        width: 100%;
+        height: 50%;
+        background: #000;
+        position: absolute;
+        top: 50%;
+        }
+        #upBox2 {
+        width: 100%;
+        height: 50%;
+        background: #fff;
+        position: absolute;
+        }
+
+    </style>
+</head>
+<body>
+    <div id="upBox1"><iframe id="upBox1Iframe" width="100%" height="100%" src="http://127.0.0.1/index.php/fastcompany.com/3000099">&lt;p&gt;Your browser does not support iframes.&lt;/p&gt;</iframe></div>
+    <div id="upBox2"><iframe id="upBox2Iframe" width="100%" height="100%" src="http://127.0.0.1/index.php/fastcompany.com/3000099">&lt;p&gt;Your browser does not support iframes.&lt;/p&gt;</iframe></div>
+    <div id="downBox1"><iframe id="downBox1Iframe" width="100%" height="100%" src="http://127.0.0.1/index.php/fastcompany.com/3000099">&lt;p&gt;Your browser does not support iframes.&lt;/p&gt;</iframe></div>
+    <div id="downBox2"><iframe id="downBox2Iframe" width="100%" height="100%" src="http://127.0.0.1/index.php/fastcompany.com/3000099">&lt;p&gt;Your browser does not support iframes.&lt;/p&gt;</iframe></div>
+
+<script>
+
+$( document ).ready(function() {
+    var base = 49;
+    $("#upBox2").hide("slide", { direction: "left" }, 1);
+    $("#downBox2").hide("slide", { direction: "left" }, 1);
+
+    // add listeners
+    f = function(e) {
+       var key = e.keyCode ? e.keyCode : e.which;
+        console.log(key);
+       if(key >= base && key <= (base + 3)) {
+            console.log(key);
+        }
+    }
+    $(document).keydown(f);
+    $("#upBox1Iframe").contents().keydown(f);
+    $("#upBox2Iframe").contents().keydown(f);
+
+    $("#downBox1Iframe").contents().keydown(f);
+    $("#downBox2Iframe").contents().keydown(f);
+
+    // enable slide
+/*
+    $( "#upBox1" ).click(function() {
+      $(this).hide("slide", { direction: "left" }, 250);
+      $("#upBox2").show("slide", { direction: "right" }, 250);
+    });
+
+    $( "#downBox1" ).click(function() {
+      $(this).hide("slide", { direction: "right" }, 250);
+      $("#downBox2").show("slide", { direction: "left" }, 250);
+    });
+
+    $( "#upBox2" ).click(function() {
+      $(this).hide("slide", { direction: "left" }, 250);
+      $("#upBox1").show("slide", { direction: "right" }, 250);
+    });
+
+    $( "#downBox2" ).click(function() {
+      $(this).hide("slide", { direction: "right" }, 250);
+      $("#downBox1").show("slide", { direction: "left" }, 250);
+    });*/
+
+});
+</script>
+
+</body>
+</html>
+

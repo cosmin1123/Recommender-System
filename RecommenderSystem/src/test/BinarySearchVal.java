@@ -35,7 +35,7 @@ public class BinarySearchVal {
         Double TFIDFWeight = 100.0;//6.0;
         Double collectionReferenceWeight = 100.0;//1.0;
         double currentStep = 100;
-
+        double bestScore = 0;
         while (currentStep > 1) {
             RelatedArticlesCheck.test(false, id, dateCreatedWeight, titleWeight, departmentWeight,
                     shortTitleWeight, categoryWeight, ratingsWeight,
@@ -46,7 +46,7 @@ public class BinarySearchVal {
             String result = CheckFile.test(id).get(0);
 
             String[] valueLines = result.split("\n");
-
+            bestScore = Double.parseDouble(valueLines[0]);
             for(String line : valueLines) {
                 if(line.split(" ").length <= 1) {
                     continue;
@@ -101,7 +101,8 @@ public class BinarySearchVal {
                     RelatedArticlesCheck.KEYWORDS_TAG + keywordWeight + "\n" +
                     RelatedArticlesCheck.RATINGS_TAG + ratingsWeight + "\n" +
                     RelatedArticlesCheck.TFIDF_TAG + TFIDFWeight + "\n" +
-                    RelatedArticlesCheck.COLLECTIONREF_TAG + collectionReferenceWeight + "\n";
+                    RelatedArticlesCheck.COLLECTIONREF_TAG + collectionReferenceWeight + "\n" +
+                    "SCORE" + bestScore + "\n";
             out.println(tempText);
             System.out.println(tempText);
             out.close();
