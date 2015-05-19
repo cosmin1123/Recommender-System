@@ -1,7 +1,7 @@
 package Spring.controllers;
 
-import algorithms.related.ComputeSimilarity;
-import algorithms.related.TFIDF.StanfordLemmatizer;
+import GenerateTables.fastCompany.GenerateFastCompany;
+import algorithms.related.TFIDF.TF;
 import edu.cmu.lti.lexical_db.ILexicalDatabase;
 import edu.cmu.lti.lexical_db.NictWordNet;
 import edu.cmu.lti.ws4j.RelatednessCalculator;
@@ -9,8 +9,7 @@ import edu.cmu.lti.ws4j.impl.*;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
-import test.BinarySearchVal;
-import test.RelatedArticlesCheck;
+
 
 
 @ComponentScan
@@ -46,6 +45,8 @@ public class Application {
         System.out.println(2 * sum / (words1.length + words2.length));
     }
     public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
+        //GenerateFastCompany.fillDatabase();
+        //SpringApplication.run(Application.class, args);
+        TF.computeTFForAll();
     }
 }
