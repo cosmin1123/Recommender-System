@@ -1,0 +1,162 @@
+\chapter{Database Architecture}
+\label{chapter:database-architecture}
+The system uses Hbase as it’s default database for storing data, but can be easily integrated with any kind of database by passing a java class for working with the database entities.
+
+HBase is an open source, non-relational, distributed database modeled after Google's BigTable and written in Java. It is developed as part of Apache Software Foundation's Apache Hadoop project and runs on top of HDFS (Hadoop Distributed Filesystem), providing BigTable-like capabilities for Hadoop. That is, it provides a fault-tolerant way of storing large quantities of sparse data (small amounts of information caught within a large collection of empty or unimportant data, such as finding the 50 largest items in a group of 2 billion records).
+
+Hbase is divided into tables. Each table has a name. Then, each table has multiple row keys. Each row key can have multiple families (columns). Each family can have multiple qualifiers. Each qualifier has a value.
+
+\begin{table}[h]
+  \caption{Hbase database format}
+\centering
+\begin{tabular}{@{}|c|c|c|c|c|l|l|@{}}
+\toprule
+Row key                & Family                         &                                & Family                         &                                & Family    &           \\ \midrule
+                       & Qualifier                      & Qualifier                      & Qualifier                      & Qualifier                      & Qualifier & Qualifier \\ \midrule
+                       & Value                          & Value                          & Value                          & Value                          & Value     & Value     \\ \midrule
+Row key                & Family                         &                                & Family                         &                                & Family    &           \\ \midrule
+\multicolumn{1}{|l|}{} & \multicolumn{1}{l|}{Qualifier} & \multicolumn{1}{l|}{Qualifier} & \multicolumn{1}{l|}{Qualifier} & \multicolumn{1}{l|}{Qualifier} & Qualifier & Qualifier \\ \midrule
+\multicolumn{1}{|l|}{} & \multicolumn{1}{l|}{Value}     & \multicolumn{1}{l|}{Value}     & \multicolumn{1}{l|}{Value}     & \multicolumn{1}{l|}{Value}     & Value     & Value     \\ \bottomrule
+\end{tabular}
+\end{table}
+
+We are working with hbase because it grants us fast access to our article data.
+
+\section{Database entities}
+\label{sec:database-entities}
+
+We have mapped our database over the attributes that are needed for the recommendation and related algorithms.
+
+\subsection{Users}
+\label{sec:users}
+\begin{itemize}
+	\item user id - String
+	\item user preferred categories - array of strings
+	\item top friends - array of user ids
+	\item item history - array of item ids
+	\item items recommended directly by the user - array of item ids
+	\item items recommended for the user - array of item ids (caching)
+\end{itemize}
+
+\subsection{Items}
+\label{sec:items}
+\begin{itemize}
+	\item item id - String
+	\item name - String
+	\item contenturl - String
+	\item date created - date
+	\item title - String
+	\item short title - String
+	\item keywords - array of strings
+	\item department - String
+	\item category - String
+	\item collection references - array of collection URLs
+	\item author - String
+	\item rating - double
+\end{itemize}
+
+\section{Database Design}
+\label{sec:database-design}
+Besides the basic information, we need to store some extra data in order to speed up the processing time of the recommended and related articles.
+
+\subsection{User Table}
+\label{sec:users-table}
+
+\begin{table}[h]
+\centering
+\caption{User table format}
+\label{user-table-format}
+\begin{tabular}{@{}|c|cccc@{}}
+\cmidrule(r){1-1}
+Row key &                                                                                         &                                                                                       &                                                                                       &                                                                                           \\ \midrule
+User id & \multicolumn{1}{c|}{Preferred categories}                                               & \multicolumn{1}{c|}{Top friends}                                                      & \multicolumn{1}{c|}{Item history}                                                     & \multicolumn{1}{c|}{\begin{tabular}[c]{@{}c@{}}Items\\ recommended directly\end{tabular}} \\ \midrule
+        & \multicolumn{1}{c|}{Preferred categories}                                               & \multicolumn{1}{c|}{\begin{tabular}[c]{@{}c@{}}Top\\ friends\end{tabular}}            & \multicolumn{1}{c|}{Item history}                                                     & \multicolumn{1}{c|}{\begin{tabular}[c]{@{}c@{}}Items\\ recommended directly\end{tabular}} \\ \midrule
+        & \multicolumn{1}{c|}{\begin{tabular}[c]{@{}c@{}}array\\ list of categories\end{tabular}} & \multicolumn{1}{c|}{\begin{tabular}[c]{@{}c@{}}array\\ list of user ids\end{tabular}} & \multicolumn{1}{c|}{\begin{tabular}[c]{@{}c@{}}array\\ list of item ids\end{tabular}} & \multicolumn{1}{c|}{\begin{tabular}[c]{@{}c@{}}array\\ list of items\end{tabular}}        \\ \bottomrule
+\end{tabular}
+\end{table}
+
+
+TODO
+\begin{itemize}
+	\item Explain why you need each item
+	\item Explain why you need this		
+\end{itemize}
+
+\subsection{Item Table}
+\label{sec:item-table}
+
+\begin{table}[h]
+\centering
+\caption{Item table format}
+\label{item-table-format}
+\begin{tabular}{@{}|c|cccllll@{}}
+\cmidrule(r){1-1}
+Row key &  &  &  &  &  &  &  \\ \midrule
+Item id & \multicolumn{1}{c|}{Name} & \multicolumn{1}{c|}{Content URL} & \multicolumn{1}{c|}{Date created} & \multicolumn{1}{l|}{Title} & \multicolumn{1}{l|}{Short Title} & \multicolumn{1}{l|}{Keywords} & \multicolumn{1}{l|}{Department} \\ \midrule
+Item id & \multicolumn{1}{c|}{Name} & \multicolumn{1}{c|}{Content URL} & \multicolumn{1}{c|}{Date created} & \multicolumn{1}{l|}{Title} & \multicolumn{1}{l|}{Short Title} & \multicolumn{1}{l|}{Keywords} & \multicolumn{1}{l|}{Department} \\ \midrule
+String & \multicolumn{1}{c|}{String} & \multicolumn{1}{c|}{String} & \multicolumn{1}{c|}{Long} & \multicolumn{1}{l|}{String} & \multicolumn{1}{l|}{String} & \multicolumn{1}{l|}{Array of String} & \multicolumn{1}{l|}{String} \\ \bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering
+\label{item-tabel-format-two}
+\begin{tabular}{@{}|c|llllll@{}}
+\cmidrule(r){1-1}
+Row key &  &  &  &  &  &  \\ \midrule
+Item id & \multicolumn{1}{l|}{Category} & \multicolumn{1}{l|}{Collection references} & \multicolumn{1}{l|}{Author} & \multicolumn{1}{l|}{Ratings} & \multicolumn{1}{l|}{} & \multicolumn{1}{l|}{} \\ \midrule
+Item id & \multicolumn{1}{l|}{Category} & \multicolumn{1}{l|}{Collection references} & \multicolumn{1}{l|}{Author} & \multicolumn{1}{l|}{User id} & \multicolumn{1}{l|}{User id} & \multicolumn{1}{l|}{User id} \\ \midrule
+String & \multicolumn{1}{l|}{String} & \multicolumn{1}{l|}{Array of collection URLs} & \multicolumn{1}{l|}{String} & \multicolumn{1}{l|}{Double} & \multicolumn{1}{l|}{Double} & \multicolumn{1}{l|}{Double} \\ \bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering
+\label{item-tabel-format-three}
+\begin{tabular}{@{}|c|llll@{}}
+\cmidrule(r){1-1}
+Row key &  &  &  &  \\ \midrule
+Item id & \multicolumn{1}{l|}{TFIDF} & \multicolumn{1}{l|}{} & \multicolumn{1}{l|}{} & \multicolumn{1}{l|}{Content} \\ \midrule
+Item id & \multicolumn{1}{l|}{Word} & \multicolumn{1}{l|}{Word} & \multicolumn{1}{l|}{Word} & \multicolumn{1}{l|}{Content} \\ \midrule
+String & \multicolumn{1}{l|}{Double} & \multicolumn{1}{l|}{Double} & \multicolumn{1}{l|}{Double} & \multicolumn{1}{l|}{String} \\ \bottomrule
+\end{tabular}
+\end{table}
+
+TODO
+\begin{itemize}
+	\item Explain why you need each item
+	\item Explain why you need this	
+\end{itemize}
+
+\subsection{TFIDF Table}
+\label{sec:tfidf-table}
+
+\begin{table}[!htbp]
+\centering
+\caption{TFIDF table }
+\label{TFIDF-table}
+\begin{tabular}{@{}|c|@{}}
+\toprule
+Row key \\ \midrule
+Total File Appearences \\ \midrule
+Total File Appearences \\ \midrule
+Integer \\ \bottomrule
+\end{tabular}
+\end{table}
+
+TODO
+\begin{itemize}
+	\item Explain why you need each item
+	\item Explain why you need this	
+\end{itemize}
+
+
+
+\section{Database Operations}
+\label{sec:database-operations}
+
+TODO
+\begin{itemize}
+	\item Present the calls that each endpoint requires(ge all articles, users, etc)
+\end{itemize}
+

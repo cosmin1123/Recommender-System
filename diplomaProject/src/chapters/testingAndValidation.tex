@@ -1,0 +1,62 @@
+\chapter{Testing and Validation}
+\label{chapter:testing-validation}
+
+In order to test and validate my solution I needed an article database. To have that, I filled my database with random values, so that I could check that I have configured it correctly and to have a solid base on which I could test my recommendation algorithms.
+
+\section{Testing} 
+\label{sec:testing}
+
+\subsection{Basic Operations} 
+\label{sec:basic-operations}
+TODO
+\begin{itemize}
+	\item Add the test cases for the basic operations, unrelated to the next two sections
+\end{itemize}
+
+\subsection{Related Articles Operations} 
+\label{sec:related-articles-operations}
+TODO
+\begin{itemize}
+	\item Add the test cases for related articles.
+\end{itemize}
+
+\subsection{Recommended Articles Operations} 
+\label{sec:recommended-articles-operations}
+TODO
+\begin{itemize}
+	\item Add the test cases for recommended articles.
+\end{itemize}
+
+\section{Evaluation} 
+\label{sec:evaluation}
+TODO
+\begin{itemize}
+	\item Write why it is hard to evaluate the recommender system.
+	\item Write the evaluation scenarios that do not depend on related or recommended.
+\end{itemize}
+
+\subsection{Related Articles}
+\label{sec:related-articles}
+
+\subsubsection{Final Result}
+\label{sec:final-resultone}
+Because it was almost impossible to check if I got good and relevant results with a random database I had to take a database from a previous project of Adobe, which was used by one of their clients, fast company. 
+
+After I populated my database with their data, I started running tests on it by changing the importance of each attribute and printing the top 100 results
+
+In order to check that I was giving a good result I chose an article and google searched its title on fast company’s site. I then classified the outputs in 3 categories, by relevance and saved the data in an expected file.
+
+Using the expected data I then binary searched for the best importance of each attribute.
+Because the expected data that I chose may have been determined by my own personality, I decided to test my recommendation system by using solr.
+
+Using the best importance values I determined by using the expected file, I got my 10 most related articles in solr top 25 related.
+
+In order to further confirm that my resulted articles are really related I built a simple web page in which users chose one of 4 degrees of relatedness and the data was saved on a server.
+
+\subsection{Recommended Articles}
+\label{sec:recommended-articles}
+
+\subsubsection{Final Result}
+\label{sec:final-resultwo}
+In order to test that the system gives good recommendations we took the dataset of MovieLens which provided 100,000 ratings from 1000 users on 1700 movies. Using that data we then used our algorithms to predict what rating would a user give to a certain movie, already rated, and compared it to the actual given rating. By doing this we obtained a deviation from the removed rating of about 15\%.
+
