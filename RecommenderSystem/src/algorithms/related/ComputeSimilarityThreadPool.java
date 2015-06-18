@@ -1,6 +1,7 @@
 package algorithms.related;
 
 import utils.Item;
+import utils.SimilarityWeights;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -19,6 +20,7 @@ public class ComputeSimilarityThreadPool extends Thread{
     private static LinkedList<Item> pool;
 
     private static int currentIndex;
+    private SimilarityWeights similarityWeights;
 
     public void addToPool(LinkedList<Item> itemList) {
         pool = itemList;
@@ -29,17 +31,19 @@ public class ComputeSimilarityThreadPool extends Thread{
     }
 
     public ComputeSimilarityThreadPool(int numThread, LinkedList items,
-                                       HashMap target, HashMap idfMap, Item targetItem) {
+                                       HashMap target, HashMap idfMap, Item targetItem,
+                                       SimilarityWeights similarityWeights) {
         this.numThread = numThread;
         addToPool(items);
         ComputeSimilarityThreadPool.target = target;
         ComputeSimilarityThreadPool.idfMap = idfMap;
         ComputeSimilarityThreadPool.targetItem = targetItem;
         currentIndex = 0;
+        this.similarityWeights = similarityWeights;
     }
 
-    public ComputeSimilarityThreadPool() {
-        super();
+    public ComputeSimilarityThreadPool(SimilarityWeights similarityWeights) {
+        this.similarityWeights = similarityWeights;
     }
 
     public void startThreads() {
@@ -48,7 +52,7 @@ public class ComputeSimilarityThreadPool extends Thread{
 
         for(int i = 0; i < numThread; i++) {
             Thread tmpThread;
-            tmpThread = new ComputeSimilarityThreadPool();
+            tmpThread = new ComputeSimilarityThreadPool(similarityWeights );
 
 
             threadList.add(tmpThread);
@@ -94,7 +98,8 @@ public class ComputeSimilarityThreadPool extends Thread{
             }
 
             // compute similarity and add it to target
-            Double similarity = ComputeSimilarity.getArticleSimilarity(targetItem, item, idfMap);
+            Double similarity = ComputeSimilarity.getArticleSimilarity(targetItem, item, idfMap, similarityWeights);
+            item.setScore(similarity);
             //
 
             if(!myTarget.containsKey(similarity)) {

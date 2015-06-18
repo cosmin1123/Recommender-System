@@ -1,7 +1,7 @@
 \chapter{Introduction}
 \label{chapter:intro}
 
-Recommendation systems have become a major research area since the appearance of the first paper on collaborative filtering in the mid 1990s and have become popular in both commercially and research communities. The first step toward choosing an appropriate algorithm for your problem is to decide upon which attributes of your entities you want to focus. Since this is a recommendation system for articles the main focus in going to be on article content and categorization. Other recommendation systems take into account only the text of the articles and do not give any importance to the date, author, language, and ratings of an article. Also, they require indexing, thus doubling the required storage space. A recommendation system for articles that combines collaborative filtering with recommendations based on content does not exist at the moment. In this paper we will describe a recommender system that solves all the mentioned problems of the existing systems.\\
+Recommendation systems have become a major research area since the appearance of the first paper on collaborative filtering in the mid 1990s and have become popular in both commercially and research communities. The first step toward choosing an appropriate algorithm for your problem is to decide upon which attributes of your entities you want to focus. Since this is a recommendation system for articles the main focus in going to be on article content and categorization. Other recommendation systems take into account only the text of the articles and do not give any importance to the date, author, language, and ratings of an article. Also, they require indexing, thus doubling the required storage space. An open source recommendation system for articles that combines collaborative filtering with recommendations based on content does not exist at the moment. In this thesis we will describe a recommender system that solves all the mentioned problems of the existing systems.\\
 
 \section{Motivation}
 \label{sec:motivation}
@@ -11,16 +11,19 @@ Adobe is working on a new project that helps content producers like National Geo
 \label{sec:objectives}
 The main objective is to build a stand-alone application the acts as a Restful API and can offer multiple recommendation options. There should be two types of recommendations:
 
-\begin{itemize}
+\begin{enumerate}
   \item Recommendations based on content (related articles), thus, solving the cold start problem.
-  \begin{itemize}
-    \item This type of recommendations may use collaborative filtering if specified by the user of the system.
-    \item This type of recommendations should make use of all the attributes of an article and give precise recommendations.
-    \item This type of recommendations should make use of all the attributes of an article and give precise recommendations.
-    \item Each attribute should be given a certain importance in the classifying of the articles.
-  \end{itemize}
+  
+  	This type of recommendations may use collaborative filtering if specified by the user of the system.
+    
+    This type of recommendations should make use of all the attributes of an article and give precise recommendations.
+    
+    This type of recommendations should make use of all the attributes of an article and give precise recommendations.
+    
+    Each attribute should be given a certain importance in the classifying of the articles.
+  
   \item Recommendations based on user history and ratings, giving personalized recommendations for a certain user.
-\end{itemize}
+\end{enumerate}
 
 
 

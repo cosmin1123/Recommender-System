@@ -1,6 +1,6 @@
 package Spring.controllers;
 
-        import database.Database;
+import database.Database;
         import org.springframework.web.bind.annotation.RequestMapping;
         import org.springframework.web.bind.annotation.RequestMethod;
         import org.springframework.web.bind.annotation.RequestParam;
@@ -14,7 +14,8 @@ public class RecommendedArticlesController {
 
     @RequestMapping(method = RequestMethod.GET, value = "/recommendedarticles")
     public LinkedListWrapper<Item> greeting(@RequestParam(value = "userId", defaultValue = "World") String userId,
-                                            @RequestParam(value = "maxArticle", defaultValue = "1000") String maxArticle) {
-        return Database.getRecommendedArticles(userId, Integer.parseInt(maxArticle));
+                                            @RequestParam(value = "maxArticle", defaultValue = "1000") String maxArticle,
+                                            @RequestParam(value = "publicationId", defaultValue = "") String publicationId) {
+        return Database.getRecommendedArticles(userId, Integer.parseInt(maxArticle), publicationId);
     }
 }

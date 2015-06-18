@@ -264,6 +264,6 @@ public class GenerateIMDB {
         createItem();
         closeFiles();
 
-        TF.computeTFForAll();
+        TF.computeTFForAll("");
     }
 }

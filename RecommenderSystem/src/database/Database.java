@@ -56,21 +56,23 @@ public class Database {
                 totalFileNum + "");
     }
 
-    public static void setWordFrequency(String itemId, HashMap<String, Double> map) {
+    public static void setWordFrequency(String itemId, HashMap<String, Double> map, String publicationId) {
         for(String word : map.keySet()) {
 
-                Utils.addRecord(TableName.ITEMS.toString(), itemId, ItemFamily.TFIDF.toString(),
+                Utils.addRecord(TableName.ITEMS.toString() + publicationId, itemId, ItemFamily.TFIDF.toString(),
                         word, map.get(word) + "");
 
         }
     }
 
-    public static Item getItem(String itemID) {
+    public static Item getItem(String itemID, String publicationId) {
         Item currentItem = new Item();
 
-        Result rs = Utils.getOneRecord(TableName.ITEMS.toString(), itemID);
+        Result rs = Utils.getOneRecord(TableName.ITEMS.toString() + publicationId, itemID);
         currentItem.setItemId(itemID);
-        assert rs != null;
+        if(rs == null) {
+            return  null;
+        }
         for(KeyValue kv : rs.raw()){
             currentItem.addToItem(Enum.valueOf(ItemFamily.class, new String(kv.getFamily())),
                      new String(kv.getValue()), new String(kv.getQualifier()));
@@ -83,32 +85,36 @@ public class Database {
         IDF.addIdfToDatabase(item);
         String book = item.getItemId();
 
-        Utils.addRecord(TableName.ITEMS.toString(), book, ItemFamily.TITLE.toString(),
+        if(book.length() == 0) {
+            return;
+        }
+
+        Utils.addRecord(TableName.ITEMS.toString() + item.getPublicationId(), book, ItemFamily.TITLE.toString(),
                 ItemFamily.TITLE.toString(), item.getTitle());
-        Utils.addRecord(TableName.ITEMS.toString(), book, ItemFamily.SHORT_TITLE.toString(),
+        Utils.addRecord(TableName.ITEMS.toString() + item.getPublicationId(), book, ItemFamily.SHORT_TITLE.toString(),
                 ItemFamily.SHORT_TITLE.toString(), item.getShortTitle());
-        Utils.addRecord(TableName.ITEMS.toString(), book, ItemFamily.AUTHOR.toString(),
+        Utils.addRecord(TableName.ITEMS.toString() + item.getPublicationId(), book, ItemFamily.AUTHOR.toString(),
                 ItemFamily.AUTHOR.toString(), item.getAuthor());
-        Utils.addRecord(TableName.ITEMS.toString(), book, ItemFamily.DEPARTMENT.toString(),
+        Utils.addRecord(TableName.ITEMS.toString() + item.getPublicationId(), book, ItemFamily.DEPARTMENT.toString(),
                 ItemFamily.DEPARTMENT.toString(), item.getDepartment());
-        Utils.addRecord(TableName.ITEMS.toString(), book, ItemFamily.CATEGORY.toString(),
+        Utils.addRecord(TableName.ITEMS.toString() + item.getPublicationId(), book, ItemFamily.CATEGORY.toString(),
                 ItemFamily.CATEGORY.toString(), item.getCategory());
-        Utils.addRecord(TableName.ITEMS.toString(), book, ItemFamily.KEYWORDS.toString(),
+        Utils.addRecord(TableName.ITEMS.toString() + item.getPublicationId(), book, ItemFamily.KEYWORDS.toString(),
                 ItemFamily.KEYWORDS.toString(), item.getKeywords().toArray());
-        Utils.addRecord(TableName.ITEMS.toString(), book, ItemFamily.CONTENT.toString(),
+        Utils.addRecord(TableName.ITEMS.toString() + item.getPublicationId(), book, ItemFamily.CONTENT.toString(),
                 ItemFamily.CONTENT.toString(), item.getContent());
-        Utils.addRecord(TableName.ITEMS.toString(), book, ItemFamily.DATE_CREATED.toString(),
+        Utils.addRecord(TableName.ITEMS.toString() + item.getPublicationId(), book, ItemFamily.DATE_CREATED.toString(),
                 ItemFamily.DATE_CREATED.toString(), item.getDateCreated() + "");
-        Utils.addRecord(TableName.ITEMS.toString(), book, ItemFamily.IMPORTANCE.toString(),
+        Utils.addRecord(TableName.ITEMS.toString() + item.getPublicationId(), book, ItemFamily.IMPORTANCE.toString(),
                 ItemFamily.IMPORTANCE.toString(), item.getDateCreated() + "");
-        Utils.addRecord(TableName.ITEMS.toString(), book, ItemFamily.PUBLICATION_ID.toString(),
+        Utils.addRecord(TableName.ITEMS.toString() + item.getPublicationId(), book, ItemFamily.PUBLICATION_ID.toString(),
                 ItemFamily.PUBLICATION_ID.toString(), item.getPublicationId());
-        Utils.addRecord(TableName.ITEMS.toString(), book, ItemFamily.LANGUAGE.toString(),
+        Utils.addRecord(TableName.ITEMS.toString() + item.getPublicationId(), book, ItemFamily.LANGUAGE.toString(),
                 ItemFamily.LANGUAGE.toString(), item.getLanguage());
-        Utils.addRecord(TableName.ITEMS.toString(), book, ItemFamily.COLLECTION_REFERENCES.toString(),
+        Utils.addRecord(TableName.ITEMS.toString() + item.getPublicationId(), book, ItemFamily.COLLECTION_REFERENCES.toString(),
                 ItemFamily.COLLECTION_REFERENCES.toString(), item.getCollectionReferences().toArray());
         for(String user : item.getRating().keySet()) {
-            Utils.addRecord(TableName.ITEMS.toString(), book, ItemFamily.RATINGS.toString(),
+            Utils.addRecord(TableName.ITEMS.toString() + item.getPublicationId(), book, ItemFamily.RATINGS.toString(),
                     user, item.getRating().get(user) + "");
         }
 
@@ -126,23 +132,23 @@ public class Database {
         return currentUser;
     }
 
-    public static LinkedList<Item> getUserItems(String userId) {
+    public static LinkedList<Item> getUserItems(String userId, String publicationId) {
         User user = getUser(userId);
         LinkedList<Item> itemList = new LinkedList<Item>();
 
         for(String itemId : user.getItemsHistory()) {
-            itemList.add(getItem(itemId));
+            itemList.add(getItem(itemId, publicationId));
         }
 
         return  itemList;
     }
 
-    public static LinkedList<Item> getUserRatedItems(String userId) {
+    public static LinkedList<Item> getUserRatedItems(String userId, String publicationId) {
         User user = getUser(userId);
         LinkedList<Item> itemList = new LinkedList<Item>();
 
         for(String itemId : user.getItemsHistory()) {
-            Item item = getItem(itemId);
+            Item item = getItem(itemId, publicationId);
             if (item.getRating().containsKey(userId)) {
                 itemList.add(item);
             }
@@ -151,19 +157,22 @@ public class Database {
         return  itemList;
     }
 
-    public static LinkedListWrapper<Item> getRelatedArticles (String articleId, int maxArticle,
-                                                              boolean useCollaborativeFiltering) {
+    public static LinkedListWrapper<Item> getRelatedArticles (String articleId, int maxArticle, String publicationId,
+                                                              boolean useCollaborativeFiltering,
+                                                              SimilarityWeights similarityWeights) {
 
 
-        return new LinkedListWrapper<Item>(RelatedArticles.recommend(articleId, maxArticle, useCollaborativeFiltering));
+        return new LinkedListWrapper<Item>(RelatedArticles.recommend(articleId, maxArticle,
+                useCollaborativeFiltering, publicationId, similarityWeights));
 
     }
 
-    public static LinkedListWrapper<Item> getRecommendedArticles(String userId, int maxArticle) {
-        return new LinkedListWrapper<Item>(RecommendedArticles.recommend(userId, maxArticle));
+    public static LinkedListWrapper<Item> getRecommendedArticles(String userId, int maxArticle, String publicationId) {
+        return new LinkedListWrapper<Item>(RecommendedArticles.recommend(userId, maxArticle, publicationId));
     }
 
-    public static LinkedListWrapper<Item> getFriendDirectlyRecommendedArticles(String userId, int maxArticles) {
+    public static LinkedListWrapper<Item> getFriendDirectlyRecommendedArticles(String userId, int maxArticles,
+                                                                               String publicationId) {
         LinkedList<String> recommendedItem =  Database.getUser(userId).getTopFriends();
         LinkedList<Item> recommendedItemList = new LinkedList<Item>();
 
@@ -171,7 +180,7 @@ public class Database {
             LinkedList<String> itemList = Database.getUser(friend).getItemsDirectlyRecommended();
 
             for(String item : itemList) {
-                recommendedItemList.add(Database.getItem(item));
+                recommendedItemList.add(Database.getItem(item, publicationId));
                 if(recommendedItemList.size() >= maxArticles) {
                     return new LinkedListWrapper<Item>(recommendedItemList);
                 }
@@ -181,8 +190,9 @@ public class Database {
         return new LinkedListWrapper<Item>(recommendedItemList);
     }
 
-    public static boolean addUser(String userId) {
-        System.out.println("USER: " + userId + " added");
+    public static boolean addUser(User user) {
+        Utils.addRecord(TableName.USERS.toString(), user.getUserId(), UserFamily.ITEM_HISTORY.toString(),
+                UserFamily.ITEM_HISTORY.toString(), user.getItemsHistory().toArray());
         return true;
     }
 

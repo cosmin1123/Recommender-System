@@ -20,6 +20,7 @@ import org.apache.hadoop.mapreduce.Job;
 
 import java.io.InterruptedIOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 /**
@@ -34,6 +35,8 @@ public class Utils {
     private static Object itemTableSynch = null;
     private static Object userTableSynch = null;
     private static Object tfidfTableSynch = null;
+    private static HBaseAdmin admin;
+    private static HashMap<String, HTable> map;
 
     /**
      * Initialization
@@ -41,9 +44,14 @@ public class Utils {
     static {
         conf = HBaseConfiguration.create();
         try {
+            map = new HashMap<String, HTable>();
             itemTable = new HTable(conf, TableName.ITEMS.toString());
             userTable = new HTable(conf, TableName.USERS.toString());
             tfidfTable = new HTable(conf, TableName.TFIDF.toString());
+            admin = new HBaseAdmin(conf);
+
+            map.put("", itemTable);
+
             itemTableSynch = new Object();
             userTableSynch = new Object();
             tfidfTableSynch = new Object();
@@ -53,11 +61,19 @@ public class Utils {
 
     }
 
+    public static boolean tableExists(String tableName) {
+        try {
+            return admin.tableExists(tableName);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     public static void createTable(String tableName, String[] families) {
 
-        HBaseAdmin admin;
         try {
-                admin = new HBaseAdmin(conf);
+
 
             if (admin.tableExists(tableName)) {
                 System.out.println("table already exists!");
@@ -104,18 +120,23 @@ public class Utils {
     public static void addRecord(String tableName, String rowKey,
                                  String family, String qualifier, String value) {
         try {
-
+            if(rowKey.length() == 0) {
+                return;
+            }
             Put put = new Put(Bytes.toBytes(rowKey));
             put.add(Bytes.toBytes(family), Bytes.toBytes(qualifier), Bytes
                     .toBytes(value));
 
-            if(tableName.equals(TableName.ITEMS.toString())) {
-                putInTable( itemTable, itemTableSynch, put);
+            if(tableName.contains(TableName.ITEMS.toString())) {
+                if(map.get(tableName) == null) {
+                    map.put(tableName, new HTable(conf, tableName));
+                }
+                putInTable( map.get(tableName), itemTableSynch, put);
             } else {
-                if(tableName.equals(TableName.USERS.toString())) {
+                if(tableName.contains(TableName.USERS.toString())) {
                     putInTable( userTable, userTableSynch, put);
                 } else {
-                    if(tableName.equals(TableName.TFIDF.toString())) {
+                    if(tableName.contains(TableName.TFIDF.toString())) {
                         putInTable(tfidfTable, tfidfTableSynch, put);
                     }
                 }
@@ -135,6 +156,9 @@ public class Utils {
     public static void addRecord(String tableName, String rowKey,
                                      String family, String qualifier, Object value[]) {
         try {
+            if(rowKey.length() == 0) {
+                return;
+            }
             Put put = new Put(Bytes.toBytes(rowKey));
             String val = "";
             for (Object aValue : value) {
@@ -143,8 +167,11 @@ public class Utils {
             put.add(Bytes.toBytes(family), Bytes.toBytes(qualifier), Bytes
                     .toBytes(val));
 
-            if(tableName.equals(TableName.ITEMS.toString())) {
-                putInTable(itemTable, itemTableSynch, put);
+            if(tableName.contains(TableName.ITEMS.toString())) {
+                if(map.get(tableName) == null) {
+                    map.put(tableName, new HTable(conf, tableName));
+                }
+                putInTable(map.get(tableName), itemTableSynch, put);
             } else {
                 putInTable(userTable, userTableSynch, put);
             }
@@ -214,7 +241,7 @@ public class Utils {
     /**
      * Scan (or list) a table
      */
-    public static LinkedList<Item> getAllItems (String tableName) {
+    public static LinkedList<Item> getAllItems (String tableName, String publicationId) {
         try{
 
             if(!AllItemsMapper.list.isEmpty()) {
@@ -222,16 +249,13 @@ public class Utils {
             }
 
             boolean b = false;
-            Job [] jobArray = new Job[5];
-            for(int i = 0; i <= 4; i++) {
-                jobArray[i] = AllItemsMapper.startNewMapper(conf, "30" + i + "0000", "30" + (i + 1) + "0000");
-            }
+            Job  job = AllItemsMapper.startNewMapper(conf,
+                    tableName, publicationId);
 
-            for(int i = 0; i <= 4; i++) {
-                // TODO with sleep and things
-                while (!jobArray[i].isComplete());
 
-            }
+                while (!job.isComplete());
+
+
             return AllItemsMapper.list;
 
         } catch (IOException e) {

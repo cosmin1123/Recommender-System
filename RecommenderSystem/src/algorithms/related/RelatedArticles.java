@@ -4,6 +4,7 @@ import algorithms.related.TFIDF.IDF;
 import database.Database;
 import database.TableName;
 import utils.Item;
+import utils.SimilarityWeights;
 import utils.User;
 import utils.Utils;
 
@@ -24,10 +25,10 @@ public class RelatedArticles {
         ComputeSimilarity.enableCaching();
     }
 
-    private static LinkedList<String> getCommonReadUsers(String articleId) {
+    private static LinkedList<String> getCommonReadUsers(String articleId, String publicationId) {
         LinkedList<String> commonReadUsers = new LinkedList<String>();
 
-        Item currentItem = Database.getItem(articleId);
+        Item currentItem = Database.getItem(articleId, publicationId);
 
         for(String user : currentItem.getRating().keySet()) {
             commonReadUsers.add(user);
@@ -36,7 +37,8 @@ public class RelatedArticles {
         return commonReadUsers;
     }
 
-    public static LinkedList<Item> recommend(String articleId, int maxArticle, boolean useCollaborativeFiltering) {
+    public static LinkedList<Item> recommend(String articleId, int maxArticle, boolean useCollaborativeFiltering,
+                                             String publicationId, SimilarityWeights similarityWeights) {
         LinkedList<String> commonUsers = null;
         Item mainItem;
         Integer totalFileNum;
@@ -44,11 +46,11 @@ public class RelatedArticles {
 
         if(ENABLE_CACHING) {
             if(useCollaborativeFiltering && cachedCommonUsers == null) {
-                cachedCommonUsers = getCommonReadUsers(articleId);
+                cachedCommonUsers = getCommonReadUsers(articleId, publicationId);
             }
 
             if(cachedMainItem == null) {
-                cachedMainItem = Database.getItem(articleId);
+                cachedMainItem = Database.getItem(articleId, publicationId);
             }
 
             if(cachedTotalFileNum == null) {
@@ -71,9 +73,9 @@ public class RelatedArticles {
             idfMap = cachedIdfMap;
         } else {
             if(useCollaborativeFiltering) {
-                commonUsers = getCommonReadUsers(articleId);
+                commonUsers = getCommonReadUsers(articleId, publicationId);
             }
-            mainItem = Database.getItem(articleId);
+            mainItem = Database.getItem(articleId, publicationId);
             totalFileNum = Database.getTotalFileNum();
             idfMap = new HashMap<String, Double>();
 
@@ -99,13 +101,14 @@ public class RelatedArticles {
                     if (itemId.equals(articleId)) {
                         continue;
                     }
-                    Item item = Database.getItem(itemId);
-                    Double similiarity = ComputeSimilarity.getArticleSimilarity(mainItem, item, idfMap);
+                    Item item = Database.getItem(itemId, publicationId);
+                    Double similiarity = ComputeSimilarity.getArticleSimilarity(mainItem, item, idfMap,
+                            similarityWeights);
 
                     if (!sortedMap.containsKey(similiarity)) {
                         sortedMap.put(similiarity, new LinkedList<Item>());
                     }
-
+                    item.setScore(similiarity);
                     (sortedMap.get(similiarity)).add(item);
                 }
             }
@@ -113,12 +116,16 @@ public class RelatedArticles {
 
         // compare items to each other
         if(sortedMap.size() < maxArticle) {
-            LinkedList<Item> listItem = Utils.getAllItems(TableName.ITEMS.toString());
+            LinkedList<Item> listItem = Utils.getAllItems(TableName.ITEMS.toString(), publicationId);
             if(ENABLE_CACHING) {
                 assert listItem != null;
                 for(Item item : listItem) {
-                    Double similiarity = ComputeSimilarity.getArticleSimilarity(mainItem, item, idfMap);
-
+                    if(item.equals(mainItem)) {
+                        continue;
+                    }
+                    Double similiarity = ComputeSimilarity.getArticleSimilarity(mainItem, item, idfMap,
+                            similarityWeights);
+                    item.setScore(similiarity);
                     if (!sortedMap.containsKey(similiarity)) {
                         sortedMap.put(similiarity, new LinkedList<Item>());
                     }
@@ -127,11 +134,13 @@ public class RelatedArticles {
                 }
             }
             else{
+                listItem.remove(mainItem);
                 ComputeSimilarityThreadPool pool = new ComputeSimilarityThreadPool(8, listItem,
-                        sortedMap, idfMap, mainItem);
+                        sortedMap, idfMap, mainItem, similarityWeights);
 
                 pool.startThreads();
                 pool.waitToFinish();
+                listItem.add(mainItem);
             }
         }
 
@@ -151,9 +160,7 @@ public class RelatedArticles {
             for(Item item : sortedMap.get(key)) {
                 relatedArticlesSize++;
 
-                // TODO remove ratings
-                item.setName(key + "");
-                //
+
                 relatedArticles.add(item);
                 if(relatedArticlesSize >= maxArticle) {
                     return relatedArticles;

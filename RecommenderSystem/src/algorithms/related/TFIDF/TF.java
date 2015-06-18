@@ -67,7 +67,7 @@ public class TF {
         return articleWordFrequency;
     }
 
-    public static void computeTFForItem(Item item) {
+    public static void computeTFForItem(Item item, String publicationId) {
         HashMap<String, Double> wordMap = TF.getArticleWordFrequency(item.getContent());
         HashMap<String, Double> resultMap = new HashMap<String, Double>();
 
@@ -100,15 +100,15 @@ public class TF {
             resultMap.put(word,wordMap.get(word));
         }
         resultMap.put(TFIDFFamily.TOTAL_FILE_APPEARANCES.toString(), (double) wordMap.size());
-        Database.setWordFrequency(item.getItemId(), resultMap);
+        Database.setWordFrequency(item.getItemId(), resultMap, publicationId);
     }
 
-    public static void computeTFForAll() {
-        LinkedList<Item> itemList = Utils.getAllItems(TableName.ITEMS.toString());
+    public static void computeTFForAll(String publicationId) {
+        LinkedList<Item> itemList = Utils.getAllItems(TableName.ITEMS.toString(), publicationId);
 
         assert itemList != null;
         for(Item item : itemList) {
-            computeTFForItem(item);
+            computeTFForItem(item, publicationId);
         }
     }
 }

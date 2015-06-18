@@ -1,11 +1,19 @@
 package utils;
 
 import database.ItemFamily;
+import org.apache.pdfbox.cos.COSDocument;
+import org.apache.pdfbox.pdfparser.PDFParser;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDDocumentInformation;
+import org.apache.pdfbox.util.PDFTextStripper;
+import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.io.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * Created by didii on 2/24/15.
@@ -14,6 +22,7 @@ import java.util.List;
  */
 public class Item {
     private String itemId;
+    private double score;
     private String contentUrl;
     private String content;
     private long dateCreated;
@@ -240,13 +249,13 @@ public class Item {
         return this.author;
     }
 
-    public boolean equals(Item obj) {
 
-            return this.language.equals(obj.language) &&
-                    this.publicationId.equals(obj.publicationId) &&
-                    this.author.equals(obj.author) &&
-                    this.category.equals(obj.category) &&
-                    this.itemId.equals(obj.itemId);
+    public boolean equals(Object obj) {
+        if(obj instanceof  Item) {
+            return this.itemId.equals(((Item)obj).getItemId());
+        }
+
+        return obj.equals(this);
 
     }
 
@@ -271,5 +280,120 @@ public class Item {
     @Override
     public int hashCode() {
         return this.itemId.hashCode();
+    }
+
+    public String getValue(JSONObject object, String key) {
+        if(object.has(key)) {
+            try {
+                String value = (object.getString(key));
+                return value;
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return "";
+
+    }
+
+    public double getScore() {
+        return score;
+    }
+
+    public void setScore(double score) {
+        this.score = score;
+    }
+
+    public boolean fillItemFromJson(String JSONArticle) {
+        if(JSONArticle.equals("undefined")) {
+            return false;
+        }
+        try {
+            JSONObject articleObject = new JSONObject(JSONArticle);
+
+            String abstractText = getValue(articleObject, "abstract");
+            String author = getValue(articleObject, "author");
+            String department = getValue(articleObject, "department");
+
+            if(articleObject.has("keywords")) {
+                JSONArray array = articleObject.getJSONArray("keywords");
+                int n = array.length();
+                for (int i = 0; i < n; i++) {
+                    String keyWord = array.getString(i);
+                    this.keywords.add(keyWord);
+                }
+            }
+            String createdDate = getValue(articleObject,"created");
+            String title = getValue(articleObject,"title");
+            String shortTitle = getValue(articleObject,"shortTitle");
+            String importance = getValue(articleObject,"importance");
+            String entityId = getValue(articleObject, "entityId");
+            String articleId = getValue(articleObject, "articleId");
+            String publicationId = getValue(articleObject,"publicationId");
+
+            this.author = author;
+            this.department = department;
+            //this.content = abstractText;
+            this.title = title;
+            this.shortTitle = shortTitle;
+            this.importance = importance;
+            this.itemId = entityId + articleId;
+            this.publicationId = publicationId;
+
+            SimpleDateFormat f = new SimpleDateFormat("yyyy-mm-dd");
+            Date d = f.parse(createdDate.substring(0, createdDate.indexOf("T")));
+            long milliseconds = d.getTime();
+            this.setDateCreated(milliseconds);
+
+            return true;
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return false;
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public void parsePdfByteStream(byte[] byteArray) {
+        if(byteArray == null || byteArray.length == 0){
+            return;
+        }
+        PDFParser parser;
+        String parsedText = "";
+        PDFTextStripper pdfStripper;
+        PDDocument pdDoc = null;
+        COSDocument cosDoc = null;
+
+
+        InputStream inputStream = new ByteArrayInputStream(byteArray);
+        try {
+            parser = new PDFParser(inputStream);
+        } catch (Exception e) {
+            System.out.println("Unable to open PDF Parser.");
+            return;
+        }
+
+        try {
+            parser.parse();
+            cosDoc = parser.getDocument();
+            pdfStripper = new PDFTextStripper();
+            pdDoc = new PDDocument(cosDoc);
+            parsedText = pdfStripper.getText(pdDoc);
+            pdDoc.close();
+            cosDoc.close();
+        } catch (Exception e) {
+            System.out.println("An exception occured in parsing the PDF Document.");
+            e.printStackTrace();
+            try {
+                if (cosDoc != null) cosDoc.close();
+                if (pdDoc != null) pdDoc.close();
+            } catch (Exception e1) {
+                e.printStackTrace();
+            }
+            return;
+        }
+        this.content = parsedText;
+
     }
 }

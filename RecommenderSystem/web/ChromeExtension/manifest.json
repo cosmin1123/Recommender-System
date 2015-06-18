@@ -1,0 +1,23 @@
+{
+  "name":"Related articles",
+  "description":"Jupiter related items plugin",
+  "version":"1",
+  "manifest_version":2,
+  "background": {
+    "scripts": ["content.js"],
+    "persistent": false
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["backgroundWorker.js","jquery-2.1.4.min.js", "jquery.tile.min.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "permissions": [
+    "https://pecs-jupiter02.lab.digitalpublishing.adobe.io/",
+    "cookies",
+    "tabs",
+    "activeTab"
+  ]
+}

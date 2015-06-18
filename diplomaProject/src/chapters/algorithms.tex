@@ -1,22 +1,24 @@
 \chapter{Recommendation Algorithms}
 \label{chapter:recommendation-system-algorithms}
 There are 3 types of recommendation algorithms: 
-\begin{itemize}
+\begin{enumerate}
 	\item Recommendations based on content
-	\begin{itemize}
-		\item These type of recommendations are solely based on the content of the item to be recommended.
-		\item It uses various text based algorithms in order to calculate a similarity between two items.
-	\end{itemize}
-	\item Recommendations based on collaborative filtering
-	\begin{itemize}
-		\item These type of recommendations are based on previous user history and ratings.
-		\item The main purpose is to find users with simillar interests to a certain user and recommend items that that are preferred by most of the users.
-	\end{itemize}
+		 
+		These type of recommendations are solely based on the content of the item to be recommended.
+		
+		It uses various text based algorithms in order to calculate a similarity between two items.
+
+	\item Recommendations based on collaborative filtering 
+		
+		These type of recommendations are based on previous user history and ratings.
+		 
+		The main purpose is to find users with simillar interests to a certain user and recommend items that that are preferred by most of the users.
+	
 	\item Hybrid recommendations
-	\begin{itemize}
-		\item These type of recommendations combine the previous presented.
-	\end{itemize}
-\end{itemize}
+
+		These type of recommendations combine the previous presented.
+
+\end{enumerate}
 All 3 types of algorithms can be used, independently or by combining the obtained results.
 
 In the following sections we are going to present the implemmented algorithms.
@@ -27,11 +29,12 @@ In the following sections we are going to present the implemmented algorithms.
 The related articles recommendations return a list of articles related to a certain article.
 
 We have implemmented both a hybrid approach and recommendations based on content.
+
 A user may choose not to use the hybrid approach and use only the data of the articles.
 
 \subsection{Collaborative Filtering}
 \label{sec:collaborative-filtering}
-In order to obtain better results, we may choose to use collaborative filtering, in order to do a kind of article grouping by user preferences. Usually, users have a certain profile/preferences, thus they will read articles related to each other. Using this technique we can reduce the number of articles on which we are going to apply the article similarity algorithm. We use the following iterative algorithm to find articles related to article A1:
+In order to obtain better results, we may choose to use collaborative filtering, in order to do a kind of article grouping by user preferences. Usually, users have a certain profile/preferences, thus they will read articles related to each other. Using this technique we can reduce the number of articles on which we are going to apply the article similarity algorithm. We use the following iterative algorithm\cite{item-to-item-recomm} to find articles related to article A1:
 \lstset{language=make,caption=Item to item collaborative filtering,label=lst:app-make}
 \begin{lstlisting}
 	For each user U that read A1
@@ -68,60 +71,59 @@ Each of these fields has a certain importance in the final resulted similarity b
 
 \subsubsection{Natural Language Processing}
 \label{sec:natural-language-processing}
-In order to compute and improve the similarity between two strings we employ three methods:
-\begin{itemize}
+In order to compute and improve the similarity between two strings we employ the following three methods:
+\begin{enumerate}
 	\item Levenshtein Distance
-	\begin{itemize}
-		\item We compute the number of characters needed to change one string to another and divide this value by the length of the bigger string. We obtain a value between 0 and 1.
-		\item This method is faster than the next one and is better suited for generating related articles on the fly.
-	\end{itemize}
+
+		We compute the number of characters needed to change one string to another and divide this value by the length of the bigger string. We obtain a value between 0 and 1.
+		
+		This method is faster than the next one and is better suited for generating related articles on the fly.
+
 	\item By comparing character pairs
-	\begin{itemize}
-		\item We compute the number of common character pairs of the two strings, multiply it by two and divide it by the number of combined character pairs. In the end, we will obtain a value between 0 and 1.
-		\item This method gives better results than the previous one.
-	\end{itemize}
+	
+		We compute the number of common character pairs of the two strings, multiply it by two and divide it by the number of combined character pairs. In the end, we will obtain a value between 0 and 1.
+		
+		This method gives better results than the previous one.
 	\item Lemmatization
-	\begin{itemize}
-		\item In order to obtain better TFIDF results we use the Stanford NLP (Natural Language Processing) framework to get the base form of a word.
-		\item TODO Write more about it
-	\end{itemize}
-\end{itemize}
+
+		In order to obtain better TFIDF results we use the Stanford NLP (Natural Language Processing) framework to get the base form of a word.
+		
+		TODO Write more about it
+\end{enumerate}
 
 \subsubsection{Term Frequency Inverse Document Frequency (TFIDF)}
 \label{sec:TFIDF}
 
 In order to compute the TFIDF similarity we use the following formulas:
-\begin{itemize}
+\begin{enumerate}
 	\item Computing the term frequency of a term T in a document, D 	
-
 	\begin{equation}
 	tf(T, D) = \sqrt[2]{\dfrac{tfreq(T, D)}{tnum(D)}}.
 	\end{equation}
 
-	\begin{itemize}
-		\item Where tfreq (T, D) is the number of occurrences of a term T in the document D and tnum (D) is the total number of terms in D. A tf value depends on the number of term occurrences. This method cannot characterize documents accurately because it is not able to distinguish important words from trivial words sufficiently. In order to obtain a better TFIDF value we also use stemming and lemmatization on the available words. 
-	\end{itemize}
+		Where tfreq (T, D) is the number of occurrences of a term T in the document D and tnum (D) is the total number of terms in D. A tf value depends on the number of term occurrences. This method cannot characterize documents accurately because it is not able to distinguish important words from trivial words sufficiently. In order to obtain a better TFIDF value we also use stemming and lemmatization on the available words. 
 	\item Computing the inverse document frequency of a term T in a document.
 	\begin{equation}
 	idf(t, D) = \log{\dfrac{N}{\vert t \in D \vert}}.
 	\end{equation}
-	\begin{itemize}
-		\item Where N is the total number of documents in the corpus and $\vert{t \in D }\vert$ is the number of documents where the term t appears. If the term is not in the corpus, this will lead to a division-by-zero. It is therefore common to adjust the denominator to $1 + \vert{t \in D}\vert$
-	\end{itemize}
-	\item Computing the TFIDF
+
+		Where N is the total number of documents in the corpus and $\vert{t \in D }\vert$ is the number of documents where the term t appears. If the term is not in the corpus, this will lead to a division-by-zero. It is therefore common to adjust the denominator to $1 + \vert{t \in D}\vert$
+
+	\item Computing the TFIDF \cite{hybrid-recomm}
 	\begin{equation}
 		tfidf (T, D_{1}) = tf (T, D_{1}) \times idf(T,D_{1})
 	\end{equation}
 	\item Computing the TFIDF similarity
-	\begin{itemize}
-		\item We use the Cosine similarity in order to do this.
+
+		We use the Cosine similarity in order to do this.
 		\begin{equation}
 			\begin{split}
 				Cosine Similarity(D_{1},D_{2}) = \cos (\theta) = \dfrac{D_{1} \times D_{2}}{\vert\vert D_{1} \vert\vert \times  \vert\vert D_{2} \vert\vert}\\
 				= \dfrac {\sum_{i=1}^{n} tfidf(T_{i}, D_{1}) \times tfidf(T_{i}, D_{2})} {\sqrt[2]{\sum_{i=1}^{n} tfidf(T_{i},D_{1} )^{2}} \times \sqrt[2]{\sum_{i=1}^{n} tfidf(T_{i},D_{2} )^{2}}} 
 			\end{split}
 		\end{equation}
-		\item Because the Cosine similarity doesn’t take into account the number of common words or the article size, it does not give good results on it’s own, so, we use the following formula, where D1 is the document for which we want the related article list:
+		
+		Because the Cosine similarity doesn’t take into account the number of common words or the article size, it does not give good results on it’s own, so, we use the following formula, where D1 is the document for which we want the related article list:
 		\begin{equation}
 			\begin{split}
 				similarity(D_{1},D_{2}) = (Cosine Similarity(D_{1}, D_{2})) \times \\
@@ -129,8 +131,8 @@ In order to compute the TFIDF similarity we use the following formulas:
 				\dfrac {1} {\sqrt[5] {Number Of Words In D_{2}}}
 			\end{split}
 		\end{equation}
-	\end{itemize}
-\end{itemize}
+
+\end{enumerate}
 
 
 \section{Algorithms for Recommended Articles}

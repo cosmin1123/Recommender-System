@@ -1,23 +1,28 @@
 package Spring.controllers;
 
+import algorithms.related.CollectionRelatedArticles;
 import database.Database;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import utils.Item;
 import utils.LinkedListWrapper;
 import utils.SimilarityWeights;
 
-@RestController
-public class RelatedArticlesController {
+import java.util.Collections;
+import java.util.LinkedList;
 
-    @RequestMapping(method = RequestMethod.GET, value = "/relatedarticles")
-    public LinkedListWrapper<Item> greeting(@RequestParam(value = "itemId", defaultValue = "World") String itemId,
-                                            @RequestParam(value = "maxArticle", defaultValue = "1000") String maxArticle,
-                                            @RequestParam(value = "useCollaborativeFiltering", defaultValue = "false")
-                                                boolean useCollaborativeFiltering,
+/**
+ * Created by didii on 6/5/15.
+ */
+@RestController
+public class RelatedCollectionControler {
+    @RequestMapping(method = RequestMethod.GET, value = "/relatedCollection")
+    public LinkedListWrapper<Item> greeting(@RequestParam(value = "relatedList", defaultValue = "") String relateList,
+                                            @RequestParam(value = "maxValue", defaultValue = "10") String maxArticle,
                                             @RequestParam(value = "publicationId", defaultValue = "")
                                                 String publicationId,
                                             @RequestParam(value = "dateCreatedWeight", defaultValue = "")
@@ -53,7 +58,13 @@ public class RelatedArticlesController {
         similarityWeights.setCollectionReferenceWeight(collectionReferenceWeight);
         similarityWeights.setTFIDFWeight(TFIDFWeight);
 
-        return Database.getRelatedArticles(itemId, Integer.parseInt(maxArticle),
-                publicationId, useCollaborativeFiltering, similarityWeights);
+        LinkedList<String> targetIds = new LinkedList<String>();
+        relateList = relateList.replace("\"", "");
+        relateList = relateList.substring(1, relateList.length() - 1);
+        Collections.addAll(targetIds, relateList.split(","));
+
+
+        return new LinkedListWrapper<Item>(CollectionRelatedArticles.related(targetIds, publicationId,
+                Integer.parseInt(maxArticle), similarityWeights));
     }
 }

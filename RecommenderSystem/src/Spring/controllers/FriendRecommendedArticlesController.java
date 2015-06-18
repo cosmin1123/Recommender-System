@@ -16,8 +16,10 @@ public class FriendRecommendedArticlesController {
     public LinkedListWrapper<Item> greeting(@RequestParam(value = "userId", defaultValue = "World")
                                                 String userId,
                                             @RequestParam(value = "maxArticles", defaultValue = "1000")
-                                                String maxArticles) {
+                                                String maxArticles,
+                                            @RequestParam(value = "publicationId", defaultValue = "")
+                                                String publicationId) {
 
-        return  Database.getFriendDirectlyRecommendedArticles(userId, Integer.parseInt(maxArticles));
+        return  Database.getFriendDirectlyRecommendedArticles(userId, Integer.parseInt(maxArticles), publicationId);
     }
 }

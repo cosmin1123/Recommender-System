@@ -13,8 +13,8 @@ public class CreateTable {
                 UserFamily.ITEMS_RECOMMENDED_DIRECTLY.toString(), UserFamily.ITEMS_RECOMMENDED.toString()});
     }
 
-    private static void createITEMS() {
-        Utils.createTable(TableName.ITEMS.toString(),
+    private static void createITEMS(String publicationId) {
+        Utils.createTable(TableName.ITEMS.toString() + publicationId,
                 new String[]{ ItemFamily.NAME.toString(),
                         ItemFamily.CONTENT_URL.toString(),
                         ItemFamily.DATE_CREATED.toString(),
@@ -46,7 +46,13 @@ public class CreateTable {
 
     public static void intialiseTables() {
         createUSERS();
-        createITEMS();
+        createITEMS("");
+        createTFIDF();
+    }
+
+    public static void intialiseTables(String publicationId) {
+        createUSERS();
+        createITEMS(publicationId);
         createTFIDF();
     }
 

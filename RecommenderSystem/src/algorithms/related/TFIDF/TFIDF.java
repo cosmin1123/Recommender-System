@@ -18,8 +18,10 @@ public class TFIDF {
         double sumDownA = 0;
         double sumDownB = 0;
         double common = 0;
-        double relateArticleWordCount = relateArticle.get(TFIDFFamily.TOTAL_FILE_APPEARANCES.toString());
-
+        Double relateArticleWordCount = relateArticle.get(TFIDFFamily.TOTAL_FILE_APPEARANCES.toString());
+        if(relateArticleWordCount == null) {
+            return 0.0;
+        }
         for(String wordArticle : article.keySet()) {
             if(wordArticle.equals(TFIDFFamily.TOTAL_FILE_APPEARANCES.toString())) {
                 continue;

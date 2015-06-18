@@ -22,13 +22,10 @@ import java.util.LinkedList;
 public class AllItemsMapper extends TableMapper<ImmutableBytesWritable, Put>  {
     public static final LinkedList<Item> list = new LinkedList<Item>();
 
-    public static Job startNewMapper(Configuration conf, String start, String end)
+    public static Job startNewMapper(Configuration conf, String tableName,
+                                     String publicationID)
             throws InterruptedException, IOException, ClassNotFoundException {
         Scan s = new Scan();
-
-        s.setStartRow(Bytes.toBytes(start));
-        s.setStopRow(Bytes.toBytes(end));
-
 
         JobConf config = new JobConf(conf);
 
@@ -36,14 +33,14 @@ public class AllItemsMapper extends TableMapper<ImmutableBytesWritable, Put>  {
 
 
 
-        Job job = new Job(config, "Read" + start + " " + end);
+        Job job = new Job(config, "Read");
 
         job.setJarByClass(AllItemsMapper.class);     // class that contains mapper
 
 
 
         TableMapReduceUtil.initTableMapperJob(
-                TableName.ITEMS.toString(),        // input HBase table name
+                tableName + publicationID,        // input HBase table name
                 s,             // Scan instance to control CF and attribute selection
                 AllItemsMapper.class,   // mapper
                 null,             // mapper output key

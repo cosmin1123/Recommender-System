@@ -1,6 +1,8 @@
 package Spring.controllers;
 
 import GenerateTables.fastCompany.GenerateFastCompany;
+import GenerateTables.movieLens.GenerateMovieLens;
+import algorithms.recommended.RecommendedArticles;
 import algorithms.related.TFIDF.TF;
 import edu.cmu.lti.lexical_db.ILexicalDatabase;
 import edu.cmu.lti.lexical_db.NictWordNet;
@@ -9,7 +11,10 @@ import edu.cmu.lti.ws4j.impl.*;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
+import test.Recommendation;
+import utils.Item;
 
+import java.util.HashMap;
 
 
 @ComponentScan
@@ -46,7 +51,13 @@ public class Application {
     }
     public static void main(String[] args) {
         //GenerateFastCompany.fillDatabase();
-        //SpringApplication.run(Application.class, args);
-        TF.computeTFForAll();
+        SpringApplication.run(Application.class, args);
+        //TF.computeTFForAll();
+        //GenerateMovieLens.fillDatabase();
+
+        //Recommendation.test("2");
+
+
+
     }
 }

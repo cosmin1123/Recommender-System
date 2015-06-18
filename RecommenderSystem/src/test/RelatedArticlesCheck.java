@@ -4,6 +4,7 @@ import algorithms.related.ComputeSimilarity;
 import algorithms.related.RelatedArticles;
 import database.ItemFamily;
 import utils.Item;
+import utils.SimilarityWeights;
 
 import java.io.*;
 import java.util.LinkedList;
@@ -34,7 +35,9 @@ public class RelatedArticlesCheck {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        LinkedList<Item> itemLinkedList = RelatedArticles.recommend(id + "", maxArticle, false);
+
+        LinkedList<Item> itemLinkedList = RelatedArticles.recommend(id + "", maxArticle, false, "",
+                new SimilarityWeights());
 
         for(Item item : itemLinkedList) {
             writer.println(item.getItemId() + "\n" +
@@ -73,10 +76,10 @@ public class RelatedArticlesCheck {
 
     private static void checkForId(String id, int maxArticle) {
 
-        LinkedList<Item> itemLinkedList = RelatedArticles.recommend(id, maxArticle, false);
+        LinkedList<Item> itemLinkedList = RelatedArticles.recommend(id, maxArticle, false, "", new SimilarityWeights());
 
         for(Item item : itemLinkedList) {
-            writer.println(item.getItemId() + " " + item.getName());
+            writer.println(item.getItemId() + " " + item.getScore());
         }
 
         writer.println("");
@@ -89,10 +92,18 @@ public class RelatedArticlesCheck {
                                   double shortTitleWeight, double categoryWeight, double ratingsWeight,
                                   double authorWeight, double keywordWeight, double collectionReferenceWeight,
                                   double TFIDFWeight, String id) {
-        ComputeSimilarity.changeWeights(dateCreatedWeight,
-                titleWeight, shortTitleWeight, departmentWeight,
-                categoryWeight, 0, 0, authorWeight, keywordWeight,
-                ratingsWeight, collectionReferenceWeight, TFIDFWeight);
+        SimilarityWeights similarityWeights = new SimilarityWeights();
+        similarityWeights.setDateCreatedWeight(dateCreatedWeight + "");
+        similarityWeights.setTitleWeight(titleWeight + "");
+        similarityWeights.setDepartmentWeight(departmentWeight + "");
+        similarityWeights.setShortTitleWeight(shortTitleWeight + "");
+        similarityWeights.setCategoryWeight(categoryWeight + "");
+        similarityWeights.setRatingsWeight(ratingsWeight + "");
+        similarityWeights.setAuthorWeight(authorWeight + "");
+        similarityWeights.setKeywordWeight(keywordWeight + "");
+        similarityWeights.setCollectionReferenceWeight(collectionReferenceWeight + "");
+        similarityWeights.setTFIDFWeight(TFIDFWeight + "");
+
 
         writer.println("===========================" +
                 " Current values ===========================");

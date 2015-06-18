@@ -47,6 +47,8 @@ public class RecommendedArticles {
         double secondUserMean = meanPair.getValue();
         double userMean = meanPair.getKey();
 
+        double common = 0;
+
         if(secondUserMean == 0) {
             return Double.NaN;
         }
@@ -62,6 +64,7 @@ public class RecommendedArticles {
 
                 downCorelation1 += ((userRating - userMean) * (userRating - userMean));
                 downCorelation2 += ((secondUserRating - secondUserMean) * (secondUserRating - secondUserMean));
+                common++;
           //      System.out.println(userRating + " " + secondUserRating);
 
             }
@@ -71,7 +74,7 @@ public class RecommendedArticles {
             return Double.NaN;
         }
         // System.out.println("up: " + upCorelation + " " + "down: " + downCorelation1 + " down: " + downCorelation2);
-        return (upCorelation) / Math.sqrt(downCorelation1 * downCorelation2);
+        return (upCorelation) / Math.sqrt(downCorelation1 * downCorelation2) * (common / userItems.size());
     }
 
     private static Pair<Double, Double> getRatedSumAndCount(LinkedList<Item> itemList, User user) {
@@ -90,7 +93,7 @@ public class RecommendedArticles {
         return new Pair<Double, Double>(sum, count);
     }
 
-    private static LinkedList<CorelatedUser> getUserCluster(User firstUser) {
+    private static LinkedList<CorelatedUser> getUserCluster(User firstUser, String publicationId) {
         LinkedList<User> userList = Utils.getAllUsers(TableName.USERS.toString());
         LinkedList<CorelatedUser> userCluster = new LinkedList<CorelatedUser>();
 
@@ -103,7 +106,7 @@ public class RecommendedArticles {
         };
         SortedMap<String, LinkedList<User>> sortedMap = new TreeMap<String, LinkedList<User>>(reverseDoubleComparator);
 
-        LinkedList<Item> firstUserItems = Database.getUserItems(firstUser.getUserId());
+        LinkedList<Item> firstUserItems = Database.getUserItems(firstUser.getUserId(), publicationId);
 
         // save main users items
         CorelatedUser.itemList = firstUserItems;
@@ -153,13 +156,13 @@ public class RecommendedArticles {
     }
 
     private static LinkedList<Item> recommendItems(LinkedList<CorelatedUser> corelatedUserList,
-                                                   User mainUser, int maxArticle) {
+                                                   User mainUser, int maxArticle, String publicationId, boolean test) {
         LinkedList<Item> recommendItemList = new LinkedList<Item>();
         HashMap<Item, Pair<Double, Double>> top = new HashMap<Item, Pair<Double, Double>>();
         HashMap<Double, LinkedList<Item>> presumedItemRating = new HashMap<Double, LinkedList<Item>>();
 
         for(CorelatedUser user : corelatedUserList) {
-            LinkedList<Item> ratedItems = Database.getUserRatedItems(user.user.getUserId());
+            LinkedList<Item> ratedItems = Database.getUserRatedItems(user.user.getUserId(), publicationId);
             Pair<Double, Double> userCountAndSumRatings = getRatedSumAndCount(ratedItems, user.user);
 
             for(Item item : ratedItems) {
@@ -180,6 +183,9 @@ public class RecommendedArticles {
                     topValue += ((itemRating - currentMean) * user.corelatedScore);
                     bottomValue += Math.abs(user.corelatedScore);
 
+                    if(item.getItemId().equals("272")) {
+                        System.out.println("STOPP");
+                    }
                     top.put(item, new Pair<Double, Double> (topValue, bottomValue));
                 }
             }
@@ -208,6 +214,9 @@ public class RecommendedArticles {
             LinkedList<Item> itemLinkedList = presumedItemRating.get(rating);
 
             for(Item item : itemLinkedList) {
+                if(test) {
+                    item.setName(rating.toString());
+                }
                 recommendItemList.add(item);
                 if(recommendItemList.size() > maxArticle) {
                     return recommendItemList;
@@ -218,12 +227,16 @@ public class RecommendedArticles {
         return recommendItemList;
     }
 
-    public static LinkedList<Item> recommend(String userId, int maxArticle) {
+    public static LinkedList<Item> recommend(String userId, int maxArticle, String publicationId) {
+        return recommend(userId, maxArticle, publicationId, false);
+    }
+
+    public static LinkedList<Item> recommend(String userId, int maxArticle, String publicationId, boolean test) {
         LinkedList<Item> recommendedItems;
         User mainUser = Database.getUser(userId);
-        LinkedList<CorelatedUser> userCluster = getUserCluster(mainUser);
+        LinkedList<CorelatedUser> userCluster = getUserCluster(mainUser, publicationId);
 
-        recommendedItems = recommendItems(userCluster, mainUser, maxArticle);
+        recommendedItems = recommendItems(userCluster, mainUser, maxArticle, publicationId, test);
 
         return recommendedItems;
     }

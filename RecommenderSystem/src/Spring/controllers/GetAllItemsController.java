@@ -17,8 +17,10 @@ public class GetAllItemsController {
 
     @RequestMapping(method = RequestMethod.GET, value = "/getallitems")
     public LinkedListWrapper<Item> greeting(@RequestParam(value = "maxArticle", defaultValue = "10")
-                                                String maxArticle) {
-        LinkedList<Item> list = Utils.getAllItems(TableName.ITEMS.toString());
+                                                String maxArticle,
+                                            @RequestParam(value = "publicationId", defaultValue = "")
+                                            String publicationId) {
+        LinkedList<Item> list = Utils.getAllItems(TableName.ITEMS.toString(), publicationId);
         LinkedList<Item> result = new LinkedList<Item>();
         int max = Integer.parseInt(maxArticle);
 

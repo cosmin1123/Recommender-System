@@ -3,6 +3,7 @@ package algorithms.related;
 import algorithms.related.TFIDF.TFIDF;
 import database.ItemFamily;
 import utils.Item;
+import utils.SimilarityWeights;
 
 import java.util.*;
 
@@ -14,25 +15,6 @@ public class ComputeSimilarity {
 
     private static boolean ENABLE_CACHING = false;
     public static HashMap<ItemFamily, HashMap<String, Double>> similarityValues;
-
-    private static final double MAX_RATING = 1000000;
-
-    private static double dateCreatedWeight = 73.4375;;
-    private static double titleWeight = 98.4375;
-    private static double shortTitleWeight = 89.0625;
-    private static double departmentWeight = 4.6875;
-    private static double categoryWeight = 40.625;
-    private static double importanceWeight = 3; // not tested yet
-    private static double languageWeight = 0;
-    private static double authorWeight = 29.6875;
-
-    private static double keywordWeight = 64.0625;
-    private static double ratingsWeight = 1.5625;
-    private static double collectionReferenceWeight = 0.0;
-    private static double TFIDFWeight = 35.9375;
-
-    private static Double upperBoundKeywords = null;
-    private static Double upperBoundCollectionRef = null;
 
     public static void enableCaching() {
         ENABLE_CACHING = true;
@@ -54,27 +36,11 @@ public class ComputeSimilarity {
         similarityValues.put(ItemFamily.TFIDF, new HashMap<String, Double>());
     }
 
-    public static void changeWeights(double newDateCreatedWeight, double newTitleWeight, double newShortTitleWeight,
-                                      double newDepartmentWeight, double newCategoryWeight, double newImportanceWeight,
-                                      double newLanguageWeight, double newAuthorWeight,
-                                      double newKeywordWeight, double newRatingsWeight,
-                                      double newCollectionReferenceWeight, double newTFIDFWeight) {
-        dateCreatedWeight = newDateCreatedWeight;
-        titleWeight = newTitleWeight;
-        shortTitleWeight = newShortTitleWeight;
-        departmentWeight = newDepartmentWeight;
-        categoryWeight = newCategoryWeight;
-        importanceWeight = newImportanceWeight;
-        languageWeight = newLanguageWeight;
-        authorWeight = newAuthorWeight;
-        ratingsWeight = newRatingsWeight;
-        collectionReferenceWeight = newCollectionReferenceWeight;
-        TFIDFWeight = newTFIDFWeight;
-        keywordWeight = newKeywordWeight;
-    }
-    /// TODO LOOOK OVER TFIDF, not ok mate!!!
     private static double getTFIDFweight(HashMap<String, Double> article, HashMap<String, Double> relateArticle,
                                          HashMap<String, Double> idfMap) {
+        if(idfMap.size() == 0) {
+            return 0;
+        }
         return TFIDF.compute( article, relateArticle, idfMap);
     }
 
@@ -245,7 +211,7 @@ public class ComputeSimilarity {
     }
 
     private static double getWeightValue(ItemFamily family, Item relatedArticle, Item article,
-                                         HashMap<String, Double> idfMap) {
+                                         HashMap<String, Double> idfMap, SimilarityWeights similarityWeights) {
         double returnValue = 0;
         switch (family) {
             case DATE_CREATED:
@@ -285,24 +251,26 @@ public class ComputeSimilarity {
                 break;
 
             case KEYWORDS:
-                if (upperBoundKeywords == null) {
-                    upperBoundKeywords = getListWeight(article.getKeywords(),
-                            article.getKeywords(), null);
+                if (similarityWeights.getUpperBoundKeywords() == null) {
+                    similarityWeights.setUpperBoundKeywords(getListWeight(article.getKeywords(),
+                            article.getKeywords(), null));
                 }
-                returnValue = getListWeight(article.getKeywords(), relatedArticle.getKeywords(), upperBoundKeywords);
+                returnValue = getListWeight(article.getKeywords(), relatedArticle.getKeywords(),
+                        similarityWeights.getUpperBoundKeywords());
                 break;
 
             case COLLECTION_REFERENCES:
-                if (upperBoundCollectionRef == null) {
-                    upperBoundCollectionRef = getListWeight(article.getCollectionReferences(),
-                            article.getCollectionReferences(), null);
+                if (similarityWeights.getUpperBoundCollectionRef() == null) {
+                    similarityWeights.setUpperBoundCollectionRef(getListWeight(article.getCollectionReferences(),
+                            article.getCollectionReferences(), null));
                 }
                 returnValue = getListWeight(article.getCollectionReferences(),
-                        relatedArticle.getCollectionReferences(), upperBoundCollectionRef);
+                        relatedArticle.getCollectionReferences(), similarityWeights.getUpperBoundCollectionRef());
                 break;
 
             case RATINGS:
-                returnValue = getRatingsWeight(article.getRating(), relatedArticle.getRating()) / MAX_RATING;
+                returnValue = getRatingsWeight(article.getRating(), relatedArticle.getRating()) /
+                        similarityWeights.getMaxRating();
                 break;
 
             case TFIDF:
@@ -317,63 +285,68 @@ public class ComputeSimilarity {
     }
 
     private static double getSimilarity(ItemFamily family, Item relatedArticle, Item article,
-                                        HashMap<String, Double> idfMap) {
+                                        HashMap<String, Double> idfMap, SimilarityWeights similarityWeights) {
         Double returnValue;
         if(ENABLE_CACHING) {
             returnValue = similarityValues.get(family).get(relatedArticle.getItemId());
             if (returnValue == null) {
 
-                returnValue = getWeightValue(family, relatedArticle, article, idfMap);
+                returnValue = getWeightValue(family, relatedArticle, article, idfMap, similarityWeights);
 
                 similarityValues.get(family).put(relatedArticle.getItemId(), returnValue);
             }
         } else {
-            returnValue = getWeightValue(family, relatedArticle, article, idfMap);
+            returnValue = getWeightValue(family, relatedArticle, article, idfMap, similarityWeights);
         }
 
         return returnValue;
     }
 
     public static double getArticleSimilarity(Item article, Item relatedArticle,
-                                              HashMap<String, Double> idfMap) {
+                                              HashMap<String, Double> idfMap, SimilarityWeights similarityWeights) {
         // article has always the same words, so get the IDF for them and save it!!!
-        Double dateSimilarity = getSimilarity(ItemFamily.DATE_CREATED,relatedArticle, article, idfMap);
+        Double dateSimilarity = getSimilarity(ItemFamily.DATE_CREATED,relatedArticle, article, idfMap,
+                similarityWeights);
 
-        Double titleSimilarity = getSimilarity(ItemFamily.TITLE,relatedArticle, article, idfMap);
+        Double titleSimilarity = getSimilarity(ItemFamily.TITLE,relatedArticle, article, idfMap, similarityWeights);
 
-        Double shortTitleSimilarity = getSimilarity(ItemFamily.SHORT_TITLE,relatedArticle, article, idfMap);
+        Double shortTitleSimilarity = getSimilarity(ItemFamily.SHORT_TITLE,relatedArticle, article, idfMap,
+                similarityWeights);
 
-        Double categorySimilarity = getSimilarity(ItemFamily.CATEGORY,relatedArticle, article, idfMap);
+        Double categorySimilarity = getSimilarity(ItemFamily.CATEGORY,relatedArticle, article, idfMap, similarityWeights);
 
-        Double departmentSimilarity = getSimilarity(ItemFamily.DEPARTMENT,relatedArticle, article, idfMap);
+        Double departmentSimilarity = getSimilarity(ItemFamily.DEPARTMENT,relatedArticle, article, idfMap, similarityWeights);
 
-        Double authorSimilarity = getSimilarity(ItemFamily.AUTHOR,relatedArticle, article, idfMap);
+        Double authorSimilarity = getSimilarity(ItemFamily.AUTHOR,relatedArticle, article, idfMap, similarityWeights);
 
-        Double languageSimilarity = getSimilarity(ItemFamily.LANGUAGE,relatedArticle, article, idfMap);
+        Double languageSimilarity = getSimilarity(ItemFamily.LANGUAGE,relatedArticle, article, idfMap,
+                similarityWeights);
 
-        Double publicationSimilarity = getSimilarity(ItemFamily.PUBLICATION_ID,relatedArticle, article, idfMap);
+        Double publicationSimilarity = getSimilarity(ItemFamily.PUBLICATION_ID,relatedArticle, article, idfMap,
+                similarityWeights);
 
-        Double importance = getSimilarity(ItemFamily.IMPORTANCE,relatedArticle, article, idfMap);
+        Double importance = getSimilarity(ItemFamily.IMPORTANCE,relatedArticle, article, idfMap, similarityWeights);
 
-        Double keywordSimilarity = getSimilarity(ItemFamily.KEYWORDS,relatedArticle, article, idfMap);
+        Double keywordSimilarity = getSimilarity(ItemFamily.KEYWORDS,relatedArticle, article, idfMap, similarityWeights);
 
-        Double collectionSimilarity = getSimilarity(ItemFamily.COLLECTION_REFERENCES,relatedArticle, article, idfMap);
+        Double collectionSimilarity = getSimilarity(ItemFamily.COLLECTION_REFERENCES,relatedArticle, article, idfMap,
+                similarityWeights);
 
-        Double ratingsSimilarity = getSimilarity(ItemFamily.RATINGS,relatedArticle, article, idfMap);
+        Double ratingsSimilarity = getSimilarity(ItemFamily.RATINGS,relatedArticle, article, idfMap, similarityWeights);
 
-        Double TFIDFSimilarity = getSimilarity(ItemFamily.TFIDF, relatedArticle, article, idfMap);
+        Double TFIDFSimilarity = getSimilarity(ItemFamily.TFIDF, relatedArticle, article, idfMap, similarityWeights);
 
-        return  dateSimilarity * dateCreatedWeight +
-                titleSimilarity * titleWeight +
-                shortTitleSimilarity * shortTitleWeight +
-                authorSimilarity * authorWeight +
-                categorySimilarity * categoryWeight +
-                departmentSimilarity * departmentWeight +
-                languageSimilarity * languageWeight +
-                importance * importanceWeight +
-                keywordSimilarity * keywordWeight +
-                collectionSimilarity * collectionReferenceWeight +
-                ratingsSimilarity * ratingsWeight +
-                TFIDFSimilarity * TFIDFWeight;
+        return  dateSimilarity * similarityWeights.getDateCreatedWeight() +
+                titleSimilarity * similarityWeights.getTitleWeight() +
+                shortTitleSimilarity * similarityWeights.getShortTitleWeight() +
+                authorSimilarity * similarityWeights.getAuthorWeight() +
+                categorySimilarity * similarityWeights.getCategoryWeight() +
+                departmentSimilarity * similarityWeights.getDepartmentWeight() +
+                languageSimilarity * similarityWeights.getLanguageWeight() +
+                importance * similarityWeights.getImportanceWeight() +
+                keywordSimilarity * similarityWeights.getKeywordWeight() +
+                collectionSimilarity * similarityWeights.getCollectionReferenceWeight() +
+                ratingsSimilarity * similarityWeights.getRatingsWeight() +
+                TFIDFSimilarity * similarityWeights.getTFIDFWeight();
     }
 }
