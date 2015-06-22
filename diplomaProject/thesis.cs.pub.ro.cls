@@ -25,6 +25,10 @@
 
 \usepackage{makeidx}
 
+
+\usepackage{amssymb}% http://ctan.org/pkg/amssymb
+\usepackage{pifont}% http://ctan.org/pkg/pifont
+
 \usepackage[top=3.5cm, bottom=3.5cm, left=3.5cm, right=3cm]{geometry}
 \setlength{\headheight}{1.20cm}
 \setlength{\headsep}{0.50cm}
@@ -171,6 +175,7 @@
 \def\vita{\prefacesection{Vita}}
 \def\publications{\prefacesection{Publications based on this Thesis}}
 
+
 %% end iiscthes.sty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -184,6 +189,9 @@
 
 \newcommand{\includechapter}[1]{\input{src/chapter-#1/index}}
 \newcommand{\includesection}[2]{\input{src/chapter-#1/#2}}
+
+\newcommand{\cmark}{\ding{52}}%
+\newcommand{\xmark}{\ding{55}}%
 
 % No indent
 \setlength{\parindent}{0pt}

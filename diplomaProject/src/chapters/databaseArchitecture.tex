@@ -9,14 +9,14 @@ Hbase is divided into tables. Each table has a name. Then, each table has multip
 \begin{table}[h]
   \caption{Hbase database format}
 \centering
-\begin{tabular}{@{}|c|c|c|c|c|l|l|@{}}
-\toprule
-Row key                & Family                         &                                & Family                         &                                & Family    &           \\ \midrule
-                       & Qualifier                      & Qualifier                      & Qualifier                      & Qualifier                      & Qualifier & Qualifier \\ \midrule
-                       & Value                          & Value                          & Value                          & Value                          & Value     & Value     \\ \midrule
-Row key                & Family                         &                                & Family                         &                                & Family    &           \\ \midrule
-\multicolumn{1}{|l|}{} & \multicolumn{1}{l|}{Qualifier} & \multicolumn{1}{l|}{Qualifier} & \multicolumn{1}{l|}{Qualifier} & \multicolumn{1}{l|}{Qualifier} & Qualifier & Qualifier \\ \midrule
-\multicolumn{1}{|l|}{} & \multicolumn{1}{l|}{Value}     & \multicolumn{1}{l|}{Value}     & \multicolumn{1}{l|}{Value}     & \multicolumn{1}{l|}{Value}     & Value     & Value     \\ \bottomrule
+\begin{tabular}{@{}ccccllll@{}}
+
+Row key                & Family                         &                                & Family                         &                                & Family    &           \\ \toprule 
+& Qualifier                      & Qualifier                      & Qualifier                      & Qualifier                      & Qualifier & Qualifier \\ 
+                       & Value                          & Value                          & Value                          & Value                          & Value     & Value     \\ 
+Row key                & Family                         &                                & Family                         &                                & Family    &           \\ \toprule 
+ & Qualifier & Qualifier & Qualifier & Qualifier & Qualifier & Qualifier \\ 
+ & Value     & Value     & Value     & Value     & Value     & Value     \\ 
 \end{tabular}
 \end{table}
 
@@ -66,12 +66,11 @@ Besides the basic information, we need to store some extra data in order to spee
 \centering
 \caption{User table format}
 \label{user-table-format}
-\begin{tabular}{@{}|c|cccc@{}}
-\cmidrule(r){1-1}
-Row key &                                                                                         &                                                                                       &                                                                                       &                                                                                           \\ \midrule
-User id & \multicolumn{1}{c|}{Preferred categories}                                               & \multicolumn{1}{c|}{Top friends}                                                      & \multicolumn{1}{c|}{Item history}                                                     & \multicolumn{1}{c|}{\begin{tabular}[c]{@{}c@{}}Items\\ recommended directly\end{tabular}} \\ \midrule
-        & \multicolumn{1}{c|}{Preferred categories}                                               & \multicolumn{1}{c|}{\begin{tabular}[c]{@{}c@{}}Top\\ friends\end{tabular}}            & \multicolumn{1}{c|}{Item history}                                                     & \multicolumn{1}{c|}{\begin{tabular}[c]{@{}c@{}}Items\\ recommended directly\end{tabular}} \\ \midrule
-        & \multicolumn{1}{c|}{\begin{tabular}[c]{@{}c@{}}array\\ list of categories\end{tabular}} & \multicolumn{1}{c|}{\begin{tabular}[c]{@{}c@{}}array\\ list of user ids\end{tabular}} & \multicolumn{1}{c|}{\begin{tabular}[c]{@{}c@{}}array\\ list of item ids\end{tabular}} & \multicolumn{1}{c|}{\begin{tabular}[c]{@{}c@{}}array\\ list of items\end{tabular}}        \\ \bottomrule
+\begin{tabular}{@{}lllll@{}}
+Row key & & & & \\ \toprule
+User id & Preferred categories & Top friends & Item history & Items recommended directly  \\ 
+        & Preferred categories & Top friends & Item history & Items recommended directly \\ 
+        & array list of categories & array list of user ids & array  list of item ids & array list of items\\ 
 \end{tabular}
 \end{table}
 
@@ -89,36 +88,33 @@ TODO
 \centering
 \caption{Item table format}
 \label{item-table-format}
-\begin{tabular}{@{}|c|cccllll@{}}
-\cmidrule(r){1-1}
-Row key &  &  &  &  &  &  &  \\ \midrule
-Item id & \multicolumn{1}{c|}{Name} & \multicolumn{1}{c|}{Content URL} & \multicolumn{1}{c|}{Date created} & \multicolumn{1}{l|}{Title} & \multicolumn{1}{l|}{Short Title} & \multicolumn{1}{l|}{Keywords} & \multicolumn{1}{l|}{Department} \\ \midrule
-Item id & \multicolumn{1}{c|}{Name} & \multicolumn{1}{c|}{Content URL} & \multicolumn{1}{c|}{Date created} & \multicolumn{1}{l|}{Title} & \multicolumn{1}{l|}{Short Title} & \multicolumn{1}{l|}{Keywords} & \multicolumn{1}{l|}{Department} \\ \midrule
-String & \multicolumn{1}{c|}{String} & \multicolumn{1}{c|}{String} & \multicolumn{1}{c|}{Long} & \multicolumn{1}{l|}{String} & \multicolumn{1}{l|}{String} & \multicolumn{1}{l|}{Array of String} & \multicolumn{1}{l|}{String} \\ \bottomrule
+\begin{tabular}{@{}ccccllll@{}}
+Row key &  &  &  &  &  &  &  \\ \toprule
+Item id & \multicolumn{1}{c}{Name} & \multicolumn{1}{c}{Content URL} & \multicolumn{1}{c}{Date created} & \multicolumn{1}{l}{Title} & \multicolumn{1}{l}{Short Title} & \multicolumn{1}{l}{Keywords} & \multicolumn{1}{l}{Department} \\ 
+Item id & \multicolumn{1}{c}{Name} & \multicolumn{1}{c}{Content URL} & \multicolumn{1}{c}{Date created} & \multicolumn{1}{l}{Title} & \multicolumn{1}{l}{Short Title} & \multicolumn{1}{l}{Keywords} & \multicolumn{1}{l}{Department} \\ 
+String & \multicolumn{1}{c}{String} & \multicolumn{1}{c}{String} & \multicolumn{1}{c}{Long} & \multicolumn{1}{l}{String} & \multicolumn{1}{l}{String} & \multicolumn{1}{l}{Array of String} & \multicolumn{1}{l}{String} \\ 
 \end{tabular}
 \end{table}
 
 \begin{table}[h]
 \centering
 \label{item-tabel-format-two}
-\begin{tabular}{@{}|c|llllll@{}}
-\cmidrule(r){1-1}
-Row key &  &  &  &  &  &  \\ \midrule
-Item id & \multicolumn{1}{l|}{Category} & \multicolumn{1}{l|}{Collection references} & \multicolumn{1}{l|}{Author} & \multicolumn{1}{l|}{Ratings} & \multicolumn{1}{l|}{} & \multicolumn{1}{l|}{} \\ \midrule
-Item id & \multicolumn{1}{l|}{Category} & \multicolumn{1}{l|}{Collection references} & \multicolumn{1}{l|}{Author} & \multicolumn{1}{l|}{User id} & \multicolumn{1}{l|}{User id} & \multicolumn{1}{l|}{User id} \\ \midrule
-String & \multicolumn{1}{l|}{String} & \multicolumn{1}{l|}{Array of collection URLs} & \multicolumn{1}{l|}{String} & \multicolumn{1}{l|}{Double} & \multicolumn{1}{l|}{Double} & \multicolumn{1}{l|}{Double} \\ \bottomrule
+\begin{tabular}{@{}cllllll@{}}
+Row key &  &  &  &  &  &  \\ \toprule
+Item id & \multicolumn{1}{l}{Category} & \multicolumn{1}{l}{Collection references} & \multicolumn{1}{l}{Author} & \multicolumn{1}{l}{Ratings} & \multicolumn{1}{l}{} & \multicolumn{1}{l}{} \\ 
+Item id & \multicolumn{1}{l}{Category} & \multicolumn{1}{l}{Collection references} & \multicolumn{1}{l}{Author} & \multicolumn{1}{l}{User id} & \multicolumn{1}{l}{User id} & \multicolumn{1}{l}{User id} \\ 
+String & \multicolumn{1}{l}{String} & \multicolumn{1}{l}{Array of collection URLs} & \multicolumn{1}{l}{String} & \multicolumn{1}{l}{Double} & \multicolumn{1}{l}{Double} & \multicolumn{1}{l}{Double} \\ 
 \end{tabular}
 \end{table}
 
-\begin{table}[h]
+\begin{table}[!h]
 \centering
 \label{item-tabel-format-three}
-\begin{tabular}{@{}|c|llll@{}}
-\cmidrule(r){1-1}
-Row key &  &  &  &  \\ \midrule
-Item id & \multicolumn{1}{l|}{TFIDF} & \multicolumn{1}{l|}{} & \multicolumn{1}{l|}{} & \multicolumn{1}{l|}{Content} \\ \midrule
-Item id & \multicolumn{1}{l|}{Word} & \multicolumn{1}{l|}{Word} & \multicolumn{1}{l|}{Word} & \multicolumn{1}{l|}{Content} \\ \midrule
-String & \multicolumn{1}{l|}{Double} & \multicolumn{1}{l|}{Double} & \multicolumn{1}{l|}{Double} & \multicolumn{1}{l|}{String} \\ \bottomrule
+\begin{tabular}{@{}cllll@{}}
+Row key &  &  &  &  \\ \toprule
+Item id & \multicolumn{1}{l}{TFIDF} & \multicolumn{1}{l}{} & \multicolumn{1}{l}{} & \multicolumn{1}{l}{Content} \\ 
+Item id & \multicolumn{1}{l}{Word} & \multicolumn{1}{l}{Word} & \multicolumn{1}{l}{Word} & \multicolumn{1}{l}{Content} \\ 
+String & \multicolumn{1}{l}{Double} & \multicolumn{1}{l}{Double} & \multicolumn{1}{l}{Double} & \multicolumn{1}{l}{String} \\ 
 \end{tabular}
 \end{table}
 
@@ -135,12 +131,11 @@ TODO
 \centering
 \caption{TFIDF table }
 \label{TFIDF-table}
-\begin{tabular}{@{}|c|@{}}
-\toprule
-Row key \\ \midrule
-Total File Appearences \\ \midrule
-Total File Appearences \\ \midrule
-Integer \\ \bottomrule
+\begin{tabular}{@{}c@{}}
+Row key \\ \toprule
+Total File Appearences \\ 
+Total File Appearences \\ 
+Integer \\ 
 \end{tabular}
 \end{table}
 

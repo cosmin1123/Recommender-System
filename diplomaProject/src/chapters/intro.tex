@@ -1,7 +1,7 @@
 \chapter{Introduction}
 \label{chapter:intro}
 
-Recommendation systems have become a major research area since the appearance of the first paper on collaborative filtering in the mid 1990s and have become popular in both commercially and research communities. The first step toward choosing an appropriate algorithm for your problem is to decide upon which attributes of your entities you want to focus. Since this is a recommendation system for articles the main focus in going to be on article content and categorization. Other recommendation systems take into account only the text of the articles and do not give any importance to the date, author, language, and ratings of an article. Also, they require indexing, thus doubling the required storage space. An open source recommendation system for articles that combines collaborative filtering with recommendations based on content does not exist at the moment. In this thesis we will describe a recommender system that solves all the mentioned problems of the existing systems.\\
+Recommendation systems have become a major research area since the appearance of the first paper on collaborative filtering in the mid 1990s and have become popular in both commercially and research communities. The first step toward choosing an appropriate algorithm for your problem is to decide upon which attributes of your entities you want to focus. Since this is a recommendation system for articles the main focus in going to be on article content and categorization. Other recommendation systems take into account only the text of the articles and do not give any importance to the date, author, language, and ratings of an article. Also, most of the already existing recommendation systems create and maintain the data in their own database, thus doubling the required storage space for an application. In this thesis we will describe a recommender system that solves all the mentioned problems of the existing systems.\\
 
 \section{Motivation}
 \label{sec:motivation}
@@ -63,9 +63,20 @@ The Duine recommender has learning capabilities. When a user rates an informatio
 
 One of the disadvantages of Duine is that it does not offer recommendations based only on content so, it wouldn't be a good fit for the presented problem.Also, it doesn't solve the cold start problem very well, since it's based only on learning and prediction algorithms. 
 
-TODO
-\begin{itemize}
-    \item Make table that compares my solution with the rest of the solutions
-\end{itemize}
+\begin{table}[h]
+\centering
+\caption{Solution Comparison}
+\label{my-label}
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+\begin{tabular}[c]{@{}l@{}}Recommendation\\ System\end{tabular} & \multicolumn{1}{l}{\begin{tabular}[c]{@{}l@{}}Collaborative \\ Filtering\end{tabular}} & \multicolumn{1}{l}{\begin{tabular}[c]{@{}l@{}}Content \\ based\end{tabular}} & \multicolumn{1}{l}{Hybrid} & \multicolumn{1}{l}{Open Source} & \multicolumn{1}{l}{\begin{tabular}[c]{@{}l@{}}Integrates with \\ Existing Database\end{tabular}} \\ \midrule
+Search Engines & \checkmark & \checkmark & \checkmark & \xmark & \xmark \\ \midrule
+Apache Solr & \xmark & \checkmark & \xmark & \checkmark & \xmark \\ \midrule
+Duine & \checkmark & \xmark & \xmark & \checkmark & \checkmark \\ \midrule
+Our Recommender & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \\ \bottomrule
+\end{tabular}
+\end{table}
+
+TODO DELETE THIS: E VREO PROBLEMA CA M-AM CONCERNTRAT PE CE REZOLV EU SI NU REZOLVA EI SI NU INVERS?
 
 

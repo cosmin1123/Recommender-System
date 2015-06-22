@@ -29,7 +29,9 @@ public class RelatedArticles {
         LinkedList<String> commonReadUsers = new LinkedList<String>();
 
         Item currentItem = Database.getItem(articleId, publicationId);
-
+        if(currentItem == null) {
+            return null;
+        }
         for(String user : currentItem.getRating().keySet()) {
             commonReadUsers.add(user);
         }
@@ -76,6 +78,9 @@ public class RelatedArticles {
                 commonUsers = getCommonReadUsers(articleId, publicationId);
             }
             mainItem = Database.getItem(articleId, publicationId);
+            if(mainItem == null) {
+                return null;
+            }
             totalFileNum = Database.getTotalFileNum();
             idfMap = new HashMap<String, Double>();
 

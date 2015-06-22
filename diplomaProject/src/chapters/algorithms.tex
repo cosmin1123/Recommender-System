@@ -26,15 +26,15 @@ In the following sections we are going to present the implemmented algorithms.
 
 \section{Algorithms for Related Articles}
 \label{sec:algorithms-for-related-articles}
-The related articles recommendations return a list of articles related to a certain article.
+The related articles recommendation returns a list of articles related to a certain article.
 
-We have implemmented both a hybrid approach and recommendations based on content.
+We have implemmented both a hybrid and a content based approach.
 
-A user may choose not to use the hybrid approach and use only the data of the articles.
+A user may choose to use only one approach or combine them for better results.
 
 \subsection{Collaborative Filtering}
 \label{sec:collaborative-filtering}
-In order to obtain better results, we may choose to use collaborative filtering, in order to do a kind of article grouping by user preferences. Usually, users have a certain profile/preferences, thus they will read articles related to each other. Using this technique we can reduce the number of articles on which we are going to apply the article similarity algorithm. We use the following iterative algorithm\cite{item-to-item-recomm} to find articles related to article A1:
+In order to obtain better results, we may use collaborative filtering to do a kind of article grouping by user preferences. Usually, users fit into a certain profile and will read articles that may be related to each other. Using this technique we can reduce the number of articles on which we are going to apply the article similarity algorithm. We use the following iterative algorithm\cite{item-to-item-recomm} to find articles that are related to article A1:
 \lstset{language=make,caption=Item to item collaborative filtering,label=lst:app-make}
 \begin{lstlisting}
 	For each user U that read A1
@@ -85,8 +85,24 @@ In order to compute and improve the similarity between two strings we employ the
 		
 		This method gives better results than the previous one.
 	\item Lemmatization
+		
+		In order to obtain better TFIDF results we use the Stanford NLP (Natural Language Processing) framework for lemmatization.
 
-		In order to obtain better TFIDF results we use the Stanford NLP (Natural Language Processing) framework to get the base form of a word.
+		Lemmatization is the process of doing a vocabulary and morphological analysis on a text in order to reduce the words to their proper base form.
+
+		It is important to not confuse lemmatization with stemming.
+
+		Stemming usually refers to a crude heuristic process that just chops off the end of a word in order to obtain good results, most of the time. This is usually achieved through the removal of the derivational affixes.
+
+		For instance:
+		\begin{enumerate}
+			\item The word $"am"$ will be reduced through lemmatization to the base form $"be"$. This form can not be deducted through stemming, as it requires a dictionary look-up.
+			\item The word $"meeting"$ can either be a noun, in which case the lemma is going to be $"meeting"$, or the ing form of the verb $"meet"$. This difference can be deducted by the lemmatizer through the understanding of what type of speech the word actually is from the context. Stemming will reduce the word to the form $"meet"$, which may not be correct in certain contexts.
+			\item The word $"walking"$ has the lemma $"walk"$, form which can be deducted both through stemming and lemmatization
+
+		\end{enumerate}
+
+		
 		
 		TODO Write more about it
 \end{enumerate}
