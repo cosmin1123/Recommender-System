@@ -8,7 +8,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import utils.Item;
 
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -32,7 +31,7 @@ public class GetThread extends Thread {
         this.end = end;
     }
 
-    private  String makeGetRequest(Integer id) {
+    private String makeGetRequest(Integer id) {
         String url = "http://www.fastcompany.com/api/v1/posts/" + id;
 
         URL obj = null;
@@ -45,9 +44,9 @@ public class GetThread extends Thread {
                     new InputStreamReader(con.getInputStream()));
             long startTime = System.currentTimeMillis();
 
-            while(!in.ready()) {
+            while (!in.ready()) {
 
-                if((System.currentTimeMillis() - startTime) > 100) {
+                if ((System.currentTimeMillis() - startTime) > 100) {
                     System.out.println(id + " is blocking BufferedReader");
                     return null;
                 }
@@ -64,15 +63,16 @@ public class GetThread extends Thread {
             //e.printStackTrace();
             System.out.println(id + " does not exist");
         }
-        return  null;
+        return null;
 
     }
+
     private Item createItem(int articleId) {
         Item newItem = new Item();
 
         newItem.setItemId(articleId + "");
         String jsonString = makeGetRequest(articleId);
-        if(jsonString == null) {
+        if (jsonString == null) {
             return null;
         }
         JSONObject jsonObject = null;
@@ -106,22 +106,22 @@ public class GetThread extends Thread {
 
             // set department
             newItem.setDepartment(jsonObject.getJSONObject("analytics").getJSONObject("omniture").getString("channel"));
-            if(newItem.getDepartment().isEmpty()) {
+            if (newItem.getDepartment().isEmpty()) {
                 newItem.setDepartment(newItem.getKeywords().
                         get((int) ((newItem.getKeywords().size() - 1) * Math.random())));
             }
 
             // set category
             newItem.setCategory(jsonObject.getJSONObject("analytics").getJSONObject("omniture").getString("channel"));
-            if(newItem.getCategory().isEmpty()) {
+            if (newItem.getCategory().isEmpty()) {
                 newItem.setCategory(newItem.getKeywords().
                         get((int) ((newItem.getKeywords().size() - 1) * Math.random())));
             }
 
             LinkedList<String> collectionRef = new LinkedList<String>();
 
-            for(String str : newItem.getKeywords()) {
-                if(collectionRef.size() > (Math.random() * 10)) {
+            for (String str : newItem.getKeywords()) {
+                if (collectionRef.size() > (Math.random() * 10)) {
                     break;
                 }
                 collectionRef.add(str);
@@ -130,11 +130,11 @@ public class GetThread extends Thread {
             newItem.setCollectionReferences(collectionRef);
 
             HashMap<String, Double> ratings = new HashMap<String, Double>();
-            JSONObject statsObj =  jsonObject.getJSONObject("stats");
-            JSONArray jsonArray =  statsObj.names();
+            JSONObject statsObj = jsonObject.getJSONObject("stats");
+            JSONArray jsonArray = statsObj.names();
             int size = jsonArray.length();
 
-            for( int i = 0; i < size; i++) {
+            for (int i = 0; i < size; i++) {
                 String name = (String) jsonArray.get(i);
                 ratings.put(name, Double.parseDouble(statsObj.getJSONObject(name).getString("count")));
             }
@@ -144,18 +144,19 @@ public class GetThread extends Thread {
         } catch (JSONException e) {
             e.printStackTrace();
             newItem = null;
-        }catch (ParseException e) {
+        } catch (ParseException e) {
             e.printStackTrace();
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
         return newItem;
     }
+
     @Override
     public void run() {
-        System.out.println("Started " + start + " " + end );
-        for(int i = start; i < end; i++) {
+        System.out.println("Started " + start + " " + end);
+        for (int i = start; i < end; i++) {
             Item newItem = createItem(i);
             if (newItem != null) {
 

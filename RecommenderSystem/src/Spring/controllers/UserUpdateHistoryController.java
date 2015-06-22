@@ -12,7 +12,7 @@ public class UserUpdateHistoryController {
     @RequestMapping(method = RequestMethod.PUT, value = "/updatehistory")
     public void greeting(@RequestParam(value = "userId", defaultValue = "") String userId,
                          @RequestParam(value = "itemId", defaultValue = "") String itemId) {
-        if(!userId.isEmpty() && !itemId.isEmpty()) {
+        if (!userId.isEmpty() && !itemId.isEmpty()) {
             Database.updateUserHistory(userId, itemId);
         }
     }

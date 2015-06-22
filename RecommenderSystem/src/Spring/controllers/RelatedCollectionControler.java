@@ -1,9 +1,6 @@
 package Spring.controllers;
 
 import algorithms.related.CollectionRelatedArticles;
-import database.Database;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -24,27 +21,27 @@ public class RelatedCollectionControler {
     public LinkedListWrapper<Item> greeting(@RequestParam(value = "relatedList", defaultValue = "") String relateList,
                                             @RequestParam(value = "maxValue", defaultValue = "10") String maxArticle,
                                             @RequestParam(value = "publicationId", defaultValue = "")
-                                                String publicationId,
+                                            String publicationId,
                                             @RequestParam(value = "dateCreatedWeight", defaultValue = "")
-                                                String dateCreatedWeight,
+                                            String dateCreatedWeight,
                                             @RequestParam(value = "titleWeight", defaultValue = "")
-                                                String titleWeight,
+                                            String titleWeight,
                                             @RequestParam(value = "departmentWeight", defaultValue = "")
-                                                String departmentWeight,
+                                            String departmentWeight,
                                             @RequestParam(value = "shortTitleWeight", defaultValue = "")
-                                                String shortTitleWeight,
+                                            String shortTitleWeight,
                                             @RequestParam(value = "categoryWeight", defaultValue = "")
-                                                String categoryWeight,
+                                            String categoryWeight,
                                             @RequestParam(value = "ratingsWeight", defaultValue = "")
-                                                String ratingsWeight,
+                                            String ratingsWeight,
                                             @RequestParam(value = "authorWeight", defaultValue = "")
-                                                String authorWeight,
+                                            String authorWeight,
                                             @RequestParam(value = "collectionReferenceWeight", defaultValue = "")
-                                                String collectionReferenceWeight,
+                                            String collectionReferenceWeight,
                                             @RequestParam(value = "TFIDFWeight", defaultValue = "")
-                                                String TFIDFWeight,
+                                            String TFIDFWeight,
                                             @RequestParam(value = "keywordWeight", defaultValue = "")
-                                                String keywordWeight) {
+                                            String keywordWeight) {
 
         SimilarityWeights similarityWeights = new SimilarityWeights();
         similarityWeights.setDateCreatedWeight(dateCreatedWeight);

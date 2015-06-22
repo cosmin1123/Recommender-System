@@ -13,20 +13,20 @@ import java.util.TreeMap;
  * Created by didii on 6/5/15.
  */
 public class CollectionRelatedArticles {
-    public static LinkedList<Item> related(LinkedList<String>targetIds, String publicationId, int maxArticle,
+    public static LinkedList<Item> related(LinkedList<String> targetIds, String publicationId, int maxArticle,
                                            SimilarityWeights similarityWeights) {
         HashMap<Item, Double> unsortMap = new HashMap<Item, Double>();
         LinkedList<Item> result = new LinkedList<Item>();
 
-        for(String itemId : targetIds) {
+        for (String itemId : targetIds) {
             Item item = Database.getItem(itemId, publicationId);
 
             LinkedList<Item> list = RelatedArticles.recommend(item.getItemId(), 10, false,
                     publicationId, similarityWeights);
 
-            for(Item it : list) {
+            for (Item it : list) {
                 Double current = unsortMap.get(it);
-                if(current == null) {
+                if (current == null) {
                     current = 0.0d;
                 }
                 current += it.getScore();
@@ -37,10 +37,10 @@ public class CollectionRelatedArticles {
         Set<Item> keys = unsortMap.keySet();
         TreeMap<Double, LinkedList<Item>> sortedMap = new TreeMap<Double, LinkedList<Item>>();
 
-        for(Item item : keys) {
+        for (Item item : keys) {
             Double score = item.getScore();
             LinkedList<Item> itemList = sortedMap.get(score);
-            if(itemList == null) {
+            if (itemList == null) {
                 itemList = new LinkedList<Item>();
             }
             itemList.add(item);
@@ -48,25 +48,24 @@ public class CollectionRelatedArticles {
         }
 
         Object[] scoreSet = sortedMap.keySet().toArray();
-        for(int i = scoreSet.length - 1; i >= 0; i--) {
+        for (int i = scoreSet.length - 1; i >= 0; i--) {
             result.addAll(sortedMap.get(scoreSet[i]));
 
-            if(result.size() >= maxArticle) {
+            if (result.size() >= maxArticle) {
                 LinkedList<Item> temp = new LinkedList<Item>(result);
-                for(Item item : temp) {
-                    if(targetIds.contains(item.getItemId())) {
+                for (Item item : temp) {
+                    if (targetIds.contains(item.getItemId())) {
                         result.remove(item);
                     }
                 }
 
-                if(result.size() >= maxArticle) {
-                    return  result;
+                if (result.size() >= maxArticle) {
+                    return result;
                 }
 
 
             }
         }
-
 
 
         return result;

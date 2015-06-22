@@ -13,6 +13,7 @@ import java.util.LinkedList;
 public class Recommendation {
     static Double variationSum = 0.0d;
     static Double count = 0.0d;
+
     public static String result(String userId, int index, User user) {
 
         String itemId = user.getItemsHistory().get(index);
@@ -27,8 +28,8 @@ public class Recommendation {
 
         LinkedList<Item> recommendedItems = RecommendedArticles.recommend(userId, 100000, "", true);
 
-        for(Item it : recommendedItems) {
-            if(it.getItemId().equals(itemId)) {
+        for (Item it : recommendedItems) {
+            if (it.getItemId().equals(itemId)) {
                 variationSum += Math.abs(userRating - it.getScore());
                 count++;
                 Database.addItem(item);
@@ -44,12 +45,13 @@ public class Recommendation {
 
         return "NO";
     }
+
     public static void test(String userId) {
 
         User user = Database.getUser(userId);
         int size = user.getItemsHistory().size();
         System.out.println(size);
-        for(int i = 0; i < size; i++) {
+        for (int i = 0; i < size; i++) {
 
             System.out.println(result(userId, i, user));
             System.out.println(variationSum + " " + count + " " + variationSum / count);

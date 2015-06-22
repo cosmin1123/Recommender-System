@@ -1,14 +1,13 @@
 package database;
 
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.client.Put;
+import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
 import org.apache.hadoop.hbase.mapreduce.TableMapReduceUtil;
 import org.apache.hadoop.hbase.mapreduce.TableMapper;
-import org.apache.hadoop.hbase.KeyValue;
-import org.apache.hadoop.hbase.client.Result;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapreduce.Job;
 import utils.Item;
@@ -19,7 +18,7 @@ import java.util.LinkedList;
 /**
  * Created by didii on 3/27/15.
  */
-public class AllItemsMapper extends TableMapper<ImmutableBytesWritable, Put>  {
+public class AllItemsMapper extends TableMapper<ImmutableBytesWritable, Put> {
     public static final LinkedList<Item> list = new LinkedList<Item>();
 
     public static Job startNewMapper(Configuration conf, String tableName,
@@ -32,11 +31,9 @@ public class AllItemsMapper extends TableMapper<ImmutableBytesWritable, Put>  {
         config.setUseNewMapper(true);
 
 
-
         Job job = new Job(config, "Read");
 
         job.setJarByClass(AllItemsMapper.class);     // class that contains mapper
-
 
 
         TableMapReduceUtil.initTableMapperJob(
@@ -57,7 +54,7 @@ public class AllItemsMapper extends TableMapper<ImmutableBytesWritable, Put>  {
         Item item = new Item();
 
         for (KeyValue kv : value.raw()) {
-            item.addToItem(Enum.valueOf(ItemFamily.class,new String(kv.getFamily())),
+            item.addToItem(Enum.valueOf(ItemFamily.class, new String(kv.getFamily())),
                     new String(kv.getValue()), new String(kv.getQualifier()));
 
             item.setItemId(new String(kv.getRow()));

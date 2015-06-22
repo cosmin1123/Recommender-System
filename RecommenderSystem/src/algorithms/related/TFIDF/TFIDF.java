@@ -9,7 +9,7 @@ import java.util.HashMap;
  */
 public class TFIDF {
     public static double root(double num, double root) {
-        return Math.pow(Math.E, Math.log(num)/root);
+        return Math.pow(Math.E, Math.log(num) / root);
     }
 
     public static Double compute(HashMap<String, Double> article, HashMap<String, Double> relateArticle,
@@ -19,11 +19,11 @@ public class TFIDF {
         double sumDownB = 0;
         double common = 0;
         Double relateArticleWordCount = relateArticle.get(TFIDFFamily.TOTAL_FILE_APPEARANCES.toString());
-        if(relateArticleWordCount == null) {
+        if (relateArticleWordCount == null) {
             return 0.0;
         }
-        for(String wordArticle : article.keySet()) {
-            if(wordArticle.equals(TFIDFFamily.TOTAL_FILE_APPEARANCES.toString())) {
+        for (String wordArticle : article.keySet()) {
+            if (wordArticle.equals(TFIDFFamily.TOTAL_FILE_APPEARANCES.toString())) {
                 continue;
             }
             Double aValue = article.get(wordArticle);
@@ -35,7 +35,7 @@ public class TFIDF {
                 aValue *= wordIdf;
                 bValue *= wordIdf;
 
-                if(aValue != 0 && bValue != 0) {
+                if (aValue != 0 && bValue != 0) {
                     common++;
                 }
                 sumProdUp += (aValue * bValue);
@@ -44,7 +44,7 @@ public class TFIDF {
             }
         }
 
-        if(sumDownA == 0 || sumDownB == 0) {
+        if (sumDownA == 0 || sumDownB == 0) {
             return 0.0;
         }
         // multiply with 30 in order to get aprox 1

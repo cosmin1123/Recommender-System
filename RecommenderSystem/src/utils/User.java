@@ -37,36 +37,37 @@ public class User {
         this.topFriends = new LinkedList<String>();
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
     public void addToUser(String familyName, String value) {
-        if(familyName.equals(UserFamily.ITEM_HISTORY.toString())) {
+        if (familyName.equals(UserFamily.ITEM_HISTORY.toString())) {
             this.itemsHistory.addAll(Arrays.asList(value.split(";")));
         }
 
-        if(familyName.equals(UserFamily.ITEMS_RECOMMENDED.toString())) {
+        if (familyName.equals(UserFamily.ITEMS_RECOMMENDED.toString())) {
             this.itemsRecommended.addAll(Arrays.asList(value.split(";")));
         }
 
-        if(familyName.equals(UserFamily.ITEMS_RECOMMENDED_DIRECTLY.toString())) {
+        if (familyName.equals(UserFamily.ITEMS_RECOMMENDED_DIRECTLY.toString())) {
             this.itemsDirectlyRecommended.addAll(Arrays.asList(value.split(";")));
         }
 
-        if(familyName.equals(UserFamily.PREFERRED_CATEGORIES.toString())) {
+        if (familyName.equals(UserFamily.PREFERRED_CATEGORIES.toString())) {
             this.topCategories.addAll(Arrays.asList(value.split(";")));
         }
 
-        if(familyName.equals(UserFamily.TOP_FRIENDS.toString())) {
+        if (familyName.equals(UserFamily.TOP_FRIENDS.toString())) {
             this.topFriends.addAll(Arrays.asList(value.split(";")));
 
         }
 
 
     }
+
     public String getUserId() {
         return this.userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public LinkedList<String> getTopCategories() {

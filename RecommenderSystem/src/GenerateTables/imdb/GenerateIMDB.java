@@ -17,18 +17,18 @@ import java.util.HashMap;
 
 /**
  * Created by didii on 3/20/15.
- private long dateCreated;
- private String title;
- private String shortTitle;
- private LinkedList<String> keywords;
- private String department;
- private String category;
- private String importance;
- private String publicationId;
- private String language;
- private LinkedList<String> collectionReferences;
- private String author;
- private HashMap<String, Double> ratings;
+ * private long dateCreated;
+ * private String title;
+ * private String shortTitle;
+ * private LinkedList<String> keywords;
+ * private String department;
+ * private String category;
+ * private String importance;
+ * private String publicationId;
+ * private String language;
+ * private LinkedList<String> collectionReferences;
+ * private String author;
+ * private HashMap<String, Double> ratings;
  */
 public class GenerateIMDB {
     private static BufferedReader genresFile;
@@ -51,7 +51,7 @@ public class GenerateIMDB {
     private static void setPublishDate(Item item) throws IOException {
         String placeAndDate = getMetadataList(releaseDatesFile, item);
         long milliseconds = 0;
-        if(placeAndDate.isEmpty()) {
+        if (placeAndDate.isEmpty()) {
             return;
         }
         String date = placeAndDate.split(";")[0].split(":")[1];
@@ -82,7 +82,7 @@ public class GenerateIMDB {
 
         String movieTitle = splitLine[4];
 
-        if(!sameTitle(item.getItemId(), (movieTitle))) {
+        if (!sameTitle(item.getItemId(), (movieTitle))) {
             ratingsFile.reset();
             return;
         }
@@ -93,22 +93,22 @@ public class GenerateIMDB {
 
     }
 
-    private static void setContent(Item item) throws  IOException {
+    private static void setContent(Item item) throws IOException {
         plotFile.mark(1000);
 
         String currentLine = plotFile.readLine();
         String movieTitle = currentLine.substring(4, currentLine.length());
 
-        if(!sameTitle(item.getItemId(), (movieTitle))) {
+        if (!sameTitle(item.getItemId(), (movieTitle))) {
             plotFile.reset();
             return;
         }
         String plot = "";
 
         while (!(currentLine = plotFile.readLine()).
-                        equals("-------------------------------------------------------------------------------")) {
+                equals("-------------------------------------------------------------------------------")) {
 
-            if(currentLine.length() > 3) {
+            if (currentLine.length() > 3) {
                 plot += currentLine.substring(3, currentLine.length());
             } else {
                 plot += currentLine;
@@ -120,14 +120,14 @@ public class GenerateIMDB {
 
     private static void setDepartment(Item item) throws IOException {
         String genres = getMetadataList(genresFile, item);
-        if(genres.isEmpty()) {
+        if (genres.isEmpty()) {
             return;
         }
         String[] splitGenres = genres.split(";");
 
         item.setDepartment(splitGenres[0]);
 
-        if(splitGenres.length > 1) {
+        if (splitGenres.length > 1) {
             item.setCategory(splitGenres[1]);
         } else {
             item.setCategory(splitGenres[0]);
@@ -140,7 +140,7 @@ public class GenerateIMDB {
 
     private static void setKeywords(Item item) throws IOException {
         String keywords = getMetadataList(keywordsFile, item);
-        if(!keywords.isEmpty()) {
+        if (!keywords.isEmpty()) {
             item.setKeywords(keywords);
         }
     }
@@ -159,19 +159,19 @@ public class GenerateIMDB {
 
         String[] splitLine;
         do {
-            if(currentLine == null) {
+            if (currentLine == null) {
                 break;
             }
             splitLine = currentLine.split("\t+");
 
-            if(!sameTitle(item.getItemId(), splitLine[0])) {
+            if (!sameTitle(item.getItemId(), splitLine[0])) {
                 break;
             }
 
             data += splitLine[1] + ";";
             buffer.mark(1000);
             currentLine = buffer.readLine();
-        }while(true);
+        } while (true);
         buffer.reset();
 
         return data;
@@ -179,7 +179,7 @@ public class GenerateIMDB {
 
     private static boolean setItemId(Item item) throws IOException {
         String currentLine = moviesFile.readLine();
-        if(currentLine == null) {
+        if (currentLine == null) {
             return false;
         }
 
@@ -195,8 +195,8 @@ public class GenerateIMDB {
     private static Item createItem() {
         Item newItem = new Item();
         try {
-            while(setItemId(newItem)) {
-                if(newItem.getItemId().contains("1714. El preu de la llibertat")) {
+            while (setItemId(newItem)) {
+                if (newItem.getItemId().contains("1714. El preu de la llibertat")) {
                     System.out.println("STOPPP");
                 }
                 setAuthor(newItem);

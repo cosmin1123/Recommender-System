@@ -47,39 +47,39 @@ public class BinarySearchVal {
 
             String[] valueLines = result.split("\n");
             bestScore = Double.parseDouble(valueLines[0]);
-            for(String line : valueLines) {
-                if(line.split(" ").length <= 1) {
+            for (String line : valueLines) {
+                if (line.split(" ").length <= 1) {
                     continue;
                 }
                 double val = Double.parseDouble(line.split(" ")[1]);
-                if(line.startsWith(RelatedArticlesCheck.DATE_TAG)) {
+                if (line.startsWith(RelatedArticlesCheck.DATE_TAG)) {
                     dateCreatedWeight = val;
                 }
-                if(line.startsWith(RelatedArticlesCheck.TITLE_TAG)) {
+                if (line.startsWith(RelatedArticlesCheck.TITLE_TAG)) {
                     titleWeight = val;
                 }
-                if(line.startsWith(RelatedArticlesCheck.SHORTTITLE_TAG)) {
+                if (line.startsWith(RelatedArticlesCheck.SHORTTITLE_TAG)) {
                     shortTitleWeight = val;
                 }
-                if(line.startsWith(RelatedArticlesCheck.DEPARTMENT_TAG)) {
-                    departmentWeight =val;
+                if (line.startsWith(RelatedArticlesCheck.DEPARTMENT_TAG)) {
+                    departmentWeight = val;
                 }
-                if(line.startsWith(RelatedArticlesCheck.CATEGORY_TAG)) {
+                if (line.startsWith(RelatedArticlesCheck.CATEGORY_TAG)) {
                     categoryWeight = val;
                 }
-                if(line.startsWith(RelatedArticlesCheck.AUTHOR_TAG)) {
+                if (line.startsWith(RelatedArticlesCheck.AUTHOR_TAG)) {
                     authorWeight = val;
                 }
-                if(line.startsWith(RelatedArticlesCheck.KEYWORDS_TAG)) {
+                if (line.startsWith(RelatedArticlesCheck.KEYWORDS_TAG)) {
                     keywordWeight = val;
                 }
-                if(line.startsWith(RelatedArticlesCheck.RATINGS_TAG)) {
+                if (line.startsWith(RelatedArticlesCheck.RATINGS_TAG)) {
                     ratingsWeight = val;
                 }
-                if(line.startsWith(RelatedArticlesCheck.TFIDF_TAG)) {
+                if (line.startsWith(RelatedArticlesCheck.TFIDF_TAG)) {
                     TFIDFWeight = val;
                 }
-                if(line.startsWith(RelatedArticlesCheck.COLLECTIONREF_TAG)) {
+                if (line.startsWith(RelatedArticlesCheck.COLLECTIONREF_TAG)) {
                     collectionReferenceWeight = val;
                     // last input in line
                     break;
@@ -106,10 +106,9 @@ public class BinarySearchVal {
             out.println(tempText);
             System.out.println(tempText);
             out.close();
-        }catch (IOException e) {
+        } catch (IOException e) {
             //exception handling left as an exercise for the reader
         }
-
 
 
     }

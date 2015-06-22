@@ -1,11 +1,11 @@
 package database;
 
+import algorithms.recommended.RecommendedArticles;
+import algorithms.related.RelatedArticles;
 import algorithms.related.TFIDF.IDF;
 import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.util.Bytes;
-import algorithms.recommended.RecommendedArticles;
-import algorithms.related.RelatedArticles;
 import utils.*;
 
 import java.util.HashMap;
@@ -22,7 +22,7 @@ public class Database {
         byte[] byteArray = rs.getValue(Bytes.toBytes(TFIDFFamily.TOTAL_FILE_APPEARANCES.toString()),
                 Bytes.toBytes(TFIDFFamily.TOTAL_FILE_APPEARANCES.toString()));
 
-        if(byteArray == null){
+        if (byteArray == null) {
             return 0;
         }
         return Integer.parseInt(new String(byteArray));
@@ -41,7 +41,7 @@ public class Database {
         byte[] byteArray = rs.getValue(Bytes.toBytes(TFIDFFamily.TOTAL_FILE_NUM.toString()),
                 Bytes.toBytes(TFIDFFamily.TOTAL_FILE_NUM.toString()));
 
-        if(byteArray == null) {
+        if (byteArray == null) {
             return 0;
         }
 
@@ -57,10 +57,10 @@ public class Database {
     }
 
     public static void setWordFrequency(String itemId, HashMap<String, Double> map, String publicationId) {
-        for(String word : map.keySet()) {
+        for (String word : map.keySet()) {
 
-                Utils.addRecord(TableName.ITEMS.toString() + publicationId, itemId, ItemFamily.TFIDF.toString(),
-                        word, map.get(word) + "");
+            Utils.addRecord(TableName.ITEMS.toString() + publicationId, itemId, ItemFamily.TFIDF.toString(),
+                    word, map.get(word) + "");
 
         }
     }
@@ -70,12 +70,12 @@ public class Database {
 
         Result rs = Utils.getOneRecord(TableName.ITEMS.toString() + publicationId, itemID);
         currentItem.setItemId(itemID);
-        if(rs == null) {
-            return  null;
+        if (rs == null) {
+            return null;
         }
-        for(KeyValue kv : rs.raw()){
+        for (KeyValue kv : rs.raw()) {
             currentItem.addToItem(Enum.valueOf(ItemFamily.class, new String(kv.getFamily())),
-                     new String(kv.getValue()), new String(kv.getQualifier()));
+                    new String(kv.getValue()), new String(kv.getQualifier()));
         }
 
         return currentItem;
@@ -85,7 +85,7 @@ public class Database {
         IDF.addIdfToDatabase(item);
         String book = item.getItemId();
 
-        if(book.length() == 0) {
+        if (book.length() == 0) {
             return;
         }
 
@@ -113,7 +113,7 @@ public class Database {
                 ItemFamily.LANGUAGE.toString(), item.getLanguage());
         Utils.addRecord(TableName.ITEMS.toString() + item.getPublicationId(), book, ItemFamily.COLLECTION_REFERENCES.toString(),
                 ItemFamily.COLLECTION_REFERENCES.toString(), item.getCollectionReferences().toArray());
-        for(String user : item.getRating().keySet()) {
+        for (String user : item.getRating().keySet()) {
             Utils.addRecord(TableName.ITEMS.toString() + item.getPublicationId(), book, ItemFamily.RATINGS.toString(),
                     user, item.getRating().get(user) + "");
         }
@@ -125,7 +125,7 @@ public class Database {
         currentUser.setUserId(userId);
         Result rs = Utils.getOneRecord(TableName.USERS.toString(), userId);
         assert rs != null;
-        for(KeyValue kv : rs.raw()){
+        for (KeyValue kv : rs.raw()) {
             currentUser.addToUser(new String(kv.getFamily()), new String(kv.getValue()));
         }
 
@@ -136,30 +136,30 @@ public class Database {
         User user = getUser(userId);
         LinkedList<Item> itemList = new LinkedList<Item>();
 
-        for(String itemId : user.getItemsHistory()) {
+        for (String itemId : user.getItemsHistory()) {
             itemList.add(getItem(itemId, publicationId));
         }
 
-        return  itemList;
+        return itemList;
     }
 
     public static LinkedList<Item> getUserRatedItems(String userId, String publicationId) {
         User user = getUser(userId);
         LinkedList<Item> itemList = new LinkedList<Item>();
 
-        for(String itemId : user.getItemsHistory()) {
+        for (String itemId : user.getItemsHistory()) {
             Item item = getItem(itemId, publicationId);
             if (item.getRating().containsKey(userId)) {
                 itemList.add(item);
             }
         }
 
-        return  itemList;
+        return itemList;
     }
 
-    public static LinkedListWrapper<Item> getRelatedArticles (String articleId, int maxArticle, String publicationId,
-                                                              boolean useCollaborativeFiltering,
-                                                              SimilarityWeights similarityWeights) {
+    public static LinkedListWrapper<Item> getRelatedArticles(String articleId, int maxArticle, String publicationId,
+                                                             boolean useCollaborativeFiltering,
+                                                             SimilarityWeights similarityWeights) {
 
 
         return new LinkedListWrapper<Item>(RelatedArticles.recommend(articleId, maxArticle,
@@ -173,15 +173,15 @@ public class Database {
 
     public static LinkedListWrapper<Item> getFriendDirectlyRecommendedArticles(String userId, int maxArticles,
                                                                                String publicationId) {
-        LinkedList<String> recommendedItem =  Database.getUser(userId).getTopFriends();
+        LinkedList<String> recommendedItem = Database.getUser(userId).getTopFriends();
         LinkedList<Item> recommendedItemList = new LinkedList<Item>();
 
-        for(String friend : recommendedItem) {
+        for (String friend : recommendedItem) {
             LinkedList<String> itemList = Database.getUser(friend).getItemsDirectlyRecommended();
 
-            for(String item : itemList) {
+            for (String item : itemList) {
                 recommendedItemList.add(Database.getItem(item, publicationId));
-                if(recommendedItemList.size() >= maxArticles) {
+                if (recommendedItemList.size() >= maxArticles) {
                     return new LinkedListWrapper<Item>(recommendedItemList);
                 }
             }
@@ -210,7 +210,6 @@ public class Database {
         System.out.println("USER: " + userId + " new recommendation");
         return true;
     }
-
 
 
 }

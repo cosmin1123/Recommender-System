@@ -10,25 +10,15 @@ import java.util.List;
 /**
  * Created by didii on 4/21/15.
  */
-public class ComputeSimilarityThreadPool extends Thread{
-    private int numThread;
+public class ComputeSimilarityThreadPool extends Thread {
     private static Item targetItem;
-    private static HashMap<String,Double> idfMap;
+    private static HashMap<String, Double> idfMap;
     private static HashMap<Double, LinkedList<Item>> target;
-
-    private  LinkedList<Thread> threadList;
     private static LinkedList<Item> pool;
-
     private static int currentIndex;
+    private int numThread;
+    private LinkedList<Thread> threadList;
     private SimilarityWeights similarityWeights;
-
-    public void addToPool(LinkedList<Item> itemList) {
-        pool = itemList;
-    }
-
-    private static synchronized void addToTarget(HashMap<Double, LinkedList<Item>> myTarget) {
-        target.putAll(myTarget);
-    }
 
     public ComputeSimilarityThreadPool(int numThread, LinkedList items,
                                        HashMap target, HashMap idfMap, Item targetItem,
@@ -46,13 +36,21 @@ public class ComputeSimilarityThreadPool extends Thread{
         this.similarityWeights = similarityWeights;
     }
 
+    private static synchronized void addToTarget(HashMap<Double, LinkedList<Item>> myTarget) {
+        target.putAll(myTarget);
+    }
+
+    public void addToPool(LinkedList<Item> itemList) {
+        pool = itemList;
+    }
+
     public void startThreads() {
         threadList = new LinkedList<Thread>();
         int numItems = pool.size() / numThread;
 
-        for(int i = 0; i < numThread; i++) {
+        for (int i = 0; i < numThread; i++) {
             Thread tmpThread;
-            tmpThread = new ComputeSimilarityThreadPool(similarityWeights );
+            tmpThread = new ComputeSimilarityThreadPool(similarityWeights);
 
 
             threadList.add(tmpThread);
@@ -62,7 +60,7 @@ public class ComputeSimilarityThreadPool extends Thread{
 
     public void waitToFinish() {
         try {
-            for(int i = 0; i < numThread; i++) {
+            for (int i = 0; i < numThread; i++) {
                 threadList.get(i).join();
             }
         } catch (InterruptedException e) {
@@ -73,12 +71,12 @@ public class ComputeSimilarityThreadPool extends Thread{
     public synchronized void getItems(List<Item> list) {
         int myListSize = 1000;
         int endOfList = currentIndex + myListSize;
-        if(endOfList >= pool.size()) {
+        if (endOfList >= pool.size()) {
             endOfList = pool.size() - 1;
         }
 
-        if(currentIndex >= endOfList) {
-            return ;
+        if (currentIndex >= endOfList) {
+            return;
         }
         list.addAll(pool.subList(currentIndex, endOfList));
         currentIndex = endOfList;
@@ -93,7 +91,7 @@ public class ComputeSimilarityThreadPool extends Thread{
         while (myPool.size() != 0) {
             // get item
             item = myPool.pop();
-            if(myPool.size() == 0) {
+            if (myPool.size() == 0) {
                 getItems(myPool);
             }
 
@@ -102,7 +100,7 @@ public class ComputeSimilarityThreadPool extends Thread{
             item.setScore(similarity);
             //
 
-            if(!myTarget.containsKey(similarity)) {
+            if (!myTarget.containsKey(similarity)) {
                 myTarget.put(similarity, new LinkedList<Item>());
             }
 

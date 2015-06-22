@@ -21,7 +21,7 @@ public class GenerateMovieLens {
 
             String line;
 
-            while((line = buff.readLine()) != null) {
+            while ((line = buff.readLine()) != null) {
                 String[] arr = line.split("\\t");
 
                 String userId = arr[0];
@@ -35,7 +35,6 @@ public class GenerateMovieLens {
                 tempItem.getRating().put(userId, (double) Integer.parseInt(rating));
                 tempUser.setUserId(userId);
                 tempUser.getItemsHistory().add(itemId);
-
 
 
                 Database.addItem(tempItem);

@@ -16,7 +16,7 @@ public class UserAddController {
         User user = new User();
         user.setUserId(userId);
 
-        if(!userId.isEmpty()) {
+        if (!userId.isEmpty()) {
             Database.addUser(user);
         }
     }

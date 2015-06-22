@@ -16,13 +16,13 @@ public class CheckFile {
     private static void fillExpectedData(HashMap<String, Integer> expectedData) throws IOException {
         String line;
         while ((line = expectedDataReader.readLine()) != null) {
-            if(line.contains("???")) {
+            if (line.contains("???")) {
                 expectedData.put(line.split(" ")[0], 1);
             } else {
-                if(line.contains("??")) {
+                if (line.contains("??")) {
                     expectedData.put(line.split(" ")[0], 2);
                 } else {
-                    if(line.contains("?")) {
+                    if (line.contains("?")) {
                         expectedData.put(line.split(" ")[0], 3);
                     } else {
                         expectedData.put(line.split(" ")[0], 4);
@@ -36,19 +36,20 @@ public class CheckFile {
 
 
         Comparator<Double> reverseDoubleComparator = new Comparator<Double>() {
-            @Override public int compare( Double s1, Double s2) {
-                return (int)((s2 - s1) * 1000000.0d);
+            @Override
+            public int compare(Double s1, Double s2) {
+                return (int) ((s2 - s1) * 1000000.0d);
             }
         };
-        TreeMap <Double, LinkedList<String>> bestResults =
+        TreeMap<Double, LinkedList<String>> bestResults =
                 new TreeMap<Double, LinkedList<String>>(reverseDoubleComparator);
 
         // skip title
-        while(dataReader.readLine() != null) {
+        while (dataReader.readLine() != null) {
 
             String title = "";
 
-            for(int i = 0; i < 10; i++) {
+            for (int i = 0; i < 10; i++) {
                 title += dataReader.readLine() + "\n";
             }
 
@@ -57,24 +58,24 @@ public class CheckFile {
             Double totalGrade = 0.0d;
 
             int linesNum = 100;
-            while((line = dataReader.readLine()) != null && !line.isEmpty()) {
+            while ((line = dataReader.readLine()) != null && !line.isEmpty()) {
                 linesNum--;
 
                 String[] splitValues = line.split(" ");
 
-                if(expectedData.containsKey(splitValues[0])) {
+                if (expectedData.containsKey(splitValues[0])) {
                     double importance = (double) expectedData.get(splitValues[0]);
 
                     Double grade = Double.parseDouble(splitValues[1]);
 
-                    if(importance == 4) {
+                    if (importance == 4) {
                         maxGrade = grade;
-                        if(maxGrade == 0) {
+                        if (maxGrade == 0) {
                             maxGrade = 1.0d;
                         }
                     }
-                    title += splitValues[0] + " " + importance +  " ;";
-                    if(grade > maxGrade) {
+                    title += splitValues[0] + " " + importance + " ;";
+                    if (grade > maxGrade) {
                         grade = -100000.0d;
                     }
                     grade = linesNum * importance; //( grade/ maxGrade) * importance;
@@ -86,7 +87,7 @@ public class CheckFile {
             }
             LinkedList<String> currentList = bestResults.get(totalGrade);
 
-            if(currentList == null) {
+            if (currentList == null) {
                 currentList = new LinkedList<String>();
             }
 
@@ -102,12 +103,12 @@ public class CheckFile {
         BufferedWriter writer = new BufferedWriter(new FileWriter("out/bestOutputData"));
 
         int num = 0;
-        for(Double key : bestResults.keySet()) {
-            if(num >= 100) {
+        for (Double key : bestResults.keySet()) {
+            if (num >= 100) {
                 break;
             }
             num++;
-            for(String val : bestResults.get(key)) {
+            for (String val : bestResults.get(key)) {
                 writer.write(key + "\n");
                 writer.write(val);
                 writer.write("\n");
@@ -118,7 +119,7 @@ public class CheckFile {
 
         System.out.println("STOP");
 
-        for(Double key : bestResults.keySet()) {
+        for (Double key : bestResults.keySet()) {
             return bestResults.get(key);
         }
 

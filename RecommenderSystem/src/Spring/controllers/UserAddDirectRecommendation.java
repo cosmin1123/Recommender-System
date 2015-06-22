@@ -12,7 +12,7 @@ public class UserAddDirectRecommendation {
     @RequestMapping(method = RequestMethod.PUT, value = "/adddirectrecommendation")
     public void greeting(@RequestParam(value = "userId", defaultValue = "") String userId,
                          @RequestParam(value = "itemId", defaultValue = "") String itemId) {
-        if(!userId.isEmpty() && !itemId.isEmpty()) {
+        if (!userId.isEmpty() && !itemId.isEmpty()) {
             Database.addDirectRecommendation(userId, itemId);
         }
     }

@@ -1,11 +1,18 @@
 package GenerateTables.Random;
 
 
-import database.*;
+import database.CreateTable;
+import database.ItemFamily;
+import database.TableName;
+import database.UserFamily;
 import utils.Utils;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedList;
 
 /**
  * Created by didii on 3/3/15.
@@ -26,15 +33,15 @@ public class GenerateRandom {
 
     private static int getRandom(int min, int max) {
         int range = (max - min) + 1;
-        return (int)(Math.random() * range) + min;
+        return (int) (Math.random() * range) + min;
     }
 
     private static void fillUnique(LinkedList<String> list, LinkedList<String> source, int size) {
         HashSet<Integer> set = new HashSet<Integer>();
 
-        while(set.size() <= size) {
+        while (set.size() <= size) {
             int rand = getRandom(source.size());
-            if(!set.contains(rand)) {
+            if (!set.contains(rand)) {
                 set.add(rand);
                 list.add(source.get(rand));
             }
@@ -51,6 +58,7 @@ public class GenerateRandom {
         }
 
     }
+
     private static void fillArrays() {
         try {
             BufferedReader book = new BufferedReader(
@@ -97,8 +105,8 @@ public class GenerateRandom {
         CreateTable.intialiseTables();
         fillArrays();
         // add items
-        for(String book : AllBookTitles) {
-            if(book.equals("Final Star")) {
+        for (String book : AllBookTitles) {
+            if (book.equals("Final Star")) {
                 System.out.println("STOP!!!");
             }
             Integer dateCreated = getRandom(Integer.MAX_VALUE);
@@ -147,7 +155,7 @@ public class GenerateRandom {
         }
 
         // add users
-        for(String user : AllUserName) {
+        for (String user : AllUserName) {
             LinkedList<String> topFriends = new LinkedList<String>();
             LinkedList<String> itemHistory = new LinkedList<String>();
             LinkedList<String> itemsRecommendedDirectly = new LinkedList<String>();
@@ -163,9 +171,9 @@ public class GenerateRandom {
             Utils.addRecord(TableName.USERS.toString(), user, UserFamily.ITEMS_RECOMMENDED_DIRECTLY.toString(),
                     UserFamily.ITEMS_RECOMMENDED_DIRECTLY.toString(), itemsRecommendedDirectly.toArray());
 
-            for(String item : itemHistory) {
+            for (String item : itemHistory) {
                 boolean rated = (getRandom(2) != 0);
-                if(rated) {
+                if (rated) {
                     Utils.addRecord(TableName.ITEMS.toString(), item, ItemFamily.RATINGS.toString(),
                             user, getRandom(1, 10) + "");
                 }

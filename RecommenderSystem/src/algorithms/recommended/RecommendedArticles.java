@@ -1,6 +1,5 @@
 package algorithms.recommended;
 
-import algorithms.recommended.CorelatedUser;
 import database.Database;
 import database.TableName;
 import javafx.util.Pair;
@@ -23,12 +22,12 @@ public class RecommendedArticles {
         double meanReferenceUser = 0;
         int num = 0;
 
-        for(Item item : itemList) {
+        for (Item item : itemList) {
 
-            Double userItemRating =  item.getRating().get(userId);
-            Double referenceUserItemRating =  item.getRating().get(referenceUserId);
+            Double userItemRating = item.getRating().get(userId);
+            Double referenceUserItemRating = item.getRating().get(referenceUserId);
 
-            if(userItemRating != null && referenceUserItemRating != null) {
+            if (userItemRating != null && referenceUserItemRating != null) {
                 meanUser = (meanUser * num + userItemRating) / (num + 1);
                 meanReferenceUser = (meanReferenceUser * num + referenceUserItemRating) / (num + 1);
                 num++;
@@ -49,15 +48,15 @@ public class RecommendedArticles {
 
         double common = 0;
 
-        if(secondUserMean == 0) {
+        if (secondUserMean == 0) {
             return Double.NaN;
         }
         //System.out.println(user.getUserId() + " = " + userMean + " " + secondUser.getUserId() + " = " + secondUserMean);
-        for(Item item : userItems) {
-            if(secondUser.getItemsHistory().contains(item.getItemId())) {
+        for (Item item : userItems) {
+            if (secondUser.getItemsHistory().contains(item.getItemId())) {
                 Double userRating = item.getRating().get(user.getUserId());
                 Double secondUserRating = item.getRating().get(secondUser.getUserId());
-                if(userRating == null || secondUserRating == null) {
+                if (userRating == null || secondUserRating == null) {
                     continue;
                 }
                 upCorelation = upCorelation + (userRating - userMean) * (secondUserRating - secondUserMean);
@@ -65,12 +64,12 @@ public class RecommendedArticles {
                 downCorelation1 += ((userRating - userMean) * (userRating - userMean));
                 downCorelation2 += ((secondUserRating - secondUserMean) * (secondUserRating - secondUserMean));
                 common++;
-          //      System.out.println(userRating + " " + secondUserRating);
+                //      System.out.println(userRating + " " + secondUserRating);
 
             }
         }
 
-        if(downCorelation1 == 0 || downCorelation2 == 0) {
+        if (downCorelation1 == 0 || downCorelation2 == 0) {
             return Double.NaN;
         }
         // System.out.println("up: " + upCorelation + " " + "down: " + downCorelation1 + " down: " + downCorelation2);
@@ -81,10 +80,10 @@ public class RecommendedArticles {
         double sum = 0;
         double count = 0;
 
-        for(Item item : itemList) {
+        for (Item item : itemList) {
             Double itemRating = item.getRating().get(user.getUserId());
 
-            if(itemRating != null) {
+            if (itemRating != null) {
                 sum += itemRating;
                 count++;
             }
@@ -98,10 +97,11 @@ public class RecommendedArticles {
         LinkedList<CorelatedUser> userCluster = new LinkedList<CorelatedUser>();
 
         Comparator<String> reverseDoubleComparator = new Comparator<String>() {
-            @Override public int compare( String s1, String s2) {
+            @Override
+            public int compare(String s1, String s2) {
                 double val1 = Double.parseDouble(s1);
                 double val2 = Double.parseDouble(s2);
-                return (int)((val2 - val1) * Integer.MAX_VALUE);
+                return (int) ((val2 - val1) * Integer.MAX_VALUE);
             }
         };
         SortedMap<String, LinkedList<User>> sortedMap = new TreeMap<String, LinkedList<User>>(reverseDoubleComparator);
@@ -116,20 +116,20 @@ public class RecommendedArticles {
         CorelatedUser.referenceRatedItemsCount = firstUserSumAndCountRating.getValue();
 
         assert userList != null;
-        for(User user : userList) {
+        for (User user : userList) {
             Pair<Double, Double> meanPair =
                     getUserCommonMeanRating(firstUser.getUserId(), user.getUserId(), firstUserItems);
 
             Double userCorelation = getCorelationBetweenUsers(firstUser, firstUserItems, user, meanPair);
 
-            if(Double.compare(userCorelation, Double.NaN) == 0) {
+            if (Double.compare(userCorelation, Double.NaN) == 0) {
                 continue;
             }
 
             String userCorelationKey = userCorelation.toString();
 
             LinkedList<User> currentList = sortedMap.get(userCorelationKey);
-            if(currentList == null) {
+            if (currentList == null) {
                 currentList = new LinkedList<User>();
             }
 
@@ -139,13 +139,13 @@ public class RecommendedArticles {
         }
 
 
-        for(Object userCorelation : sortedMap.keySet()) {
+        for (Object userCorelation : sortedMap.keySet()) {
             LinkedList<User> sameCorelationsUsers = sortedMap.get(userCorelation);
-            for(User user : sameCorelationsUsers) {
+            for (User user : sameCorelationsUsers) {
 
                 userCluster.add(new CorelatedUser(user, Double.parseDouble((String) userCorelation)));
 
-                if(userCluster.size() > MAX_USER_CLUSTER) {
+                if (userCluster.size() > MAX_USER_CLUSTER) {
                     return userCluster;
                 }
             }
@@ -161,18 +161,18 @@ public class RecommendedArticles {
         HashMap<Item, Pair<Double, Double>> top = new HashMap<Item, Pair<Double, Double>>();
         HashMap<Double, LinkedList<Item>> presumedItemRating = new HashMap<Double, LinkedList<Item>>();
 
-        for(CorelatedUser user : corelatedUserList) {
+        for (CorelatedUser user : corelatedUserList) {
             LinkedList<Item> ratedItems = Database.getUserRatedItems(user.user.getUserId(), publicationId);
             Pair<Double, Double> userCountAndSumRatings = getRatedSumAndCount(ratedItems, user.user);
 
-            for(Item item : ratedItems) {
-                if(!mainUser.getItemsHistory().contains(item.getItemId())) {
+            for (Item item : ratedItems) {
+                if (!mainUser.getItemsHistory().contains(item.getItemId())) {
                     double itemRating = item.getRating().get(user.user.getUserId());
 
-                    if(!top.containsKey(item)) {
+                    if (!top.containsKey(item)) {
                         top.put(item, new Pair<Double, Double>((double) 0, (double) 0));
                     }
-                    Pair<Double, Double> pair =  top.get(item);
+                    Pair<Double, Double> pair = top.get(item);
 
                     double topValue = pair.getKey();
                     double bottomValue = pair.getValue();
@@ -183,21 +183,21 @@ public class RecommendedArticles {
                     topValue += ((itemRating - currentMean) * user.corelatedScore);
                     bottomValue += Math.abs(user.corelatedScore);
 
-                    if(item.getItemId().equals("272")) {
+                    if (item.getItemId().equals("272")) {
                         System.out.println("STOPP");
                     }
-                    top.put(item, new Pair<Double, Double> (topValue, bottomValue));
+                    top.put(item, new Pair<Double, Double>(topValue, bottomValue));
                 }
             }
         }
 
-        for(Item item : top.keySet()) {
+        for (Item item : top.keySet()) {
             Pair<Double, Double> pairRating = top.get(item);
 
             Double key = pairRating.getKey() / pairRating.getValue() +
                     CorelatedUser.referenceRatedSum / CorelatedUser.referenceRatedItemsCount;
 
-            if(!presumedItemRating.containsKey(key)) {
+            if (!presumedItemRating.containsKey(key)) {
                 presumedItemRating.put(key, new LinkedList<Item>());
             }
             LinkedList<Item> itemList = presumedItemRating.get(key);
@@ -210,15 +210,15 @@ public class RecommendedArticles {
         Collections.sort(keys);
         Collections.reverse(keys);
 
-        for(Double rating : keys) {
+        for (Double rating : keys) {
             LinkedList<Item> itemLinkedList = presumedItemRating.get(rating);
 
-            for(Item item : itemLinkedList) {
-                if(test) {
+            for (Item item : itemLinkedList) {
+                if (test) {
                     item.setName(rating.toString());
                 }
                 recommendItemList.add(item);
-                if(recommendItemList.size() > maxArticle) {
+                if (recommendItemList.size() > maxArticle) {
                     return recommendItemList;
                 }
             }

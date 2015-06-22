@@ -18,8 +18,8 @@ public class IDF {
         List<String> lst = StanfordLemmatizer.getlemmatizer().lemmatize(item.getContent());
         HashSet<String> checkedWord = new HashSet<String>();
 
-        for(String word : lst) {
-            if(checkedWord.contains(word)) {
+        for (String word : lst) {
+            if (checkedWord.contains(word)) {
                 continue;
             }
             checkedWord.add(word);
@@ -29,8 +29,8 @@ public class IDF {
         }
     }
 
-    public static double getWordIDF( double articleWordFrequency, int totalItemNum) {
-        if(articleWordFrequency == 0) {
+    public static double getWordIDF(double articleWordFrequency, int totalItemNum) {
+        if (articleWordFrequency == 0) {
             return 0;
         }
         double idf = 1 + Math.log(totalItemNum / articleWordFrequency);

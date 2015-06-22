@@ -14,9 +14,6 @@ import java.util.Scanner;
  * Created by didii on 3/24/15.
  */
 public class RelatedArticlesCheck {
-    private static PrintWriter writer = null;
-
-
     public static final String DEPARTMENT_TAG = "Department: ";
     public static final String CATEGORY_TAG = "Category: ";
     public static final String AUTHOR_TAG = "Author: ";
@@ -27,6 +24,7 @@ public class RelatedArticlesCheck {
     public static final String RATINGS_TAG = "Ratings: ";
     public static final String TFIDF_TAG = "TFIDF: ";
     public static final String COLLECTIONREF_TAG = "CollectionRef: ";
+    private static PrintWriter writer = null;
 
     public static void printSimilarities(int id, int maxArticle) {
         RelatedArticles.enableCaching();
@@ -39,10 +37,10 @@ public class RelatedArticlesCheck {
         LinkedList<Item> itemLinkedList = RelatedArticles.recommend(id + "", maxArticle, false, "",
                 new SimilarityWeights());
 
-        for(Item item : itemLinkedList) {
+        for (Item item : itemLinkedList) {
             writer.println(item.getItemId() + "\n" +
-                    ItemFamily.DATE_CREATED.toString() + ": " +
-                    ComputeSimilarity.similarityValues.get(ItemFamily.DATE_CREATED).get(item.getItemId()) + "\n" +
+                            ItemFamily.DATE_CREATED.toString() + ": " +
+                            ComputeSimilarity.similarityValues.get(ItemFamily.DATE_CREATED).get(item.getItemId()) + "\n" +
                             ItemFamily.AUTHOR.toString() + ": " +
                             ComputeSimilarity.similarityValues.get(ItemFamily.AUTHOR).get(item.getItemId()) + "\n" +
                             ItemFamily.CATEGORY.toString() + ": " +
@@ -78,7 +76,7 @@ public class RelatedArticlesCheck {
 
         LinkedList<Item> itemLinkedList = RelatedArticles.recommend(id, maxArticle, false, "", new SimilarityWeights());
 
-        for(Item item : itemLinkedList) {
+        for (Item item : itemLinkedList) {
             writer.println(item.getItemId() + " " + item.getScore());
         }
 
@@ -123,21 +121,21 @@ public class RelatedArticlesCheck {
 
     public static Double readAndWrite(String write, Scanner scanIn) {
 
-        if(scanIn.hasNextLine()) {
+        if (scanIn.hasNextLine()) {
 
             String line = scanIn.nextLine();
-            System.out.println(write + " " +  line);
+            System.out.println(write + " " + line);
             return Double.parseDouble(line.substring(0, line.indexOf("/")));
         }
         return 0.0;
     }
 
     public static double keepInBounds(double num) {
-        if(num < 0.0) {
+        if (num < 0.0) {
             return 0.0;
         }
 
-        if(num > 100) {
+        if (num > 100) {
             return 100.0;
         }
         return num;
@@ -164,17 +162,18 @@ public class RelatedArticlesCheck {
 
 
     }
+
     public static void test(boolean interactive, String id, double initialDateCreatedWeight, double initialTitleWeight,
                             double initialDepartmentWeight, double initialShortTitleWeight,
                             double initialCategoryWeight, double initialRatingsWeight,
                             double initialAuthorWeight, double initialKeywordWeight,
                             double initialCollectionReferenceWeight, double initialTFIDFWeight, double currentStep) {
         try {
-            if(!interactive || writer == null) {
+            if (!interactive || writer == null) {
                 writer = new PrintWriter(new BufferedWriter(new FileWriter("out/resultedData"), 100000));
             }
 
-            if(interactive) {
+            if (interactive) {
 
                 Scanner scanIn = new Scanner(new FileInputStream("res/weights"));
                 double dateCreatedWeight = readAndWrite(DATE_TAG, scanIn);
@@ -188,18 +187,18 @@ public class RelatedArticlesCheck {
                 double TFIDFWeight = readAndWrite(TFIDF_TAG, scanIn);
                 double collectionReferenceWeight = readAndWrite(COLLECTIONREF_TAG, scanIn);
 
-                testValues( dateCreatedWeight, titleWeight, departmentWeight,
+                testValues(dateCreatedWeight, titleWeight, departmentWeight,
                         shortTitleWeight, categoryWeight, ratingsWeight,
                         authorWeight, keywordWeight, collectionReferenceWeight,
                         TFIDFWeight, id);
 
                 scanIn.close();
                 writer.flush();
-            }else {
+            } else {
                 for (double departmentWeight = keepInBounds(initialDepartmentWeight - currentStep);
                      departmentWeight <= keepInBounds(initialDepartmentWeight + currentStep);
                      departmentWeight += currentStep) {
-                    for (double categoryWeight = keepInBounds(initialCategoryWeight - currentStep) ;
+                    for (double categoryWeight = keepInBounds(initialCategoryWeight - currentStep);
                          categoryWeight <= keepInBounds(initialCategoryWeight + currentStep);
                          categoryWeight += currentStep) {
                         for (double authorWeight = keepInBounds(initialAuthorWeight - currentStep);
@@ -209,14 +208,14 @@ public class RelatedArticlesCheck {
                                  dateCreatedWeight <= keepInBounds(initialDateCreatedWeight + currentStep);
                                  dateCreatedWeight += currentStep) {
                                 for (double titleWeight = keepInBounds(initialTitleWeight - currentStep);
-                                     titleWeight <= keepInBounds(initialTitleWeight+ currentStep );
+                                     titleWeight <= keepInBounds(initialTitleWeight + currentStep);
                                      titleWeight += currentStep) {
                                     for (double shortTitleWeight = keepInBounds(initialShortTitleWeight - currentStep);
                                          shortTitleWeight <= keepInBounds(initialShortTitleWeight + currentStep)
                                             ; shortTitleWeight += currentStep) {
-                                       for (double keywordWeight = keepInBounds(initialKeywordWeight - currentStep);
-                                            keywordWeight <= keepInBounds(initialKeywordWeight + currentStep);
-                                            keywordWeight += currentStep) {
+                                        for (double keywordWeight = keepInBounds(initialKeywordWeight - currentStep);
+                                             keywordWeight <= keepInBounds(initialKeywordWeight + currentStep);
+                                             keywordWeight += currentStep) {
                                             for (double ratingsWeight = keepInBounds(initialRatingsWeight - currentStep);
                                                  ratingsWeight <= keepInBounds(initialRatingsWeight + currentStep);
                                                  ratingsWeight += currentStep) {
@@ -224,16 +223,16 @@ public class RelatedArticlesCheck {
                                                      TFIDFWeight <= keepInBounds(initialTFIDFWeight + currentStep);
                                                      TFIDFWeight += currentStep) {
                                                     for (double collectionReferenceWeight =
-                                                         keepInBounds(initialCollectionReferenceWeight- currentStep);
+                                                         keepInBounds(initialCollectionReferenceWeight - currentStep);
                                                          collectionReferenceWeight <= keepInBounds
                                                                  (initialCollectionReferenceWeight + currentStep);
                                                          collectionReferenceWeight += currentStep) {
 
-                                                        testValues( dateCreatedWeight, titleWeight, departmentWeight,
-                                                        shortTitleWeight, categoryWeight, ratingsWeight,
-                                                        authorWeight, keywordWeight, collectionReferenceWeight,
-                                                        TFIDFWeight, id);
-                                                        if(currentStep == 0) {
+                                                        testValues(dateCreatedWeight, titleWeight, departmentWeight,
+                                                                shortTitleWeight, categoryWeight, ratingsWeight,
+                                                                authorWeight, keywordWeight, collectionReferenceWeight,
+                                                                TFIDFWeight, id);
+                                                        if (currentStep == 0) {
                                                             writer.close();
                                                             return;
                                                         }

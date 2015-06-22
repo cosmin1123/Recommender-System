@@ -1,33 +1,25 @@
 package utils;
 
-import java.io.IOException;
-
 import database.AllItemsMapper;
 import database.TableName;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.HBaseConfiguration;
-import org.apache.hadoop.hbase.HColumnDescriptor;
-import org.apache.hadoop.hbase.HTableDescriptor;
-import org.apache.hadoop.hbase.KeyValue;
-import org.apache.hadoop.hbase.MasterNotRunningException;
-import org.apache.hadoop.hbase.ZooKeeperConnectionException;
+import org.apache.hadoop.hbase.*;
 import org.apache.hadoop.hbase.client.*;
-
-
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.mapreduce.Job;
 
-
+import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+
 /**
  * Created by didii on 2/25/15.
  */
 public class Utils {
-    private static  Configuration conf = null;
+    private static Configuration conf = null;
     private static HTable itemTable = null;
     private static HTable userTable = null;
     private static HTable tfidfTable = null;
@@ -106,7 +98,7 @@ public class Utils {
         }
     }
 
-    private static void putInTable( HTable table, Object sync, Put put)
+    private static void putInTable(HTable table, Object sync, Put put)
             throws InterruptedIOException, RetriesExhaustedWithDetailsException {
 
         synchronized (sync) {
@@ -120,23 +112,23 @@ public class Utils {
     public static void addRecord(String tableName, String rowKey,
                                  String family, String qualifier, String value) {
         try {
-            if(rowKey.length() == 0) {
+            if (rowKey.length() == 0) {
                 return;
             }
             Put put = new Put(Bytes.toBytes(rowKey));
             put.add(Bytes.toBytes(family), Bytes.toBytes(qualifier), Bytes
                     .toBytes(value));
 
-            if(tableName.contains(TableName.ITEMS.toString())) {
-                if(map.get(tableName) == null) {
+            if (tableName.contains(TableName.ITEMS.toString())) {
+                if (map.get(tableName) == null) {
                     map.put(tableName, new HTable(conf, tableName));
                 }
-                putInTable( map.get(tableName), itemTableSynch, put);
+                putInTable(map.get(tableName), itemTableSynch, put);
             } else {
-                if(tableName.contains(TableName.USERS.toString())) {
-                    putInTable( userTable, userTableSynch, put);
+                if (tableName.contains(TableName.USERS.toString())) {
+                    putInTable(userTable, userTableSynch, put);
                 } else {
-                    if(tableName.contains(TableName.TFIDF.toString())) {
+                    if (tableName.contains(TableName.TFIDF.toString())) {
                         putInTable(tfidfTable, tfidfTableSynch, put);
                     }
                 }
@@ -154,9 +146,9 @@ public class Utils {
      * Put (or insert) a list row
      */
     public static void addRecord(String tableName, String rowKey,
-                                     String family, String qualifier, Object value[]) {
+                                 String family, String qualifier, Object value[]) {
         try {
-            if(rowKey.length() == 0) {
+            if (rowKey.length() == 0) {
                 return;
             }
             Put put = new Put(Bytes.toBytes(rowKey));
@@ -167,8 +159,8 @@ public class Utils {
             put.add(Bytes.toBytes(family), Bytes.toBytes(qualifier), Bytes
                     .toBytes(val));
 
-            if(tableName.contains(TableName.ITEMS.toString())) {
-                if(map.get(tableName) == null) {
+            if (tableName.contains(TableName.ITEMS.toString())) {
+                if (map.get(tableName) == null) {
                     map.put(tableName, new HTable(conf, tableName));
                 }
                 putInTable(map.get(tableName), itemTableSynch, put);
@@ -199,7 +191,7 @@ public class Utils {
     /**
      * Get a row
      */
-    public static Result getOneRecord (String tableName, String rowKey){
+    public static Result getOneRecord(String tableName, String rowKey) {
         HTable table;
         try {
             table = new HTable(conf, tableName);
@@ -212,27 +204,28 @@ public class Utils {
 
         return null;
     }
+
     /**
      * Scan (or list) a table
      */
-    public static LinkedList<User> getAllUsers (String tableName) {
-        try{
+    public static LinkedList<User> getAllUsers(String tableName) {
+        try {
             HTable table = new HTable(conf, tableName);
             Scan s = new Scan();
             ResultScanner ss = table.getScanner(s);
             LinkedList<User> list = new LinkedList<User>();
-                for (Result r : ss) {
-                    User user = new User();
-                    for (KeyValue kv : r.raw()) {
-                        user.addToUser(new String(kv.getFamily()), new String(kv.getValue()));
-                        user.setUserId(new String(kv.getRow()));
-                    }
-                    list.add(user);
+            for (Result r : ss) {
+                User user = new User();
+                for (KeyValue kv : r.raw()) {
+                    user.addToUser(new String(kv.getFamily()), new String(kv.getValue()));
+                    user.setUserId(new String(kv.getRow()));
                 }
+                list.add(user);
+            }
 
 
             return list;
-        } catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
@@ -241,19 +234,19 @@ public class Utils {
     /**
      * Scan (or list) a table
      */
-    public static LinkedList<Item> getAllItems (String tableName, String publicationId) {
-        try{
+    public static LinkedList<Item> getAllItems(String tableName, String publicationId) {
+        try {
 
-            if(!AllItemsMapper.list.isEmpty()) {
+            if (!AllItemsMapper.list.isEmpty()) {
                 return AllItemsMapper.list;
             }
 
             boolean b = false;
-            Job  job = AllItemsMapper.startNewMapper(conf,
+            Job job = AllItemsMapper.startNewMapper(conf,
                     tableName, publicationId);
 
 
-                while (!job.isComplete());
+            while (!job.isComplete()) ;
 
 
             return AllItemsMapper.list;

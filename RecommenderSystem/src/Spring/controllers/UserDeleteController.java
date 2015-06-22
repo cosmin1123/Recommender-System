@@ -11,7 +11,7 @@ public class UserDeleteController {
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/userdelete")
     public void greeting(@RequestParam(value = "userId", defaultValue = "") String userId) {
-        if(!userId.isEmpty()) {
+        if (!userId.isEmpty()) {
             Database.deleteUser(userId);
         }
     }

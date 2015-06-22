@@ -4,16 +4,14 @@ package Spring.controllers;
  * Created by didii on 6/4/15.
  */
 
-import algorithms.related.TFIDF.IDF;
 import algorithms.related.TFIDF.TF;
 import database.CreateTable;
 import database.Database;
 import org.springframework.http.HttpEntity;
-import org.springframework.web.bind.annotation.RestController;
-
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import utils.Item;
 
 @RestController
@@ -26,13 +24,13 @@ public class ArticleAddController {
         if (article.length() != 0) {
             Item newItem = new Item();
             newItem.fillItemFromJson(article);
-            if(newItem.getItemId().isEmpty()) {
+            if (newItem.getItemId().isEmpty()) {
                 returnString = "\"Article needs to have an id\"";
                 return returnString;
             }
 
             Item tmp = Database.getItem(newItem.getItemId(), newItem.getPublicationId());
-            if(tmp == null) {
+            if (tmp == null) {
                 CreateTable.intialiseTables(newItem.getPublicationId());
                 returnString = "\"Article added succesfully\"";
             } else {
