@@ -42,11 +42,26 @@ The basic principle of a framework is: Not having to reinvent the wheel. By usin
 \\ Faster, because it allows the programmer to focus on implemmentation specific code, while re-using generic modules, without being tied to the framework itself.
 \\ Better, because a framework ensures you that the code you are running is in full compliance with the industry's rules. It is structured, and both upgradable and maintanable.
 
-
 \subsubsection{Spring Framework}
-\label{sec:frameworks-spring}
+\label{sec:frameworks-hbase}
 
+\subsubsection{Apache HBase}
+\label{sec:frameworks-hbase}
+Hbase is an open source, non relational and distributed databse, modeled after Google's Big Table. It is written in Java, which is a great advantage, since it is really easy to integrate with our existing code.
+\\ Unlike realational databases, the structure of a non relational database is very simillar to that of a hash map. This grants us an easier control over the content of the database and faster access time. Most of the operations can be done in constant time. HBase also has an api that supports multiple types of queries, simillar in functionality to those of a SQL database.
+\\ Since HBase is a distributed database, it also obeys the CAP theorem, also known as Brewer's theorem, which states that it is impossible for a distributed system to provide all of the following:
 
+\begin{itemize}
+	\item Consistency - The same data is seen by all nodes at the same time.
+	\item Availability - If a number of nodes from your cluster fail, then the system will still be available.
+	\item Partition tolerance - The system will continue to operate, even if the cluster has been split into multiple partitions, that are unable to exchange messages, due to network failures.
+\end{itemize}
+
+Hbase has appeared due to the need of processing massive amounts of data for the purpose of language processing and is a CP type system. 
+\\ Since, we needed a fast and reliable database, that could process the large amounts of text data that we obtained from our articles and which could easily be integrated with Java, HBase was the right choice for our recommender system. Another reason for chosing HBase was the fact that it has a great community and support. 
+
+\subsubsection{Stanford CoreNLP}
+\label{sec:frameworks-stanford-corenlp}
 
 \begin{itemize}
 	\item Present Spring and why we chose it	
@@ -58,6 +73,107 @@ The basic principle of a framework is: Not having to reinvent the wheel. By usin
 
 \section{Recommendation System Workflow} 
 \label{sec:workflow}
+There are multiple actions that you can request from the recommendation system through the Spring RESTful api.
+\\ In the following sections we are going to talk about the implemented use cases.
+\\ All the data will be returned as a JSON object.
+
+\hfill \break
+\hfill \break
+\hfill \break
+\hfill \break
+
+\begin{figure}
+\caption{System Workflow}
+\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{src/img/workflow.png}
+\end{figure}
+
+\subsection{Add user}
+\label{sec:workflow-add-user}
+A PUT request is made to the RESTful api with the required data for adding a friend of an user.
+\\The minimum data required for a user is the user id and friend id.
+\\The request is intercepted by the api and the new friend is added to the user’s top friends list. If the operation is successful then the user will receive “true”, otherwise the user will be informed of the error. 
+
+\subsection{Add user friend}
+\label{sec:workflow-add-user-friend}
+A PUT request is made to the RESTful api with the required data for adding a friend of an user.
+\\ The minimum data required for a user is the user id and friend id.
+\\ The request is intercepted by the api and the new friend is added to the user’s top friends list. If the operation is successful then the user will receive “true”, otherwise the user will be informed of the error. 
+
+\subsection{Add user direct recommendation}
+\label{sec:workflow-add-user-direct-recommendation}
+A PUT request is made to the RESTful api with the required data for adding a direct user recommendation.
+\\ These are supposed to be recommendations made manually by a user.
+\\ The minimum data required is the user id and an item id.
+\\ The request is intercepted by the api and the user entry is fetched from the database and the new item is added to the items directly recommended list of the user. If the operation is successful then the user will receive “true”,otherwise the user will be informed of the error. 
+
+\subsection{Delete user}
+\label{sec:workflow-delete-user}
+A DELETE request is made to the RESTful api with the required data for deleting an user.
+\\ The minimum required data is the user id
+\\ The request is intercepted by the api and the database entry is deleted. If the operation is successful then the user will receive “true”, otherwise the user will be informed of the error. 
+
+
+\subsection{Update user article history}
+\label{sec:workflow-update-user-article-history}
+A PUT request is made to the RESTful api with the required data for updating an user article history
+\\ The read article history can be updated and a rating of a certain article can be added. 
+\\ The minimum required fields are the article id and the user id.
+\\ The request is intercepted by the api and the user entry is fetched from the database. The new item is added to the article history list of the user. If the operation is successful then the api will return “true”, otherwise the user will be informed of the error. 
+
+
+\subsection{Article recommendations based on friends direct recommendations}
+\label{sec:workflow-friends-direct-recommendations}
+A GET request is made to the RESTful api with the user id.
+\\ The request is intercepted by the api and all the directly recommended articles of the top friends of the user are returned.
+\\ The top friends list can be added manually through the api.
+\\ If a top friends list does not exist, one will be generated by using the user’s previous article history.
+\\ If the operation is successful then the user will receive “true”, otherwise the user will be informed of the error. 
+
+\subsection{Add article}
+\label{sec:workflow-add-article}
+A PUT request is made to the RESTful api with the required data for adding a new article.
+\\ The request is intercepted by the api and the new article is added to the database.
+\\ The minimum required data is the article id.
+\\ If the operation is successful then the user will receive “true”, otherwise the user will be informed of the error.
+
+
+\subsection{Get all articles}
+\label{sec:workflow-get-all-articles}
+A GET request is made to the RESTful api in order to get all the articles.
+\\ The user may specify how many articles he wishes to receive.
+\\ The articles are fetched from the database and returned to the user.
+\\ If the operation is successful then the user will receive the article list, otherwise the user will be informed of the error
+
+\subsection{Get recommended articles}
+\label{sec:workflow-get-recommended-articles}
+A GET request is made to the RESTful api in order to get the recommended articles for a user
+\\ The minimum required data is the user id for whom we need the recommendation.
+\\ The system will try to guess how the user will rate the articles in the database, based on his previous ratings and the ratings of the other users he has the most common interests.
+\\ If the operation is successful then the user will receive the top rated articles, otherwise the user will be informed of the error.
+
+\subsection{Get related articles}
+\label{sec:workflow-get-related-articles}
+A GET request is made to the RESTful api in order to get the related articles for an article.
+\\ The minimum required data is the article id for which we need the related articles. The user may also specify a max number of articles to be returned
+\\ The system intercepts the request and will use all the similarity methods from the presented workflow to calculate the similarity between every article in the database and the current article.
+\\ Each article will have a value from 0 to 1 meaning the similarity with the article for which we requested the related articles.
+\\ The top related list is returned is if the operation is successful, otherwise the user will be informed of the error.
+
+
+\subsection{Get articles related to a collection}
+\label{sec:workflow-get-articles-related-to-collection}
+A GET request is made to the RESTful api in order to get the related articles for  a collection.
+\\ The minimum required data is the collection article list.
+\\ By using the previous presented process of getting an article’s similarity score to another article, we get the similarity score of all the articles to all the collection articles. We sum up this scores and return the articles with the top similarity score, if the operation was successful, otherwise the user will be informed of the error.
+
+\subsection{Integration with chrome plugin}
+\label{sec:workflow-integration-with-chrome-plugin}
+If the articles in the current publication do not exist in the database, then the chrome extension will add them by doing specific requests to the application api.
+\\ Once all the articles have been added, the user may start a view in which he can see the related articles.
+
+
+
+
 
 \begin{itemize}
 	\item Add the workflow
