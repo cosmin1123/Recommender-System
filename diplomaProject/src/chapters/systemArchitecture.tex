@@ -43,7 +43,7 @@ The basic principle of a framework is: Not having to reinvent the wheel. By usin
 \\ Better, because a framework ensures you that the code you are running is in full compliance with the industry's rules. It is structured, and both upgradable and maintanable.
 
 \subsubsection{Spring Framework}
-\label{sec:frameworks-hbase}
+\label{sec:frameworks-spring-framework}
 
 \subsubsection{Apache HBase}
 \label{sec:frameworks-hbase}
@@ -62,6 +62,26 @@ Hbase has appeared due to the need of processing massive amounts of data for the
 
 \subsubsection{Stanford CoreNLP}
 \label{sec:frameworks-stanford-corenlp}
+Stanford CoreNLP provides us with a set of NLP processing tools. Even though, this is a powerful tool, capable to give the base forms of words, their parts of speech, whether they are names of companies, people, etc., normalize dates, times, and numeric quantities, and mark up the structure of sentences in terms of phrases and word dependencies, indicate which noun phrases refer to the same entities, indicate sentiment, etc we use only a small part of it's capabilities.
+Stanford CoreNLP is an integrated framework which can be used with ease and we can choose what tools to enable or disable by setting the options given to the framework. 
+From all the existing options we use only the tokenize, ssplit, pos, lemma.
+
+tokenize
+Tokenizes the text. This component started as a PTB-style tokenizer, but was extended since then to handle noisy and web text. The tokenizer saves the character offsets of each token in the input text, as CharacterOffsetBeginAnnotation and CharacterOffsetEndAnnotation.
+
+ssplit 
+Splits a sequence of tokens into sentences.
+
+pos
+Labels tokens with their POS tag
+A Part-Of-Speech Tagger (POS Tagger) is a piece of software that reads text in some language and assigns parts of speech to each word (and other token), such as noun, verb, adjective, etc., although generally computational applications use more fine-grained POS tags like 'noun-plural'. This software is a Java implementation of the log-linear part-of-speech taggers described in these papers (if citing just one paper, cite the 2003 one):
+The tagger was originally written by Kristina Toutanova. Since that time, Dan Klein, Christopher Manning, William Morgan, Anna Rafferty, Michel Galley, and John Bauer have improved its speed, performance, usability, and support for other 
+languages.
+
+The system requires Java 1.8+ to be installed. Depending on whether you're running 32 or 64 bit Java and the complexity of the tagger model, you'll need somewhere between 60 and 200 MB of memory to run a trained tagger (i.e., you may need to give java an option like java -mx200m). Plenty of memory is needed to train a tagger. It again depends on the complexity of the model but at least 1GB is usually needed, often more.
+
+lemma
+Generates the word lemmas for all tokens in the corpus.
 
 \begin{itemize}
 	\item Present Spring and why we chose it	
@@ -170,9 +190,6 @@ A GET request is made to the RESTful api in order to get the related articles fo
 \label{sec:workflow-integration-with-chrome-plugin}
 If the articles in the current publication do not exist in the database, then the chrome extension will add them by doing specific requests to the application api.
 \\ Once all the articles have been added, the user may start a view in which he can see the related articles.
-
-
-
 
 
 \begin{itemize}
