@@ -15,7 +15,9 @@ We can combine the recommended articles for a certain user with the related arti
 \label{sec:future-development}
 
 In order to further improve the recommendations we could use a neural network to predict what ratings a user would give to the unrated articles\cite{netflix-recommender}. This way, we could better predict the users with similar interests.
-TODO
-\begin{itemize}
-	\item Add more about the neural network.	
-\end{itemize}
+Artificial neural networks are a family of statistical learning models inspired by the biological neural networks, in which a group of neurons work together to predict the outcome of an action, based on their previous experience. The connection between each of the neurons has a certain weight that can be changed and thus the network can adapt and learn based on it's previous experience. An artificial neural network has to be trained before being used. This means that we need to give it both an input data set, which will go through the network and produce results, and an output data set, which is the expected result. The neural network will adjust the weights between the neurons in order to get closer to the output data set. After the training stage, the neural network will be capable of predicting the result, based on it's training set.
+
+In our case, we can train the neural network to predict what rating a user will give to an item, based on it's other ratings and the similarity of the rated items.
+By having that rating, we could improve the collaborative filtering results, since we can predict the ratings a user would give to all the items. By having that prediction we can better find users with simillar interests and make recommendations based on that.
+
+Another great feature would be to set the related articles algorithm to adjust the importance it gives to each attribute based on an user's input. This means that if, for example users tend to choose and spend more time on articles, from the related articles list that have a greater similarity on the category attribute, then that attribute's importance will increase by a certain amount and the other attributes importance will adjust as well.

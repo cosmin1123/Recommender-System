@@ -3,7 +3,7 @@
 
 In the following sections we are going to talk about the various architecture and technology choices.
 
-Also, we are going to present the workflows of the system.
+Also, we are going to present the workflow of the system.
 
 \section{Recommendation System Architecture} 
 \label{sec:architecture}
@@ -41,9 +41,18 @@ A framework is like a black box that offers certain functionalities to it's user
 The basic principle of a framework is: Not having to reinvent the wheel. By using them we can build faster and better software.
 \\ Faster, because it allows the programmer to focus on implemmentation specific code, while re-using generic modules, without being tied to the framework itself.
 \\ Better, because a framework ensures you that the code you are running is in full compliance with the industry's rules. It is structured, and both upgradable and maintanable.
+In the following sections we describe the frameworks used by our system and why we made those choices.
 
 \subsubsection{Spring Framework}
 \label{sec:frameworks-spring-framework}
+Spring framework is one of the most popular Java application frameworks. It is an open source platform, which appeared in 2003 and it offers a wide range of modules, like testing, transaction management, Model-view-controller, remote access framework, etc. 
+From all these modules, we use only the Model-view-controller part, in order to create the RESTful api of our system.
+The only difference between a traditional MVC controller and a RESTful controller is the fact that in place of the server rendering the result on a view, it will just write an object's data, directly to a HTTP response, in a JSON format.
+\lstset{caption=Spring framework REST controller code, label=lst:spring-framework-rest-controller}
+\lstinputlisting{src/code/SpringController.java}
+As we can see in the above \autoref{lst:spring-framework-rest-controller}, adding a controller is easy and we can set the request method and required parameters.
+We can also return a model, in JSON format, if needed. The only requirement is that the object returned has getters for each of it's attributes.
+Due to easiness of use, great popularity and the fact that it enforces some of the java principles, by requiring us to set accessors to the used classes, we can say that Spring is the best choice for our system. 
 
 \subsubsection{Apache HBase}
 \label{sec:frameworks-hbase}
@@ -62,39 +71,40 @@ Hbase has appeared due to the need of processing massive amounts of data for the
 
 \subsubsection{Stanford CoreNLP}
 \label{sec:frameworks-stanford-corenlp}
-Stanford CoreNLP provides us with a set of NLP processing tools. Even though, this is a powerful tool, capable to give the base forms of words, their parts of speech, whether they are names of companies, people, etc., normalize dates, times, and numeric quantities, and mark up the structure of sentences in terms of phrases and word dependencies, indicate which noun phrases refer to the same entities, indicate sentiment, etc we use only a small part of it's capabilities.
-Stanford CoreNLP is an integrated framework which can be used with ease and we can choose what tools to enable or disable by setting the options given to the framework. 
-From all the existing options we use only the tokenize, ssplit, pos, lemma.
+Stanford CoreNLP\cite{manning-EtAl:2014:P14-5} provides us with a set of NLP processing tools. Even though, this is a powerful tool, capable to give the base forms of words, their parts of speech, whether they are names of companies, people, etc., normalize dates, times, and numeric quantities, and mark up the structure of sentences in terms of phrases and word dependencies, indicate which noun phrases refer to the same entities, indicate sentiment, etc we use only a small part of it's capabilities.
+Stanford CoreNLP is an integrated framework which can be used with ease and we can choose what tools to enable or disable by simply setting the options given to the framework. 
+From all the existing options we use only the "tokenize", "ssplit", "pos" and "lemma", which we will describe below.
 
-tokenize
-Tokenizes the text. This component started as a PTB-style tokenizer, but was extended since then to handle noisy and web text. The tokenizer saves the character offsets of each token in the input text, as CharacterOffsetBeginAnnotation and CharacterOffsetEndAnnotation.
+The purpose of the "tokenize" option is to tokenize the text. We need this in order to split large chunks of text into separate words, thus being able to lemmatize each word and use it to get better similarity between articles.
 
-ssplit 
-Splits a sequence of tokens into sentences.
+The purpose of the "ssplit" property is that of splitting the text into sentences for the future analysis of the meaning of each word based on the context of the sentence in order to reduce it to a basic form by using the lemma property.
 
-pos
-Labels tokens with their POS tag
-A Part-Of-Speech Tagger (POS Tagger) is a piece of software that reads text in some language and assigns parts of speech to each word (and other token), such as noun, verb, adjective, etc., although generally computational applications use more fine-grained POS tags like 'noun-plural'. This software is a Java implementation of the log-linear part-of-speech taggers described in these papers (if citing just one paper, cite the 2003 one):
-The tagger was originally written by Kristina Toutanova. Since that time, Dan Klein, Christopher Manning, William Morgan, Anna Rafferty, Michel Galley, and John Bauer have improved its speed, performance, usability, and support for other 
-languages.
+The purpose of the "pos" option is to enable the Part-Of-Speech Tagger (POS Tagger) of the Stanford CoreNLP. 
+A POS Tagger is a tool that reads text in a language and assigns parts of speech to each word, such as noun, verb, adjective, etc..
+We need it in order to determine what part of speach each word is and based on that, we can reduce the word to a simpler form, by using the "lemma" property.
 
-The system requires Java 1.8+ to be installed. Depending on whether you're running 32 or 64 bit Java and the complexity of the tagger model, you'll need somewhere between 60 and 200 MB of memory to run a trained tagger (i.e., you may need to give java an option like java -mx200m). Plenty of memory is needed to train a tagger. It again depends on the complexity of the model but at least 1GB is usually needed, often more.
+The purpose of the "lemma" property is that of applying the lemmatization process to all the tokens of the document.
+Lemmatization is the process of grouping different forms of a word so they can be processed as a single item.
+In most of the languages, words are used in several inflicted forms. For example the verb "to be" may appear as "was", "am", "being", etc. The base form of the word, in this case, would be the one you can find in the dictionary, "be" and this is called the lemma of the word. If we combine the part of speach, determined from the context,  with the base form of the word, we get something called the lexeme of the word. 
 
-lemma
-Generates the word lemmas for all tokens in the corpus.
+Another process, closely related to lemmatisation is called stemming. The main difference is that in the stemming process we do not take into account the context of a word, but only the word itself, and therefore we ca not make a difference between words, based on the part of speech. For example, the word "beings", will always be reduced by a stemmer to the base form "be", which is wrong, if used as a noun "All beings are like each other in existing". The lemmatisation process will determine, based on the context, that the word is a noun and has the basic form "being". A stemmer will be able to reduce the word "walking" to the correct form "walk", just like a lemmatizer.
 
-\begin{itemize}
-	\item Present Spring and why we chose it	
-	\item Present Java and why use chose it
-	\item Present HBASE and why we chose it( not sure about this. Small presentation in database design. Can bring it from there)
-	\item Present Stanford lemmatizer and why we chose it.	
-\end{itemize}
+If the application does not need great accuracy, then a stemmer is recommended, since the running time is much faster and the implemmentation is simpler.
 
+We chose a lemmatizer in order to increase the quality of our similarity results. The lemmatizer is used only in the article adding stage, when creating the TFIDF entries, in order to be able to make fast recommendations. If we need to compute word similarity, during the recommendation stage, then we are using the Levenshtein Distance or a simple word similarity algorithm, based on pairs of letters of the word, as presented in the Recommendation Algorithms chapter.
+
+\lstset{caption=Stanford Core NLP lemmatizer code, label=lst:stanford-core-nlp}
+\lstinputlisting{src/code/StanfordCoreNLP.java}
+
+\subsubsection{Apache Maven}
+\label{sec:frameworks-apache-maven}
+Apache maven is a buid and project management system used primarily with Java. It's main functionalities are that of building a project and defining it's dependencies. A XML files is used to define the project's dependencies, repos from where they can be downloaded, the order in which the build executes and the required directors and plugins.
+In order to be able to easily setup our system on different platforms, we needed a dependency system. Since Apache Maven is a popular system, compatible with Java, that has quite a long history and a great community it was our choice.
 
 \section{Recommendation System Workflow} 
 \label{sec:workflow}
 There are multiple actions that you can request from the recommendation system through the Spring RESTful api.
-\\ In the following sections we are going to talk about the implemented use cases.
+\\ In the following sections we describe the implemented use cases.
 \\ All the data will be returned as a JSON object.
 
 \hfill \break
@@ -157,9 +167,9 @@ A PUT request is made to the RESTful api with the required data for adding a new
 \\ If the operation is successful then the user will receive “true”, otherwise the user will be informed of the error.
 
 
-\subsection{Get all articles}
+\subsection{Get articles}
 \label{sec:workflow-get-all-articles}
-A GET request is made to the RESTful api in order to get all the articles.
+A GET request is made to the RESTful api in order to get the articles from the databse.
 \\ The user may specify how many articles he wishes to receive.
 \\ The articles are fetched from the database and returned to the user.
 \\ If the operation is successful then the user will receive the article list, otherwise the user will be informed of the error
@@ -190,9 +200,3 @@ A GET request is made to the RESTful api in order to get the related articles fo
 \label{sec:workflow-integration-with-chrome-plugin}
 If the articles in the current publication do not exist in the database, then the chrome extension will add them by doing specific requests to the application api.
 \\ Once all the articles have been added, the user may start a view in which he can see the related articles.
-
-
-\begin{itemize}
-	\item Add the workflow
-	\item Add all the workflows(use cases) and explain them in depth
-\end{itemize}

@@ -1,62 +1,186 @@
 \chapter{Testing and Validation}
 \label{chapter:testing-validation}
 
-In order to test and validate my solution I needed an article database. To have that, I filled my database with random values, so that I could check that I have configured it correctly and to have a solid base on which I could test my recommendation algorithms.
+The first step to test and validate our solution was to get an article database. To have that, we filled our database with random values, so that we could check that we have configured it correctly and to have a solid base on which we could test our recommendation algorithms.
+Further on, we used data from different sources, to populate our database and try our algorithms.
+In the following sections we describe the sources used and the tests that we made.
+
+\section{Data sources} 
+\label{sec:testing-and-validation-data-sources}
+In order to test all the functionalities of our system we needed multiple data sources, since finding a source with all the required data was not possible.
+In the following section we will present the data sources used. Some of them are from Adobe's previous project for publishing articles online.
+
+\subsection{Random Database} 
+\label{sec:testing-and-validation-data-sources-random-database}
+This was the first data we added to our database.
+In order to have data that could be used for NLP we needed to use real words. To do that, we defined a small dictionary, with a couple of hundreds of words.
+The main purpose of it was to test our database for basic functionality and easily develop the system.
+
+\subsection{Fast Company} 
+\label{sec:testing-and-validation-data-sources-fast-company}
+Fast Company is a buiness magazine that focuses on technology, buisness and design. It's online platform uses Adobe's older application and has a database, very simillary in structure to ours.
+In order to get their data we made calls to their public api which returned JSON objects. Because we needed to get a large amount of data which took a lot of time, we made the api calls and processing in parallel. The api provided us with almost all the data we needed, except the rating of an article and user data. We used it for testing and improving our related algorithms.
+
+\subsection{Movie Lens} 
+\label{sec:testing-and-validation-data-sources-movie-lens}
+This data set was provided by GroupLens Research which collected and provided rating data sets from the MovieLens web site. We used a set of data which had  100 000 ratings from 1000 users on 1700 movies.
+By using that set we were able to predict what rating would a user give to a movie, based on it's previous ratings and the ratings of other users. This data set was used for testing and improving our recommendation algorithms.
 
 \section{Testing} 
-\label{sec:testing}
-TODO Add al the used databses (fast company, national geographic, etc)
-\subsection{Basic Operations} 
+\label{sec:testing-and-validation-testing}
+In order to check that our system works accordingly to our expectations, we ran the following tests, which are described below.
+We required tests both for our basic operations and our algorithms.
+
+\subsection{Endpoints} 
 \label{sec:basic-operations}
-TODO
+In the following sections we will present some testing scenarios that validate the fact that the system's endpoints work accordingly to the use cases.
+
+\subsubsection{Add User}
+\label{sec:basic-operations-add-user}
+The Add User operation is a must for our recommendation algorithm. Each user needs to have  a profile, based on which we can make article recommendations. To check that the Add User operation works we ran the following tests: 
 \begin{itemize}
-	\item Add the test cases for the basic operations, unrelated to the next two sections
+	\item We tried adding an user without an user id, which resulted in an error message, informing us that this endpoint requires an user id.
+	\item We tried adding an user with an user id, which resulted in a HTTP 200 success message, informing us that the operation was successful.
+	\item We tried adding an user with an user id and multiple data, which resulted in a HTTP 200 success message, informing us that the operation was successful.
 \end{itemize}
 
-\subsection{Related Articles Operations} 
-\label{sec:related-articles-operations}
-TODO
+\subsubsection{Add Article}
+\label{sec:basic-operations-add-user}
+The Add Article operation is a must for our recommendation algorithm. To check that the Add Article operation works we ran the following tests: 
 \begin{itemize}
-	\item Add the test cases for related articles.
+	\item We tried adding an article without an article id, which resulted in an error message, informing us that this endpoint requires an article id.
+	\item We tried adding an article with an article id, which resulted in a HTTP 200 success message, informing us that the operation was successful.
+	\item We tried adding an article with an article id and multiple data, which resulted in a HTTP 200 success message, informing us that the operation was successful.
 \end{itemize}
 
-\subsection{Recommended Articles Operations} 
-\label{sec:recommended-articles-operations}
-TODO
+\subsubsection{Add User Friend}
+\label{sec:basic-operations-add-user}
+The Add User Friend operation is required only for getting recommendations based on friends recommendations. To check that the add user friend operation works we ran the following tests: 
 \begin{itemize}
-	\item Add the test cases for recommended articles.
+	\item We tried adding an user's friend without an user id, which resulted in an error message, informing us that this endpoint requires an user id.
+	\item We tried adding an user's friend without a friend id, which resulted in an error message, informing us that this endpoint requires a friend id.
+	\item We tried adding an user with an user and a friend id, which resulted in a HTTP 200 success message, informing us that the operation was successful.
+\end{itemize}
+
+\subsubsection{Add User Direct Recommendation}
+\label{sec:basic-operations-add-user}
+The Add User Direct Recommendation, combined with Add User Friend operation provides us with the means required to make friend's based recommendations. To check that the Add User Direct Recommendation operation works we ran the following tests: 
+\begin{itemize}
+	\item We tried adding a friend's recommendation without an user id, which resulted in an error message, informing us that this endpoint requires an user id.
+	\item We tried adding a friend's recommendation without an article id, which resulted in an error message, informing us that this endpoint requires an article id.
+	\item We tried adding an user with an user and an article id, which resulted in a HTTP 200 success message, informing us that the operation was successful.
+\end{itemize}
+
+\subsubsection{Delete User}
+\label{sec:basic-operations-add-user}
+In order to be able to clear our database, we also need to delete users. To check that the Delete User operation works we ran the following tests: 
+\begin{itemize}
+	\item We tried deleting an user, without providing an user id, which resulted in an error message, informing us that this endpoint requires an user id.
+	\item We tried deleting an user with an user id, which resulted in a HTTP 200 success message, informing us that the operation was successful.
+\end{itemize}
+
+\subsubsection{Update User Article History}
+\label{sec:basic-operations-add-user}
+In order to be able to make recommmendations based on collaborative filerting, we  needed an  user article history, which records all the articles read by the user. To check that the Update User Article History operation works we ran the following tests: 
+\begin{itemize}
+	\item We tried updating the article history of an user, without providing an user id, which resulted in an error message, informing us that this endpoint requires an user id.
+	\item We tried updating the article history of an user, without providing an article id, which resulted in an error message, informing us that this endpoint requires an article id.
+	\item We tried updating the article history of an user with an article id, which resulted in a HTTP 200 success message, informing us that the operation was successful.
+\end{itemize}
+
+
+\subsubsection{Get Friend's Article Recommendations}
+\label{sec:basic-operations-add-user}
+This endpoint allows us to get an user's article recommendations based on his friends. To check that the Get Friend's Article Recommendations operation works we ran the following tests: 
+\begin{itemize}
+	\item We tried getting the friend's article recommendation of an user, without providing an user id, which resulted in an error message, informing us that this endpoint requires an user id.
+	\item We tried getting the friend's article recommendation of an user with an article id, which resulted in a HTTP 200 success message, informing us that the operation was successful.
+	\item We checked that we are getting the correct answer by adding a friend and a friend's recommended article and that we are getting the added article.
+\end{itemize}
+
+\subsubsection{Get Articles}
+\label{sec:basic-operations-add-user}
+This endpoint allows us to get a certain number of articles from the database. To check that the Get Friend's Article Recommendations operation works we ran the following tests: 
+\begin{itemize}
+	\item We added a couple of articles, by using the Add Article operation, after which we checked if the Get Articles operation returns the added articles.
+\end{itemize}
+
+
+\subsubsection{Get Recommended Articles}
+\label{sec:basic-operations-add-user}
+This endpoint allows us to get the recommended articles for an user, based on his history. To check that the Get Recommended Articles operation works we ran the following tests: 
+\begin{itemize}
+	\item We tried getting the recommended articles, without providing an user id, which resulted in an error message, informing us that this endpoint requires an user id.
+	\item We tried getting the recommended articles of an user with an user id, which resulted in a list of articles recommended for that user in JSON format.
+\end{itemize}
+
+\subsubsection{Get Related Articles}
+\label{sec:basic-operations-add-user}
+This endpoint allows us to get the articles related to another article, based on it's attributes. To check that the Get Related Articles operation works we ran the following tests: 
+\begin{itemize}
+	\item We tried getting the related articles, without providing an article id, which resulted in an error message, informing us that this endpoint requires an article id.
+	\item We tried getting the recommended articles with an article id, which resulted in a list of articles related to that article, in JSON format.
+\end{itemize}
+
+\subsubsection{Get Articles Related to a Collection}
+\label{sec:basic-operations-add-user}
+This endpoint allows us to get the articles related to a collection, based on it's attributes and the attributes of the articles in the collection. To check that the Get Articles Related to a Collection operation works we ran the following tests: 
+\begin{itemize}
+	\item We tried getting the articles related to a collection, without providing any of the collection's attributes, which resulted in an error message, informing us that this endpoint requires the collection's attributes, which are simillar to that of an article.
+	\item We tried getting the related articles with a collection's attributes, which resulted in a list of articles related to that collection, in JSON format.
+	\item We tried getting the related articles with a collection's attributes and a list of articles ids which are in that collection, which resulted in a list of articles related to that collection, in JSON format.
 \end{itemize}
 
 \section{Evaluation} 
 \label{sec:evaluation}
-TODO
-\begin{itemize}
-	\item Write why it is hard to evaluate the recommender system.
-	\item Write the evaluation scenarios that do not depend on related or recommended.
-\end{itemize}
+In this section we describe how we evaluated our system and how well it performs.
+We can apply three types of experiments, in order to evaluate our recommender quality \cite{evaluate-recommender-system}. The first one is an offline setting, where recommendations are compared without user interaction. The second one is based on user studies, where a group of subjects interact with the system and report on the experience. The third one and the best is represented by large a scale, online experiment, where we test the system in a production environment.
 
-\subsection{Related Articles}
+\subsection{Time and Memory Usage}
+\label{sec:time-memory-usage}
+In the following subsections we make an analysis of the time and memory usage of our system, when applying the related and recommended algorithms, compared to solr.
+
+\subsubsection{Article Indexing Time}
+\label{sec:article-indexing-time}
+TODO Add image and comment on it
+
+\subsubsection{Related Article Time}
+\label{sec:related-articles-time}
+TODO Add image and comment on it
+
+\subsubsection{Recommended Article Time}
+\label{sec:recommended-articles-time}
+TODO Add image and comment on it
+
+\subsubsection{Disk Memory Usage}
+\label{sec:disk-memory-usage}
+TODO Add image and comment on it
+
+\subsubsection{RAM Memory Usage}
+\label{sec:ram-memory-usage}
+TODO Add image and comment on it
+
+\subsection{Quality of Results}
+\label{sec:quality-of-results}
+In the following subsections we make an analysis of the results quality given by our system, when applying the related or recommended algorithms.
+
+\subsubsection{Related Articles}
 \label{sec:related-articles}
+Because it was almost impossible to check if we got good and relevant results with a random database we had to take a database from a previous project of Adobe, which was used by one of their clients, Fast Company. 
 
-\subsubsection{Final Result}
-\label{sec:final-resultone}
-Because it was almost impossible to check if I got good and relevant results with a random database I had to take a database from a previous project of Adobe, which was used by one of their clients, fast company. 
+After we populated our database with their data, we started running tests on it by changing the importance of each attribute and printing the top 100 results
 
-After I populated my database with their data, I started running tests on it by changing the importance of each attribute and printing the top 100 results
+In order to check that we were obtaining  good results we chose an article and google searched it's title on fast company’s site. We then classified the outputs in 3 categories, by relevance, and saved the data in an expected file.
 
-In order to check that I was giving a good result I chose an article and google searched its title on fast company’s site. I then classified the outputs in 3 categories, by relevance and saved the data in an expected file.
+Using the expected data we then binary searched for the best importance of each attribute.
+Because the expected data that we chose may have been influenced by subjective factors, we decided to test our recommendation system by using solr.
 
-Using the expected data I then binary searched for the best importance of each attribute.
-Because the expected data that I chose may have been determined by my own personality, I decided to test my recommendation system by using solr.
+Using the best importance values we determined by using the expected file, we got our ten most related articles in solr's top 25 related.
 
-Using the best importance values I determined by using the expected file, I got my 10 most related articles in solr top 25 related.
+In order to further confirm that our resulted articles are really related I built a simple web page in which users chose one of 4 degrees of relatedness and the data was saved on a server.
 
-In order to further confirm that my resulted articles are really related I built a simple web page in which users chose one of 4 degrees of relatedness and the data was saved on a server.
-
-\subsection{Recommended Articles}
+\subsubsection{Recommended Articles}
 \label{sec:recommended-articles}
-
-\subsubsection{Final Result}
-\label{sec:final-resultwo}
 In order to test that the system gives good recommendations we took the dataset of MovieLens which provided 100,000 ratings from 1000 users on 1700 movies. Using that data we then used our algorithms to predict what rating would a user give to a certain movie, already rated, and compared it to the actual given rating. By doing this we obtained a deviation from the removed rating of about 15\%.
 
+TODO: Add table with deviation
