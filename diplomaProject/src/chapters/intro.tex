@@ -1,9 +1,9 @@
 \chapter{Introduction}
 \label{chapter:intro}
 
-Recommendation systems have become a major research area since the appearance of the first paper on collaborative filtering in the mid 1990s and have become popular in both commercially and research communities. The first step toward choosing an appropriate algorithm for your problem is to decide upon which attributes of your entities you want to focus. Since this is a recommendation system for articles the main focus is going to be on article content and categorization. Other recommendation systems take into account only the text of the articles and do not give any importance to the date, author, language, and ratings of an article. Also, most of the already existing recommendation systems create and maintain the data in their own database, thus doubling the required storage space for an application. 
+Recommendation systems have become a major research area since the appearance of the first paper on collaborative filtering in the mid 1990s and have become popular in both commercially and research communities. The first step toward choosing an appropriate algorithm for your problem is to decide upon which attributes of your entities you want to focus. Since this is a recommendation system for articles the main focus is going to be on article content and categorization. Other recommendation systems focus only on the text of an article and do not give any importance to it's date, author, language, and ratings. Also, most of the already existing recommendation systems create and maintain the data in their own database, thus increasing the required storage space for an application. 
 
-In this thesis we describe a recommender system that solves all the mentioned problems of the existing systems.\\
+In this thesis we describe a recommender system that solves all the mentioned problems of the existing systems.
 
 \section{Motivation}
 \label{sec:motivation}
@@ -34,21 +34,21 @@ The main objective is to build a stand-alone application the acts as a Restful A
 
 A great amount of research has been carried out on the topic of recommendation systems, both in the academia and in the industry. There is a great deal of diversity in the solutions that currently make up the state of the art in the field, both in regard to algorithms used and the recommendation strategies employed. 
 
-In the following sections, I will present a couple of the most successful recommendation systems at the moment.
+In the following sections, we present a couple of the most successful recommendation systems at the moment.
 \nocite{*}
 
 \subsection{Search Engines (Google, Yahoo, Bing, etc)}
 
 These are the most famous type of recommendation systems. They are based on both the content of a site and the particular preferences of an user, determined by their previous search history. 
 
-All these systems offer an user the possibility to query all the indexed websites using a certain phrase or combination of words.
+All these systems offer an user the possibility to query the indexed websites by using a certain phrase or combination of words.
 
 The one that offers a tool most similar to an articles recommendation system is represented by advanced Google search. It offers the possibility to find sites that are similar to a web address you already know, but the recommended pages are not that good of a match. By using certain keywords and doing a search based on them, the resulted articles were more alike.
 
 Also, most of the search engines are held by private companies and act like black boxes. You do not have any access to their data and algorithms.
 
 
-\subsection{Apache Solr}
+\subsection{Apache Solr }
 
 Solr is an open source enterprise search platform, written in Java, from the Apache Lucene project. Its major features include full-text search, hit highlighting, faceted search, real-time indexing, dynamic clustering, database integration, NoSQL features and rich document handling. Providing distributed search and index replication, Solr is highly scalable and fault tolerant. Solr is the most popular enterprise search engine. 
 
@@ -70,15 +70,11 @@ One of the disadvantages of Duine is that it does not offer recommendations base
 \caption{Solution Comparison}
 \label{my-label}
 \begin{tabular}{@{}lccccc@{}}
+\begin{tabular}[c]{@{}l@{}}Recommendation\\ System\end{tabular} & \multicolumn{1}{l}{\begin{tabular}[c]{@{}l@{}}Collaborative \\ Filtering\end{tabular}} & \multicolumn{1}{l}{\begin{tabular}[c]{@{}l@{}}Content \\ based\end{tabular}} & \multicolumn{1}{l}{Hybrid} & \multicolumn{1}{l}{Open Source} & \multicolumn{1}{l}{\begin{tabular}[c]{@{}l@{}}Integrates with \\ Existing Database\end{tabular}} \\ 
 \toprule
-\begin{tabular}[c]{@{}l@{}}Recommendation\\ System\end{tabular} & \multicolumn{1}{l}{\begin{tabular}[c]{@{}l@{}}Collaborative \\ Filtering\end{tabular}} & \multicolumn{1}{l}{\begin{tabular}[c]{@{}l@{}}Content \\ based\end{tabular}} & \multicolumn{1}{l}{Hybrid} & \multicolumn{1}{l}{Open Source} & \multicolumn{1}{l}{\begin{tabular}[c]{@{}l@{}}Integrates with \\ Existing Database\end{tabular}} \\ \midrule
-Search Engines & \checkmark & \checkmark & \checkmark & \xmark & \xmark \\ \midrule
-Apache Solr & \xmark & \checkmark & \xmark & \checkmark & \xmark \\ \midrule
-Duine & \checkmark & \xmark & \xmark & \checkmark & \checkmark \\ \midrule
-Our Recommender & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \\ \bottomrule
+Search Engines & \checkmark & \checkmark & \checkmark & \xmark & \xmark \\
+Apache Solr & \xmark & \checkmark & \xmark & \checkmark & \xmark \\
+Duine & \checkmark & \xmark & \xmark & \checkmark & \checkmark \\ 
+Our Recommender & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \\
 \end{tabular}
 \end{table}
-
-TODO DELETE THIS: E VREO PROBLEMA CA M-AM CONCERNTRAT PE CE REZOLV EU SI NU REZOLVA EI SI NU INVERS?
-
-
