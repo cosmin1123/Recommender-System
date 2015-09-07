@@ -40,6 +40,8 @@ out/
 # mpeltonen/sbt-idea plugin
 .idea_modules/
 
+articles/
+formatedSolrArticles/
 # JIRA plugin
 atlassian-ide-plugin.xml
 
