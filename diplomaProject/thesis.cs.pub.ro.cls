@@ -65,6 +65,7 @@
 \usepackage{graphicx}
 \DeclareGraphicsExtensions{.pdf,.png,.jpg}
 
+\usepackage{pgfplots}
 % Code listings support
 \usepackage{listings}
 

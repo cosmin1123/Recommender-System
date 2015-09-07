@@ -1,9 +1,9 @@
 \chapter{Introduction}
 \label{chapter:intro}
 
-Recommendation systems have become a major research area since the appearance of the first paper on collaborative filtering in the mid 1990s and have become popular in both commercially and research communities. The first step toward choosing an appropriate algorithm for your problem is to decide upon which attributes of your entities you want to focus. Since this is a recommendation system for articles the main focus is going to be on article content and categorization. Other recommendation systems focus only on the text of an article and do not give any importance to it's date, author, language, and ratings. Also, most of the already existing recommendation systems create and maintain the data in their own database, thus increasing the required storage space for an application. 
+Recommendation systems have become a major research area since the appearance of the first paper on collaborative filtering in the mid 1990s and have since then become popular in both commercial and research communities. The first step toward choosing an appropriate algorithm for your problem is to decide upon which attributes of your entities you want to focus. Since this is a recommendation system for articles the main focus is going to be on article content and categorization. Other recommendation systems focus only on the text of an article and do not give any importance to it's date, author, language, or ratings. Also, most of the already existing recommendation systems create and maintain the data in their own database, thus increasing the required storage space for an application. 
 
-In this thesis we describe a recommender system that solves all the mentioned problems of the existing systems.
+In this thesis we describe an open source recommender system that provides an easy to use RESTful api, through Spring Framework's MVC(Model-View-Controller) and grants us access to a multitude of recommendation and related algorithms. These algorithms also use the Stanford Core NLP framework for Neuro-linguistic programming, which helps us improve the quality of our recommendations. Also, a database with fast access is needed to be able to store and process our data in real time. We chose Apache HBase, which fits perfectly for this job, as described in the following chapters.
 
 \section{Motivation}
 \label{sec:motivation}
@@ -18,10 +18,8 @@ The main objective is to build a stand-alone application the acts as a Restful A
   
   	This type of recommendations may use collaborative filtering if specified by the user of the system.
     
-    This type of recommendations should make use of all the attributes of an article and give precise recommendations.
-    
-    This type of recommendations should make use of all the attributes of an article and give precise recommendations.
-    
+    This type of recommendations should make use of all the attributes of an article and give good recommendations.
+   
     Each attribute should be given a certain importance in the classifying of the articles.
   
   \item Recommendations based on user history and ratings, giving personalized recommendations for a certain user.
@@ -32,32 +30,32 @@ The main objective is to build a stand-alone application the acts as a Restful A
 \section{Related Work}
 \label{sub-sec:related-work}
 
-A great amount of research has been carried out on the topic of recommendation systems, both in the academia and in the industry. There is a great deal of diversity in the solutions that currently make up the state of the art in the field, both in regard to algorithms used and the recommendation strategies employed. 
+A great amount of research \cite{evaluate-recommender-system} has been carried out on the topic of recommendation systems, both in the academia and in the industry. There is a great deal of diversity in the solutions that currently make up the state of the art in the field, both in regard to algorithms used and the recommendation strategies employed. 
 
 In the following sections, we present a couple of the most successful recommendation systems at the moment.
 \nocite{*}
 
 \subsection{Search Engines (Google, Yahoo, Bing, etc)}
 
-These are the most famous type of recommendation systems. They are based on both the content of a site and the particular preferences of an user, determined by their previous search history. 
+These\footnote{www.google.com}  are the most famous types of recommendation systems. They are based on both the content of a site and the particular preferences of an user, determined by their previous search history. 
 
 All these systems offer an user the possibility to query the indexed websites by using a certain phrase or combination of words.
 
-The one that offers a tool most similar to an articles recommendation system is represented by advanced Google search. It offers the possibility to find sites that are similar to a web address you already know, but the recommended pages are not that good of a match. By using certain keywords and doing a search based on them, the resulted articles were more alike.
+The one that offers a tool most similar to an article recommendation system is represented by Advanced Google search\footnote{http://www.google.ca/advanced_search}. It offers the possibility to find sites that are similar to a web address you already know, but the recommended pages are not that good of a match. By using certain keywords and doing a search based on them, the resulted articles were more alike.
 
 Also, most of the search engines are held by private companies and act like black boxes. You do not have any access to their data and algorithms.
 
 
 \subsection{Apache Solr }
 
-Solr is an open source enterprise search platform, written in Java, from the Apache Lucene project. Its major features include full-text search, hit highlighting, faceted search, real-time indexing, dynamic clustering, database integration, NoSQL features and rich document handling. Providing distributed search and index replication, Solr is highly scalable and fault tolerant. Solr is the most popular enterprise search engine. 
+Solr\footnote{http://lucene.apache.org/solr/} is an open source enterprise search platform, written in Java, from the Apache Lucene project. It's major features include full-text search, hit highlighting, faceted search, real-time indexing, dynamic clustering, database integration, NoSQL features and rich document handling. Providing distributed search and index replication, Solr is highly scalable and fault tolerant. Solr is the most popular enterprise search engine. 
 
 Solr is written in Java and runs as a standalone full-text search server. Solr uses the Lucene Java search library at its core for full-text indexing and search, and has REST-like HTTP/XML and JSON APIs that make it usable from most popular programming languages. Solr's powerful external configuration allows it to be tailored to many types of application without Java coding, and it has a plugin architecture to support more advanced customization.
 
 This solution needs to do its own indexing before any recommendations can be made and it can't be directly integrated with another database. Thus, requiring the duplication of data. This system does not take into account the previous user search history and does not make personalized recommendations.
 
 \subsection{Duine Recommender }
-The Duine recommender is a software module that calculates how interesting information items are for a user. The resulting interest is quantified by a number, called prediction, ranging from -1 (not interesting) to +1 (interesting). When applied in, for example, an electronic TV Guide the Duine recommender can calculate how interesting each TV program is for a particular user. These predictions can be used in various ways: e.g. to provide a user with a list of the top 10 most interesting items, to sort a list of items with the items with the highest prediction at the top, or to present an indication of the interest to the user for each item (e.g. using a number of stars).
+The Duine recommender\footnote{http://www.duineframework.org/} is a software module that calculates how interesting information items are for a user. The resulting interest is quantified by a number, called prediction, ranging from -1 (not interesting) to +1 (interesting). When applied in, for example, an electronic TV Guide the Duine recommender can calculate how interesting each TV program is for a particular user. These predictions can be used in various ways: e.g. to provide a user with a list of the top 10 most interesting items, to sort a list of items with the items with the highest prediction at the top, or to present an indication of the interest to the user for each item (e.g. using a number of stars).
 
 The Duine recommender also processes and stores ratings that users give to an information item and interests of the users in aspects of the information (categories, genres, people, topics etc). All data associated with a user is stored in a user profile.
 

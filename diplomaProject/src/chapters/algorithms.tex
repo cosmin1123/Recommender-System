@@ -6,37 +6,34 @@ There are 3 types of recommendation algorithms:
 \begin{enumerate}
 	\item Recommendations based on content
 		 
-		These type of recommendations are solely based on the content of the item to be recommended.
+		This type of recommendations are solely based on the content of the item to be recommended.
 		
-		It uses various text based algorithms in order to calculate a similarity between two items.
+		It uses various text based algorithms in order to calculate the similarity between two items.
 
 	\item Recommendations based on collaborative filtering 
 		
-		These type of recommendations are based on previous user history and ratings.
+		This type of recommendations are based on previous user history and ratings.
 		 
-		The main purpose is to find users with simillar interests to a certain user and recommend items that that are preferred by most of the users.
+		The main purpose is to find users with simillar interests to a certain user and recommend items that that are preferred by most of them to that initial user.
 	
 	\item Hybrid recommendations
 
-		These type of recommendations combine the previous presented.
+		This type of recommendations combine the previous presented.
 
 \end{enumerate}
 All 3 types of algorithms can be used, independently or by combining the obtained results.
-
-In the following sections we are going to present the implemmented algorithms.
+In the following sections we are going to present the implemmented algorithms and why we chose them.
 
 
 \section{Algorithms for Related Articles}
 \label{sec:algorithms-for-related-articles}
 The related articles recommendation returns a list of articles related to a certain article.
-
 We have implemmented both a hybrid and a content based approach.
-
 A user may choose to use only one approach or combine them for better results.
 
 \subsection{Collaborative Filtering}
 \label{sec:collaborative-filtering}
-In order to obtain better results, we may use collaborative filtering to do a kind of article grouping by user preferences. Usually, users fit into a certain profile and read articles that are related to each other. Using this technique we can reduce the number of articles on which we are going to apply the article similarity algorithm. We use the following iterative algorithm\cite{item-to-item-recomm} to find articles that are related to article A1:
+In order to obtain better results, we may use collaborative filtering to do article grouping by user preferences. Usually, users fit into a certain profile and read articles that are related to each other. Using this technique we can reduce the number of articles on which we are going to apply the article similarity algorithm. We use the following iterative algorithm\cite{item-to-item-recomm} to find articles that are related to article A1:
 \lstset{language=make,caption=Item to item collaborative filtering,label=lst:app-make}
 \begin{lstlisting}
 	For each user U that read A1
@@ -94,7 +91,7 @@ In order to compute and improve the similarity between two strings we employ the
 
 		It is important to not confuse lemmatization with stemming.
 
-		Stemming usually refers to a crude heuristic process that just chops off the end of a word in order to obtain good results, most of the time. This is usually achieved through the removal of the derivational affixes.
+		Stemming usually refers to a crude heuristic process that just chops off the end of a word in order to obtain good results, most of the time. This is usually achieved through the removal of the derivation affixes.
 
 		For instance:
 		\begin{enumerate}

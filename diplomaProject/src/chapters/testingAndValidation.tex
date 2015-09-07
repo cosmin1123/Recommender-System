@@ -18,12 +18,12 @@ The main purpose of it was to test our database for basic functionality and easi
 
 \subsection{Fast Company} 
 \label{sec:testing-and-validation-data-sources-fast-company}
-Fast Company is a buiness magazine that focuses on technology, buisness and design. It's online platform uses Adobe's older application and has a database, very simillary in structure to ours.
+Fast Company\footnote{http://www.fastcompany.com/} is a buiness magazine that focuses on technology, buisness and design. It's online platform uses Adobe's older application and has a database, very similarly in structure to ours.
 In order to get their data we made calls to their public api which returned JSON objects. Because we needed to get a large amount of data which took a lot of time, we made the api calls and processing in parallel. The api provided us with almost all the data we needed, except the rating of an article and user data. We used it for testing and improving our related algorithms.
 
 \subsection{Movie Lens} 
 \label{sec:testing-and-validation-data-sources-movie-lens}
-This data set was provided by GroupLens Research which collected and provided rating data sets from the MovieLens web site. We used a set of data which had  100 000 ratings from 1000 users on 1700 movies.
+This\footnote{http://grouplens.org/datasets/movielens/} data set was provided by GroupLens Research which collected and provided rating data sets from the MovieLens web site. We used a set of data which had  100 000 ratings from 1000 users on 1700 movies.
 By using that set we were able to predict what rating would a user give to a movie, based on it's previous ratings and the ratings of other users. This data set was used for testing and improving our recommendation algorithms.
 
 \section{Testing} 
@@ -134,39 +134,143 @@ This endpoint allows us to get the articles related to a collection, based on it
 \section{Evaluation} 
 \label{sec:evaluation}
 In this section we describe how we evaluated our system and how well it performs.
-We can apply three types of experiments, in order to evaluate our recommender quality \cite{evaluate-recommender-system}. The first one is an offline setting, where recommendations are compared without user interaction. The second one is based on user studies, where a group of subjects interact with the system and report on the experience. The third one and the best is represented by large a scale, online experiment, where we test the system in a production environment.
+We can apply three types of experiments, in order to evaluate our recommender's quality \cite{evaluate-recommender-system}. The first one is an offline setting, where recommendations are compared without user interaction. The second one is based on user studies, where a group of subjects interact with the system and report on the experience. The third one and the best is represented by large a scale, online experiment, where we test the system in a production environment.
 
 \subsection{Time and Memory Usage}
 \label{sec:time-memory-usage}
-In the following subsections we make an analysis of the time and memory usage of our system, when applying the related and recommended algorithms, compared to solr.
+In the following subsections we make an analysis of the time and memory usage of our system, when applying the related and recommended algorithms, compared to solr. 
 
 \subsubsection{Article Indexing Time}
 \label{sec:article-indexing-time}
-TODO Add image and comment on it
+
+\begin{figure}[h]
+\centering
+\caption{Article Indexing Time}
+\begin{tikzpicture}
+\begin{axis}[
+    xlabel={Number of Articles},
+    ylabel={Time (s)},
+    xmin=0, xmax=5000,
+    ymin=0, ymax=42,
+    xtick={0, 1000,2000, 3000, 4000, 5000},
+    ytick={0,50,100,150,200,250},
+    legend pos=north west,
+    ymajorgrids=true,
+    grid style=dashed,
+]
+\addplot[
+    color=red,
+    mark=square,
+    ]
+    coordinates {
+    (100,0.980)(500,2.192)(1000,3.509)(1500,5.208)(2000,6.192)(2500,8.903)(3000,9.600)(3500,10.880)(4000,11.862)(4500,14.183)(5000,15.132)
+    };
+ 
+ \addplot[
+    color=blue,
+    mark=square,
+    ]
+    coordinates {
+    (100,2.921)(500,5.823)(1000,10.009)(1500,14.418)(2000,19.292)(2500,23.045)(3000,27.309)(3500,28.340)(4000,29.862)(4500,33.256)(5000,41.269)
+    };
+    \legend{Solr,Our Recommender System}
+\end{axis}
+\end{tikzpicture}
+\label{tikz}
+\end{figure}
+
+Indexing time refers to the amount of time needed by a system to add a new item or a group of items to it's data. We have to index items in order to make the system aware of the existing information and to make certain optimisations that lower our response time.
+In the above image, Figure 5.1, we can see our and solr's performance on item indexing. Our time is slower than that of solr because we use a database to store our data. This allows us to keep it in a structured manner and provide personalised recommendations, a feature that solr does not have.
 
 \subsubsection{Related Article Time}
 \label{sec:related-articles-time}
-TODO Add image and comment on it
 
-\subsubsection{Recommended Article Time}
-\label{sec:recommended-articles-time}
-TODO Add image and comment on it
+\begin{figure}[h]
+\centering
+\caption{Related Article Time}
 
+\begin{tikzpicture}
+\begin{axis}[
+    xlabel={Number of Articles},
+    ylabel={Time (ms)},
+    xmin=0, xmax=5000,
+    ymin=0, ymax=500,
+    xtick={0, 1000,2000, 3000, 4000, 5000},
+    ytick={0,50,100,150,200,250},
+    legend pos=north west,
+    ymajorgrids=true,
+    grid style=dashed,
+]
+\addplot[
+    color=red,
+    mark=square,
+    ]
+    coordinates {
+    (100,24)(500,26)(1000,25)(1500,22)(2000,17)(2500,17)(3000,13)(3500,20)(4000,21)(4500,19)(5000,22)
+    };
+ 
+ \addplot[
+    color=blue,
+    mark=square,
+    ]
+    coordinates {
+    (100,34)(500,54)(1000,125)(1500,234)(2000,6)(2500,9)(3000,9)(3500,12)(4000,14)(4500,20)(5000,15)
+    };
+    \legend{Solr,Our Recommender System}
+\end{axis}
+\end{tikzpicture}
+\label{tikz}
+\end{figure}
+
+In Figure 5.2, we can see how solr's and our related article recommendations perform. In the begining of the experiment we didn't use any form of caching, thus using less RAM memory but we got a response time that is worse than that of solr. Then, we started using our caching mechanisms and we got a simillar time.
 \subsubsection{Disk Memory Usage}
 \label{sec:disk-memory-usage}
-TODO Add image and comment on it
 
-\subsubsection{RAM Memory Usage}
-\label{sec:ram-memory-usage}
-TODO Add image and comment on it
+\begin{figure}[h]
+\centering
+\caption{Disk Memory Usage}
 
+\begin{tikzpicture}
+\begin{axis}[
+    xlabel={Number of Articles},
+    ylabel={Time (MB)},
+    xmin=0, xmax=5000,
+    ymin=0, ymax=50,
+    xtick={0, 1000,2000, 3000, 4000, 5000},
+    ytick={0,10,20,30,40,50},
+    legend pos=north west,
+    ymajorgrids=true,
+    grid style=dashed,
+]
+\addplot[
+    color=red,
+    mark=square,
+    ]
+    coordinates {
+    (100,2.3)(500,4.6)(1000,8.5)(1500,13)(2000,17)(2500,21)(3000,25)(3500,28)(4000,35)(4500,38)(5000,42)
+    };
+ 
+ \addplot[
+    color=blue,
+    mark=square,
+    ]
+    coordinates {
+    (100,1.7)(500,2.8)(1000,4)(1500,7)(2000,10)(2500,14)(3000,17)(3500,21)(4000,25)(4500,29)(5000,34)
+    };
+    \legend{Solr,Our Recommender System}
+\end{axis}
+\end{tikzpicture}
+\label{tikz}
+\end{figure}
+
+In the above image, Figure 5.3, we can see how solr's disk usage compares to ours. We can clearly see that we use less memory than solr. Even though, this may cause some speed issues, when using it without caching, our system is ideal for applications that have a limited amount of memory at their disposal.
 \subsection{Quality of Results}
 \label{sec:quality-of-results}
 In the following subsections we make an analysis of the results quality given by our system, when applying the related or recommended algorithms.
 
 \subsubsection{Related Articles}
 \label{sec:related-articles}
-Because it was almost impossible to check if we got good and relevant results with a random database we had to take a database from a previous project of Adobe, which was used by one of their clients, Fast Company. 
+Because it was almost impossible to check if we got good and relevant results with a random database we had to take a database from a previous project of Adobe, which was used by one of their clients, Fast Company\footnote{http://www.fastcompany.com/}. 
 
 After we populated our database with their data, we started running tests on it by changing the importance of each attribute and printing the top 100 results
 
@@ -182,5 +286,3 @@ In order to further confirm that our resulted articles are really related I buil
 \subsubsection{Recommended Articles}
 \label{sec:recommended-articles}
 In order to test that the system gives good recommendations we took the dataset of MovieLens which provided 100,000 ratings from 1000 users on 1700 movies. Using that data we then used our algorithms to predict what rating would a user give to a certain movie, already rated, and compared it to the actual given rating. By doing this we obtained a deviation from the removed rating of about 15\%.
-
-TODO: Add table with deviation

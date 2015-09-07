@@ -4,9 +4,8 @@ var solr = require('solr-client');
 var client = solr.createClient();
 
 var fs = require('fs');
-
-for (i = 3000000; i < 3043700; i++) { 
-	var filename = '/Users/didii/Downloads/solr-5.1.0/server/solr/tmpFiles/bruteArticles/' + i; 
+for (i = 3000000; i < 3005000; i++) { 
+	var filename = '/home/cosmin/Documents/Recommender-System/RecommenderSystem/web/solr/articles/' + i; 
 	var buf = fs.readFileSync(filename, "utf8");
 		
 	if(buf.indexOf('{"id"') == 0) {
@@ -31,7 +30,7 @@ for (i = 3000000; i < 3043700; i++) {
 		newObj.author = obj.author.display_name;
 		var tmp = new Array();
 		tmp.push(newObj);
-		fs.writeFileSync('/Users/didii/Downloads/solr-5.1.0/server/solr/tmpFiles/formatedSolrArticles/' + i + ".json", JSON.stringify(tmp));
+		fs.writeFileSync('/home/cosmin/Documents/Recommender-System/RecommenderSystem/web/solr/formatedSolrArticles/' + i + ".json", JSON.stringify(tmp));
 	}
 
 }

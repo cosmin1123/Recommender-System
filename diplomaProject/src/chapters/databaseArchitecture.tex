@@ -2,7 +2,7 @@
 \label{chapter:database-architecture}
 In this chapter we present our database, how we represented our entities, why we used this representation and what database operations we require.
 
-The system uses Hbase as it’s default database for storing data, but can be easily integrated with any kind of database by passing a java class for working with the database entities.
+The system uses Hbase\footnote{http://hbase.apache.org/} as it’s default database for storing data, but can be easily integrated with any kind of database by passing a java class for working with the database entities.
 
 HBase is an open source, non-relational, distributed database modeled after Google's BigTable and written in Java. It is developed as part of Apache Software Foundation's Apache Hadoop project and runs on top of HDFS (Hadoop Distributed Filesystem), providing BigTable-like capabilities for Hadoop. That is, it provides a fault-tolerant way of storing large quantities of sparse data (small amounts of information caught within a large collection of empty or unimportant data, such as finding the 50 largest items in a group of 2 billion records).
 
@@ -11,22 +11,20 @@ Hbase is divided into tables. Each table has a name. Then, each table has multip
 \begin{table}[h]
   \caption{Hbase database format}
 \centering
-\begin{tabular}{@{}ccccllll@{}}
+\begin{tabular}{@{}lllllll@{}}
 
 Row key                & Family                         &                                & Family                         &                                & Family    &           \\ \toprule 
 & Qualifier                      & Qualifier                      & Qualifier                      & Qualifier                      & Qualifier & Qualifier \\ 
-                       & Value                          & Value                          & Value                          & Value                          & Value     & Value     \\ 
-Row key                & Family                         &                                & Family                         &                                & Family    &           \\ \toprule 
- & Qualifier & Qualifier & Qualifier & Qualifier & Qualifier & Qualifier \\ 
- & Value     & Value     & Value     & Value     & Value     & Value     \\ 
+                       & Value                          & Value                          & Value                          & Value                          & Value     & Value     
 \end{tabular}
 \end{table}
 
-We are working with hbase because it grants us fast access to our article data.
+Due to HBase's table format, we get fast access to our article data. Also, we modeled our entities so that we can take full advantage of the NOsql database.
 
 \section{Database Overview}
 \label{sec:users}
-As we can see in Figure 4.1 each user has a list of items recommended by the user and an item history, referenced by the item's id. Each item has a set of words in it's content. Each word is saved with the total number of appearences, in all the files in the TFIDF table. This table also keeps track of the total number of files in the database.
+As we can see in Figure 4.1 we have 3 database tabels: Users, Items and TFIDF. The Users table represents an user in the database and it's required data for being able to make personalised recommendations. The Items table represents an item in our database and it's required data for being able to apply TFIDF to it and make item related recommendations. The TFIDF table holds the required data for applying TFIDF on our items.
+Each user has a list of items recommended by the user and an item history, referenced by the item's id. Each item has a set of words in it's content and a list of ratings from the users. Each word is saved with the total number of appearences in all the files, in the TFIDF table. This table also keeps track of the total number of files in the database.
 \begin{figure}[h]
 \caption{Database Schema}
 \includegraphics[width=1.0\textwidth]{src/img/databaseSchema.png}
@@ -35,8 +33,7 @@ As we can see in Figure 4.1 each user has a list of items recommended by the use
 \section{Database entities}
 \label{sec:database-entities}
 
-We have mapped our database over the attributes that are needed for the recommendation and related algorithms.
-
+We have mapped our database over the attributes that are needed for the recommendation and related algorithms and we present them in the following sections. We will begin with the Users table and end with the Items table, since the TFIDF table isn't a basic required table in order to represent our entities.
 
 \subsection{Users}
 \label{sec:users}
