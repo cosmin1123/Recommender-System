@@ -40,11 +40,11 @@ Since, Javascript is one of the pillars of the World Wide Web and our Recommende
 
 \subsection{Frameworks}
 \label{sec:frameworks}
-A framework is like a black box that offers certain functionalities to it's user and does not require him to have any knowledge of what is going on behind the scenes
+A framework is like a black box that offers certain functionalities to it's user and does not require him to have any knowledge of what is going on behind the scenes.
 The basic principle of a framework is: Not having to reinvent the wheel. By using them we can build faster and better software.
 Faster, because it allows the programmer to focus on implemmentation specific code, while re-using generic modules, without being tied to the framework itself.
 Better, because a framework ensures you that the code you are running is in full compliance with the industry's rules. It is structured, and both upgradable and maintanable.
-In the following sections we describe the frameworks used by our system and why we made those choices.
+In the following sections we describe the frameworks used by our system and why we made these choices.
 
 \subsubsection{Spring Framework}
 \label{sec:frameworks-spring-framework}
@@ -87,7 +87,7 @@ The purpose of the "lemma" property is that of applying the lemmatization proces
 Lemmatization is the process of grouping different forms of a word so they can be processed as a single item.
 In most of the languages, words are used in several inflicted forms. For example the verb "to be" may appear as "was", "am", "being", etc. The base form of the word, in this case, would be the one you can find in the dictionary, "be" and this is called the lemma of the word. If we combine the part of speech, determined from the context,  with the base form of the word, we get something called the lexeme of the word. 
 
-Another process, closely related to lemmatisation is called stemming. The main difference is that in the stemming process we do not take into account the context of a word, but only the word itself, and therefore we ca not make a difference between words, based on the part of speech. For example, the word "beings", will always be reduced by a stemmer to the base form "be", which is wrong, if used as a noun "All beings are like each other in existing". The lemmatisation process will determine, based on the context, that the word is a noun and has the basic form "being". A stemmer will be able to reduce the word "walking" to the correct form "walk", just like a lemmatizer.
+Another process, closely related to lemmatisation is called stemming. The main difference is that in the stemming process we do not take into account the context of a word, but only the word itself, and therefore we ca not make a difference between words, based on the part of speech. For example, the word "beings", will always be reduced by a stemmer to the base form "be", which is wrong "All beings are like each other in existing". The lemmatisation process will determine, based on the context, that the word is a noun and has the basic form "being". A stemmer will be able to reduce the word "walking" to the correct form "walk", just like a lemmatizer.
 
 If the application does not need great accuracy, then a stemmer is recommended, since the running time is much faster and the implemmentation is simpler.
 We chose a lemmatizer in order to increase the quality of our similarity results. The lemmatizer is used only in the article adding stage, when creating the TFIDF entries, in order to be able to make fast recommendations. If we need to compute word similarity, during the recommendation stage, then we are using the Levenshtein Distance or a simple word similarity algorithm, based on pairs of letters of the word, as presented in the Recommendation Algorithms chapter.
@@ -114,7 +114,7 @@ All the data is returned as a JSON object.
 \subsection{Add user}
 \label{sec:workflow-add-user}
 A PUT request is made to the RESTful api with the required data for adding a friend of an user.
-The minimum data required for a user is the user id and friend id.
+The minimum data required for an user is the user id and friend id.
 The request is intercepted by the api and the new friend is added to the user’s top friends list. If the operation is successful then the user receives “true”, otherwise the user is informed of the error. 
 
 \subsection{Add user friend}
@@ -138,7 +138,7 @@ The request is intercepted by the api and the database entry is deleted. If the 
 
 \subsection{Update user article history}
 \label{sec:workflow-update-user-article-history}
-A PUT request is made to the RESTful api with the required data for updating an user article history
+A PUT request is made to the RESTful api with the required data for updating an user's article history.
 The read article history can be updated and a rating of a certain article can be added. 
 The minimum required fields are the article id and the user id.
 The request is intercepted by the api and the user entry is fetched from the database. The new item is added to the article history list of the user. If the operation is successful then the api returns “true”, otherwise the user is informed of the error. 
@@ -162,7 +162,7 @@ If the operation is successful then the user receives “true”, otherwise the 
 \subsection{Get articles}
 \label{sec:workflow-get-all-articles}
 A GET request is made to the RESTful api in order to get the articles from the databse.
-The user may specify how many articles he wishes to receive or hey may request for a specific article.
+The user may specify how many articles he wishes to receive or he may request a specific article.
 The articles are fetched from the database and returned to the user.
 If the operation is successful then the user receives the article list, otherwise the user is informed of the error
 
@@ -170,7 +170,7 @@ If the operation is successful then the user receives the article list, otherwis
 \label{sec:workflow-get-recommended-articles}
 A GET request is made to the RESTful api in order to get the recommended articles for a user
 The minimum required data is the user id for whom we need the recommendation.
-The system tries to guess how the user will rate the articles in the database, based on his previous ratings and the ratings of the other users he has the most common interests.
+The system tries to guess how the user will rate the articles in the database, based on his previous ratings and the ratings of the other users.
 If the operation is successful then the user receives the top rated articles, otherwise the user is informed of the error.
 
 \subsection{Get related articles}
