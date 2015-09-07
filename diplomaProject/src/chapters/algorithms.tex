@@ -22,7 +22,7 @@ There are 3 types of recommendation algorithms:
 
 \end{enumerate}
 All 3 types of algorithms can be used, independently or by combining the obtained results.
-In the following sections we are going to present the implemmented algorithms and why we chose them.
+In the following sections we present the implemmented algorithms and why we chose them.
 
 
 \section{Algorithms for Related Articles}
@@ -85,7 +85,7 @@ In order to compute and improve the similarity between two strings we employ the
 		This method gives better results than the previous one.
 	\item Lemmatization
 		
-		In order to obtain better TFIDF results we use the Stanford NLP (Neuro-linguistic programming) framework for lemmatization.
+		In order to obtain better TFIDF results we use the Stanford NLP (Natural Language Processing) framework for lemmatization.
 
 		Lemmatization is the process of doing a vocabulary and morphological analysis on a text in order to reduce the words to their proper base form.
 
@@ -95,9 +95,9 @@ In order to compute and improve the similarity between two strings we employ the
 
 		For instance:
 		\begin{enumerate}
-			\item The word $"am"$ will be reduced through lemmatization to the base form $"be"$. This form can not be deducted through stemming, as it requires a dictionary look-up.
-			\item The word $"meeting"$ can either be a noun, in which case the lemma is going to be $"meeting"$, or the ing form of the verb $"meet"$. This difference can be deducted by the lemmatizer through the understanding of what type of speech the word actually is from the context. Stemming will reduce the word to the form $"meet"$, which may not be correct in certain contexts.
-			\item The word $"walking"$ has the lemma $"walk"$, form which can be deducted both through stemming and lemmatization
+			\item The word $"am"$ will be reduced through lemmatization to the base form $"be"$. This form can not be deduced through stemming, as it requires a dictionary look-up.
+			\item The word $"meeting"$ can either be a noun, in which case the lemma is going to be $"meeting"$, or the ing form of the verb $"meet"$. This difference can be deduced by the lemmatizer through the understanding of what type of speech the word actually is from the context. Stemming will reduce the word to the form $"meet"$, which is not correct in certain contexts.
+			\item The word $"walking"$ has the lemma $"walk"$, form which can be deduced both through stemming and lemmatization
 
 		\end{enumerate}
 

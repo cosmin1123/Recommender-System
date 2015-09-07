@@ -1,7 +1,7 @@
 \chapter{Testing and Validation}
 \label{chapter:testing-validation}
 
-The first step to test and validate our solution was to get an article database. To have that, we filled our database with random values, so that we could check that we have configured it correctly and to have a solid base on which we could test our recommendation algorithms.
+The first step to test and validate our solution was to get an article database. To have that, we filled our database with random values, so that we could check that we configured it correctly and to have a solid base on which we could test our recommendation algorithms.
 Further on, we used data from different sources, to populate our database and try our algorithms.
 In the following sections we describe the sources used and the tests that we made.
 
@@ -19,7 +19,7 @@ The main purpose of it was to test our database for basic functionality and easi
 \subsection{Fast Company} 
 \label{sec:testing-and-validation-data-sources-fast-company}
 Fast Company\footnote{http://www.fastcompany.com/} is a buiness magazine that focuses on technology, buisness and design. It's online platform uses Adobe's older application and has a database, very similarly in structure to ours.
-In order to get their data we made calls to their public api which returned JSON objects. Because we needed to get a large amount of data which took a lot of time, we made the api calls and processing in parallel. The api provided us with almost all the data we needed, except the rating of an article and user data. We used it for testing and improving our related algorithms.
+In order to get their data we made calls to their public API which returned JSON objects. Because we needed to get a large amount of data which took a lot of time, we made the API calls and processing in parallel. The API provided us with almost all the data we needed, except the rating of an article and user data. We used it for testing and improving our related algorithms.
 
 \subsection{Movie Lens} 
 \label{sec:testing-and-validation-data-sources-movie-lens}
@@ -266,7 +266,7 @@ In Figure 5.2, we can see how solr's and our related article recommendations per
 In the above image, Figure 5.3, we can see how solr's disk usage compares to ours. We can clearly see that we use less memory than solr. Even though, this may cause some speed issues, when using it without caching, our system is ideal for applications that have a limited amount of memory at their disposal.
 \subsection{Quality of Results}
 \label{sec:quality-of-results}
-In the following subsections we make an analysis of the results quality given by our system, when applying the related or recommended algorithms.
+In the following subsections we make an analysis of the quality of the results given by our system, when applying the related or recommended algorithms.
 
 \subsubsection{Related Articles}
 \label{sec:related-articles}
